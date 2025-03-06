@@ -54,6 +54,6 @@ turbo docker-push
 ## Project Planning
 
 - Sprint planning runs on GitHub issues
-- Documents are hostet on Google Drive and are public ![here](https://drive.google.com/drive/folders/19lpbNJcOhSzu6dgTf4em5GLhbSm4QyvB?usp=sharing).
+- Documents are hostet on Google Drive and are public ![https://drive.google.com/drive/folders/19lpbNJcOhSzu6dgTf4em5GLhbSm4QyvB?usp=sharing](https://drive.google.com/drive/folders/19lpbNJcOhSzu6dgTf4em5GLhbSm4QyvB?usp=sharing).
 
 ## Have fun coding! :D
