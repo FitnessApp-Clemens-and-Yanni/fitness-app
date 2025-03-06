@@ -1,0 +1,18 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "dotnet clean",
+    "build": "dotnet build",
+    "dev": "dotnet run --project WebApi",
+    "start": "dotnet run --project WebApi",
+    "docker": "docker build -t yannialshoufi/syp-fitness-webapi .",
+    "format": "dotnet format"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

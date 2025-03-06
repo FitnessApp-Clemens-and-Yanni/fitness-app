@@ -1,0 +1,28 @@
+services:
+  homepage:
+    image: yannialshoufi/syp-fitness-homepage
+    container_name: homepage-container
+    ports:
+      - 80:4321
+    networks:
+      - syp-fitness-network
+
+  webapi:
+    image: yannialshoufi/syp-fitness-webapi
+    container_name: webapi-container
+    ports:
+      - 5000:8080
+    networks:
+      - syp-fitness-network
+
+  reactnative-web:
+    image: yannialshoufi/syp-fitness-reactnative-web
+    container_name: reactnative-web-container
+    ports:
+      - 4000:8081
+    networks:
+      - syp-fitness-network
+
+networks:
+  syp-fitness-network:
+    name: syp-fitness-network

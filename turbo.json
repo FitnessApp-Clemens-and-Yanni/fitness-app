@@ -10,8 +10,14 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
+    "format": {
+      "dependsOn": ["^format"]
+    },
     "check-types": {
       "dependsOn": ["^check-types"]
+    },
+    "docker": {
+      "dependsOn": ["^docker"]
     },
     "dev": {
       "cache": false,

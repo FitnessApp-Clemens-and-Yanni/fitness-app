@@ -1,0 +1,36 @@
+{
+  "name": "homepage",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev --port 8080",
+    "start": "astro dev --port 8080",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "docker": "docker build -t yannialshoufi/syp-fitness-homepage .",
+    "lint": "pnpm dlx eslint .",
+    "format": "pnpm exec prettier . --write"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.1.0",
+    "@astrojs/node": "^9.1.2",
+    "@astrojs/react": "^4.2.1",
+    "@tailwindcss/vite": "^4.0.9",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "astro": "^5.4.2",
+    "canvas-confetti": "^1.9.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.9"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.26.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-astro": "^1.3.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11"
+  }
+}
