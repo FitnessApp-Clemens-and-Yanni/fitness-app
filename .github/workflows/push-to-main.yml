@@ -22,13 +22,13 @@ jobs:
       - name: Set up PNPM
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Running tests
-        run: npm build
+        run: pnpm build
 
       - name: Running tests
-        run: npm test
+        run: pnpm test
