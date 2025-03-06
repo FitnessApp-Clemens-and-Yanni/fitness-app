@@ -8,6 +8,7 @@ To start developing in this repo it's important that you install the following C
 - dotnet
 - turbo
 - docker
+- pnpm
 
 ## Access to docker
 
@@ -43,5 +44,7 @@ and _THEN_ you can run:
 ```
 turbo docker-push
 ```
+
+## PLEASE do not use `npm` in this repo!!! Any `package-lock.json` or `npm` artifact will not pass code reviews.
 
 ## Have fun coding! :D
