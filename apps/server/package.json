@@ -11,7 +11,8 @@
     "docker-build": "docker build -t fitness-webapi .",
     "docker-tag": "docker tag fitness-webapi ghcr.io/fitnessapp-clemens-and-yanni/fitness-webapi:latest",
     "docker-push": "docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-webapi:latest",
-    "format": "dotnet format"
+    "format": "dotnet format",
+    "test": "dotnet test"
   },
   "keywords": [],
   "author": "",

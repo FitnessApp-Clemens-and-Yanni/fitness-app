@@ -11,8 +11,9 @@
     "docker-build": "docker build -t fitness-homepage .",
     "docker-tag": "docker tag fitness-homepage ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage:latest",
     "docker-push": "docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage:latest",
-    "lint": "pnpm dlx eslint .",
-    "format": "pnpm exec prettier . --write"
+    "lint": "pnpm exec eslint .",
+    "format": "pnpm exec prettier . --write",
+    "test": "echo No Astro tests yet"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.1.0",
