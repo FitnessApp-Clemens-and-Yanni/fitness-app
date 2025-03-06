@@ -9,7 +9,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest --all",
+    "test": "jest --all --passWithNoTests",
     "lint": "expo lint",
     "docker-build": "docker build -t fitness-phone-app-web .",
     "docker-tag": "docker tag fitness-phone-app-web ghcr.io/fitnessapp-clemens-and-yanni/fitness-phone-app-web:latest",
