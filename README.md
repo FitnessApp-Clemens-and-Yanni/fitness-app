@@ -47,4 +47,13 @@ turbo docker-push
 
 ## PLEASE do not use `npm` in this repo!!! Any `package-lock.json` or `npm` artifact will not pass code reviews.
 
+## Starting All Projects
+
+`docker compose up -d`
+
+## Project Planning
+
+- Sprint planning runs on GitHub issues
+- Documents are hostet on Google Drive and are public ![here](https://drive.google.com/drive/folders/19lpbNJcOhSzu6dgTf4em5GLhbSm4QyvB?usp=sharing).
+
 ## Have fun coding! :D
