@@ -8,7 +8,9 @@
     "build": "dotnet build",
     "dev": "dotnet run --project WebApi",
     "start": "dotnet run --project WebApi",
-    "docker": "docker build -t yannialshoufi/syp-fitness-webapi .",
+    "docker-build": "docker build -t fitness-webapi .",
+    "docker-tag": "docker tag fitness-webapi ghcr.io/fitnessapp-clemens-and-yanni/fitness-webapi:latest",
+    "docker-push": "docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-webapi:latest",
     "format": "dotnet format"
   },
   "keywords": [],

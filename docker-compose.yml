@@ -1,28 +1,28 @@
 services:
   homepage:
-    image: yannialshoufi/syp-fitness-homepage
+    image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage
     container_name: homepage-container
     ports:
       - 80:4321
     networks:
-      - syp-fitness-network
+      - fitness-network
 
   webapi:
-    image: yannialshoufi/syp-fitness-webapi
+    image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-webapi
     container_name: webapi-container
     ports:
       - 5000:8080
     networks:
-      - syp-fitness-network
+      - fitness-network
 
   reactnative-web:
-    image: yannialshoufi/syp-fitness-reactnative-web
+    image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-phone-app-web
     container_name: reactnative-web-container
     ports:
       - 4000:8081
     networks:
-      - syp-fitness-network
+      - fitness-network
 
 networks:
-  syp-fitness-network:
-    name: syp-fitness-network
+  fitness-network:
+    name: fitness-network

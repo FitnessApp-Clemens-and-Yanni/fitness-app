@@ -11,7 +11,9 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "docker": "docker build -t yannialshoufi/syp-fitness-phone-app-web .",
+    "docker-build": "docker build -t fitness-phone-app-web .",
+    "docker-tag": "docker tag fitness-phone-app-web ghcr.io/fitnessapp-clemens-and-yanni/fitness-phone-app-web:latest",
+    "docker-push": "docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-phone-app-web:latest",
     "format": "pnpm exec prettier . --write"
   },
   "jest": {

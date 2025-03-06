@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "docker": "docker build -t yannialshoufi/syp-fitness-homepage .",
+    "docker-build": "docker build -t fitness-homepage .",
+    "docker-tag": "docker tag fitness-homepage ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage:latest",
+    "docker-push": "docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage:latest",
     "lint": "pnpm dlx eslint .",
     "format": "pnpm exec prettier . --write"
   },

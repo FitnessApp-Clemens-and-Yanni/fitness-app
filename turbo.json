@@ -16,8 +16,14 @@
     "check-types": {
       "dependsOn": ["^check-types"]
     },
-    "docker": {
-      "dependsOn": ["^docker"]
+    "docker-build": {
+      "dependsOn": ["^docker-build"]
+    },
+    "docker-tag": {
+      "dependsOn": ["^docker-tag"]
+    },
+    "docker-push": {
+      "dependsOn": ["^docker-push"]
     },
     "dev": {
       "cache": false,
