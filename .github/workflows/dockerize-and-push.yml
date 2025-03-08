@@ -20,6 +20,9 @@ jobs:
         with:
           version: 10.5.2
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Build images
         run: pnpm docker-build
 
