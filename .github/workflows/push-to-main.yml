@@ -2,13 +2,7 @@ name: Push to Main GitHub Workflow Action
 
 run-name: ${{ github.actor }} is pushing to main and "Push to Main GitHub Workflow Action" is running
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: push
 
 jobs:
   test:
