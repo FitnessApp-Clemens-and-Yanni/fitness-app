@@ -1,0 +1,30 @@
+name: Dockerize and Push
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.5.2
+
+      - name: Build images
+        run: pnpm docker-build
+
+      - name: Tag images
+        run: pnpm docker-tag
+
+      - name: Push images
+        run: pnpm docker-push
