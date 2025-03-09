@@ -29,7 +29,7 @@ jobs:
       - name: Building all projects
         run: pnpm build
 
-      - name: Building all projects
+      - name: Running linter
         run: pnpm lint
 
       - name: Running tests
