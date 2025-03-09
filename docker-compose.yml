@@ -1,11 +1,11 @@
 services:
-  # homepage:
-  #   image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage
-  #   container_name: homepage-container
-  #   ports:
-  #     - 80:4321
-  #   networks:
-  #     - fitness-network
+  homepage:
+    image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-homepage
+    container_name: homepage-container
+    ports:
+      - 80:4321
+    networks:
+      - fitness-network
 
   webapi:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-webapi
