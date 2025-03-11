@@ -1,6 +1,9 @@
+using WebApi.Routes;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGroup("api")
+    .MapRoutes();
 
 app.Run();
