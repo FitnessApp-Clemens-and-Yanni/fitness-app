@@ -1,25 +1,75 @@
 ---
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import '../styles/global.css';
 // Component Imports
-import Button from '../components/Button.astro';
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
+    <title>Fitness App</title>
+
+    <!-- <script is:inline>
+      const getThemePreference = () => {
+        if (
+          typeof localStorage !== 'undefined' &&
+          localStorage.getItem('theme')
+        ) {
+          return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+      };
+      const isDark = getThemePreference() === 'dark';
+      document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+
+      if (typeof localStorage !== 'undefined') {
+        const observer = new MutationObserver(() => {
+          const isDark = document.documentElement.classList.contains('dark');
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+        observer.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class'],
+        });
+      }
+    </script> -->
+  </head>
+
+  <body>
+    <div class="flex min-h-svh flex-col items-center justify-center md:p-10">
+      <div class="w-full max-w-sm md:max-w-3xl">
+        <div class="flex flex-col gap-6">
+          <Card className="overflow-hidden p-0">
+            <CardContent className="grid p-0 md:grid-cols-2">
+              <div class="p-6 md:p-8">
+                <h1
+                  class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl"
+                >
+                  The Fitness App
+                </h1>
+                <p class="leading-7 [&:not(:first-child)]:mt-6">
+                  A fitness app for advanced users.
+                </p>
+                <Button>Try now!</Button>
+              </div>
+              <div class="relative hidden md:block">
+                <img
+                  src="/homepage_banner.png"
+                  alt="Image"
+                  class="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2]"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
