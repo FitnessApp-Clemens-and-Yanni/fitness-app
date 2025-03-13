@@ -1,5 +1,5 @@
 using WebApi.Routes.Exercises;
-using WebApi.Routes.Journal;
+using WebApi.Routes.FinishedWorkouts;
 using WebApi.Routes.Plan;
 
 namespace WebApi.Routes;
@@ -12,7 +12,7 @@ public static partial class Routes
             .MapExercisesRoutes();
         
         app.MapGroup("journal")
-            .MapJournalRoutes();
+            .MapFinishedWorkoutsRoutes();
         
         app.MapGroup("plan")
             .MapPlanRoutes();
