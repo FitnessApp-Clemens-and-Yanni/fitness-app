@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { GripVertical, Move, Pen, Plus, X } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -15,9 +20,22 @@ import {
 } from "react-native";
 
 export default function Index() {
-  const { isLoading, error, data } = useQuery({
+  const workoutsQueryClient = useQueryClient();
+
+  const {
+    isLoading,
+    error,
+    data: workoutsData,
+  } = useQuery({
     queryKey: ["workouts"],
     queryFn: getWorkouts,
+  });
+
+  const workoutsMutation = useMutation({
+    mutationFn: async (wod: Workout[]) => {},
+    onSuccess: () => {
+      workoutsQueryClient.setQueryData(["workouts"], workoutsData);
+    },
   });
 
   if (isLoading) {
@@ -38,8 +56,14 @@ export default function Index() {
 
   return (
     <FlatList
-      data={data}
-      renderItem={({ item }) => <Workout workoutResponse={item} />}
+      data={workoutsData}
+      renderItem={({ item }) => (
+        <Workout
+          workoutResponse={item}
+          workoutsMutation={workoutsMutation}
+          workoutsData={workoutsData}
+        />
+      )}
       className="mt-5"
       contentContainerClassName="gap-5"
       columnWrapperClassName="justify-evenly"
@@ -49,7 +73,15 @@ export default function Index() {
   );
 }
 
-function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
+function Workout({
+  workoutResponse,
+  workoutsData: workoutsResponse,
+  workoutsMutation,
+}: {
+  workoutResponse: WorkoutResponse;
+  workoutsData: WorkoutResponse[] | undefined;
+  workoutsMutation: UseMutationResult<void, Error, Workout[], unknown>;
+}) {
   const [workoutModel, setWorkoutModel] = useState<Workout | undefined>(
     undefined
   );
@@ -110,7 +142,10 @@ function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
               {workoutModel?.exercises
                 .toSorted((e) => e.sorting)
                 .map((exercise) => (
-                  <Card className="flex-row py-5 gap-5 mb-2 pr-5 items-center">
+                  <Card
+                    className="flex-row py-5 gap-5 mb-2 pr-5 items-center"
+                    key={exercise._id}
+                  >
                     <GripVertical />
                     <View className="flex-1 flex-row items-center">
                       <Text>{exercise.name}</Text>
@@ -132,7 +167,9 @@ function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
               <Button>
                 <Plus />
               </Button>
-              <Button>
+              <Button
+                onPress={() => workoutsMutation.mutate([...workoutsResponse])}
+              >
                 <Text>Save</Text>
               </Button>
             </View>
