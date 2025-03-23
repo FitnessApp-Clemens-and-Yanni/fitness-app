@@ -1,12 +1,11 @@
+import { EditWorkoutModal } from "@/components/EditWorkoutModal";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { GripVertical, Move, Pen, Plus, X } from "lucide-react-native";
+import { Card, CardHeader } from "@/components/ui/Card";
+import { H1, H2, H3, H4 } from "@/components/ui/Typography";
+import { getWorkouts } from "@/lib/getWorkouts";
+import { generateUUID } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { Check, Pen } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -16,12 +15,9 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  TextInput,
 } from "react-native";
 
 export default function Index() {
-  const workoutsQueryClient = useQueryClient();
-
   const {
     isLoading,
     error,
@@ -29,13 +25,6 @@ export default function Index() {
   } = useQuery({
     queryKey: ["workouts"],
     queryFn: getWorkouts,
-  });
-
-  const workoutsMutation = useMutation({
-    mutationFn: async (wod: Workout[]) => {},
-    onSuccess: () => {
-      workoutsQueryClient.setQueryData(["workouts"], workoutsData);
-    },
   });
 
   if (isLoading) {
@@ -58,11 +47,7 @@ export default function Index() {
     <FlatList
       data={workoutsData}
       renderItem={({ item }) => (
-        <Workout
-          workoutResponse={item}
-          workoutsMutation={workoutsMutation}
-          workoutsData={workoutsData}
-        />
+        <Workout workoutResponse={item} workoutsData={workoutsData} />
       )}
       className="mt-5"
       contentContainerClassName="gap-5"
@@ -76,17 +61,32 @@ export default function Index() {
 function Workout({
   workoutResponse,
   workoutsData: workoutsResponse,
-  workoutsMutation,
 }: {
   workoutResponse: WorkoutResponse;
   workoutsData: WorkoutResponse[] | undefined;
-  workoutsMutation: UseMutationResult<void, Error, Workout[], unknown>;
 }) {
-  const [workoutModel, setWorkoutModel] = useState<Workout | undefined>(
-    undefined
-  );
+  const [workoutModel, setWorkoutModel] = useState<Workout | undefined>();
 
-  function startUpdatingWorkout() {
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | undefined>();
+  const [selectedExercise, setSelectedExercise] = useState<
+    WorkoutExercise | undefined
+  >();
+
+  const startWorkout = () => {
+    setSelectedWorkout({
+      _id: workoutResponse._id,
+      name: workoutResponse.name,
+      exercises: workoutResponse.exercises.map((exercise) => ({
+        _id: exercise._id,
+        name: exercise.name,
+        noteText: exercise.noteText,
+        sorting: exercise.sorting,
+        numberOfSets: exercise.numberOfSets,
+      })),
+    });
+  };
+
+  const startUpdatingWorkout = () => {
     setWorkoutModel({
       _id: workoutResponse._id,
       name: workoutResponse.name,
@@ -98,9 +98,9 @@ function Workout({
         numberOfSets: exercise.numberOfSets,
       })),
     });
-  }
+  };
 
-  function setExerciseSetCount(text: string, exercise: WorkoutExercise) {
+  const setExerciseSetCount = (text: string, exercise: WorkoutExercise) => {
     if (text === "") {
       const idx = workoutModel!.exercises.indexOf(exercise);
       setWorkoutModel({
@@ -125,57 +125,98 @@ function Workout({
         numberOfSets: +text,
       }),
     });
-  }
+  };
 
   return (
     <>
-      <Modal transparent={true} visible={workoutModel !== undefined}>
-        <View className="flex-1 py-7 px-5">
-          <View className="flex-1 bg-gray-200/95 ring-1 ring-primary">
-            <View className="flex flex-row justify-between bg-primary/90 p-5">
-              <Text className="text-2xl font-thin">{workoutModel?.name}</Text>
-              <TouchableOpacity onPress={() => setWorkoutModel(undefined)}>
-                <X />
-              </TouchableOpacity>
-            </View>
-            <ScrollView className="p-5 flex-1">
-              {workoutModel?.exercises
-                .toSorted((e) => e.sorting)
-                .map((exercise) => (
-                  <Card
-                    className="flex-row py-5 gap-5 mb-2 pr-5 items-center"
-                    key={exercise._id}
-                  >
-                    <GripVertical />
-                    <View className="flex-1 flex-row items-center">
-                      <Text>{exercise.name}</Text>
-                    </View>
-                    <View className="flex-row items-center gap-2">
-                      <Text>Sets:</Text>
-                      <TextInput
-                        className="w-7 ring-1 ring-primary rounded py-2 text-center"
-                        value={exercise.numberOfSets.toString()}
-                        onChangeText={(text) =>
-                          setExerciseSetCount(text, exercise)
-                        }
-                      />
-                    </View>
-                  </Card>
-                ))}
-            </ScrollView>
-            <View className="flex-row justify-end gap-5 p-5">
-              <Button>
-                <Plus />
-              </Button>
-              <Button
-                onPress={() => workoutsMutation.mutate([...workoutsResponse])}
+      <EditWorkoutModal
+        workoutModel={workoutModel}
+        setWorkoutModel={setWorkoutModel}
+        setExerciseSetCount={setExerciseSetCount}
+      />
+
+      <Modal
+        visible={selectedWorkout !== undefined}
+        className="text-white flex-1"
+      >
+        <H1 className="m-5">{selectedWorkout?.name}</H1>
+
+        <ScrollView horizontal={true} className="flex-1 py-5 px-4">
+          {selectedWorkout?.exercises.map((exercise) => (
+            <Card key={exercise._id} className="aspect-square mr-5">
+              <TouchableOpacity
+                className="p-2 aspect-square"
+                onPress={() => setSelectedExercise(exercise)}
               >
-                <Text>Save</Text>
-              </Button>
-            </View>
+                <Text className="text-[.75em]">{exercise.name}</Text>
+              </TouchableOpacity>
+            </Card>
+          ))}
+        </ScrollView>
+        <View className="flex-[8]">
+          <ScrollView className="flex-1 p-5">
+            {selectedExercise === undefined ? (
+              <H3>Select an exercise!</H3>
+            ) : (
+              <View className="gap-5">
+                <H2 className="m-2">{selectedExercise?.name}</H2>
+                <View className="flex-1 flex-row justify-evenly">
+                  <Card className="py-3 px-2 justify-center">
+                    <Text>kg</Text>
+                  </Card>
+                  <Card className="py-3 px-2 justify-center">
+                    <Text>reps</Text>
+                  </Card>
+                  <Card className="py-3 px-2 justify-center">
+                    <Text>vol</Text>
+                  </Card>
+                  <View className="px-7"></View>
+                </View>
+                <ScrollView>
+                  {new Array(selectedExercise?.numberOfSets)
+                    .fill(null)
+                    .map((_) => (
+                      <Card className="mb-1" key={generateUUID()}>
+                        <View className="flex-1 flex-row justify-evenly items-center py-2">
+                          <Text className="text-md">95</Text>
+                          <Text className="text-md">9</Text>
+                          <Text className="text-md">1710</Text>
+                          <TouchableOpacity>
+                            <Check />
+                          </TouchableOpacity>
+                        </View>
+                      </Card>
+                    ))}
+                </ScrollView>
+                <View className="flex-1"></View>
+                <H4>Previous records</H4>
+                <ScrollView>
+                  {new Array(selectedExercise?.numberOfSets)
+                    .fill(null)
+                    .map((_) => (
+                      <Card className="mb-1 bg-gray-200" key={generateUUID()}>
+                        <View className="flex-1 flex-row justify-evenly items-center py-2">
+                          <Text className="text-md">95</Text>
+                          <Text className="text-md">9</Text>
+                          <Text className="text-md">1710</Text>
+                        </View>
+                      </Card>
+                    ))}
+                </ScrollView>
+              </View>
+            )}
+          </ScrollView>
+          <View className="flex-row justify-between p-5 items-center">
+            <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
+              <Text>Go Back</Text>
+            </TouchableOpacity>
+            <Button>
+              <Text>Start Workout</Text>
+            </Button>
           </View>
         </View>
       </Modal>
+
       <View className="mt-2 w-5/12 ring-2 ring-primary bg-neutral-300 rounded aspect-square p-2 flex flex-col justify-end">
         <Text className="flex-1 text-xl p-3">{workoutResponse.name}</Text>
         <View className="flex-[3] flex flex-col justify-end items-between">
@@ -187,7 +228,7 @@ function Workout({
               <Pen />
             </TouchableOpacity>
             <View className="flex-[5] flex flex-row justify-end items-center">
-              <Button>
+              <Button onPress={startWorkout}>
                 <Text>Start</Text>
               </Button>
             </View>
@@ -196,164 +237,4 @@ function Workout({
       </View>
     </>
   );
-}
-
-type WorkoutResponse = {
-  _id: string;
-  name: string;
-  sorting: number;
-  exercises: WorkoutExerciseResponse[];
-};
-
-type WorkoutExerciseResponse = {
-  _id: string;
-  name: string;
-  equipmentInfo: string;
-  involvedMuscles: string[];
-  showcaseImage: string;
-  isUserExercise: boolean;
-  numberOfSets: number;
-  noteText: string;
-  sorting: number;
-};
-
-type Workout = {
-  _id: string;
-  name: string;
-  exercises: WorkoutExercise[];
-};
-
-type WorkoutExercise = {
-  _id: string;
-  name: string;
-  numberOfSets: number;
-  noteText: string;
-  sorting: number;
-};
-
-async function getWorkouts() {
-  return await new Promise<WorkoutResponse[]>((resolve, reject) => {
-    setTimeout(() => {
-      resolve([
-        {
-          _id: "507f191e310c19729de860ea",
-          name: "Leg",
-          sorting: 1,
-          exercises: [
-            {
-              _id: "506f191e810c19729de860ea",
-              name: "Leg Extensions",
-              sorting: 5,
-              equipmentInfo: "Strength Machine",
-              involvedMuscles: ["Upper Legs"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/leg-extensions.jpg",
-              isUserExercise: false,
-              numberOfSets: 1,
-              noteText: "Make sure the machine is cleaned probably this time!!",
-            },
-            {
-              _id: "506f191e810c19729de860eb",
-              name: "Machine Seated Leg Curl",
-              sorting: 81,
-              equipmentInfo: "Strength Machine",
-              involvedMuscles: ["Upper Legs"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/machine-seated-leg-curl.jpg",
-              isUserExercise: false,
-              numberOfSets: 2,
-              noteText: "",
-            },
-            {
-              _id: "506f191e810c19729de860ec",
-              name: "Machine Leg Press (Wide Stance)",
-              sorting: 100,
-              equipmentInfo: "Strength Machine",
-              involvedMuscles: ["Upper Legs"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/machine-leg-press-wide-stance.jpg",
-              isUserExercise: false,
-              numberOfSets: 1,
-              noteText:
-                'The "Wide Stance" thing is just because there is not an alternative exercise name.',
-            },
-            {
-              _id: "506f191e810c19729de860ed",
-              name: "Machine Hip Adduction",
-              sorting: 101,
-              equipmentInfo: "Strength Machine",
-              involvedMuscles: ["Upper Legs"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/machine-hip-adduction.jpg",
-              isUserExercise: false,
-              numberOfSets: 1,
-              noteText: "",
-            },
-          ],
-        },
-        {
-          _id: "507f191f310c19729de860ea",
-          name: "Back and Shoulders",
-          sorting: 3,
-          exercises: [
-            {
-              _id: "506f191e810c19729de860ef",
-              name: "Barbell Bench Press",
-              sorting: 2,
-              equipmentInfo: "Barbell",
-              involvedMuscles: ["Chest", "Triceps", "Shoulders"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/barbell-bench-press.jpg",
-              isUserExercise: false,
-              numberOfSets: 2,
-              noteText: "As described by Moritz.",
-            },
-            {
-              _id: "506f191e810c19729de860fb",
-              name: "Pull-Up",
-              sorting: 4,
-              equipmentInfo: "Pullup Bar",
-              involvedMuscles: ["Back", "Shoulders", "Abs"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/pull-up.jpg",
-              isUserExercise: false,
-              numberOfSets: 1,
-              noteText: "",
-            },
-          ],
-        },
-        {
-          _id: "507f191f310c19729de860ea",
-          name: "Back and Shoulders",
-          sorting: 3,
-          exercises: [
-            {
-              _id: "506f191e810c19729de860ef",
-              name: "Barbell Bench Press",
-              sorting: 2,
-              equipmentInfo: "Barbell",
-              involvedMuscles: ["Chest", "Triceps", "Shoulders"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/barbell-bench-press.jpg",
-              isUserExercise: false,
-              numberOfSets: 2,
-              noteText: "As described by Moritz.",
-            },
-            {
-              _id: "506f191e810c19729de860fb",
-              name: "Pull-Up",
-              sorting: 4,
-              equipmentInfo: "Pullup Bar",
-              involvedMuscles: ["Back", "Shoulders", "Abs"],
-              showcaseImage:
-                "http://localhost:4999/images/exercises/pull-up.jpg",
-              isUserExercise: false,
-              numberOfSets: 1,
-              noteText: "",
-            },
-          ],
-        },
-      ]);
-    }, 0);
-  });
 }
