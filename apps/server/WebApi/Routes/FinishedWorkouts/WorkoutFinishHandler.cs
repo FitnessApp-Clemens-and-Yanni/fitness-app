@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Routes.FinishedWorkouts;
 
-public static class PostFinishedWorkouts
+public static class WorkoutFinishHandler
 {
-    public static Task<IActionResult> PostFinishedWorkout()
+    public static Task<IActionResult> HandleFinishedWorkout()
     {
         throw new NotImplementedException();
     }

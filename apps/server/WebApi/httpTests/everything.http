@@ -1,0 +1,45 @@
+### GET request to get the only plan
+GET http://localhost:5000/api/plans/
+
+###
+PUT http://localhost:5000/api/plans/workouts/123123123123
+Content-Type: application/json
+
+{
+    "_id": "507f191e310c19729de860ea",
+    "name": "Leg Day - Updated",
+    "sorting": 1,
+    "exercises": [
+        {
+            "_id": "507f191e810c19729de860ea",
+            "name": "Leg Extensions",
+            "sorting": "5",
+            "equipmentInfo": "Strength Machine",
+            "involvedMuscles": ["Upper Legs"],
+            "showcaseImage": "http://localhost:5000/images/exercises/leg-extensions.jpg",
+            "isUserExercise": false,
+            "numberOfSets": 4,
+            "noteText": "Increase weight slightly!"
+        },
+        {
+            "_id": "507f191e810c19729de860eb",
+            "name": "Machine Seated Leg Curl",
+            "sorting": "81",
+            "equipmentInfo": "Strength Machine",
+            "involvedMuscles": ["Upper Legs"],
+            "showcaseImage": "http://localhost:5000/images/exercises/machine-seated-leg-curl.jpg",
+            "isUserExercise": false,
+            "numberOfSets": 5,
+            "noteText": "Focus on slow reps."
+        }
+    ]
+}
+
+###
+DELETE http://localhost:5000/api/plans/workouts/507f191e310c19729de860ea/507f191e810c19729de860ea?isUserExercise=true
+
+###
+DELETE http://localhost:5000/api/plans/workouts/507f191f310c19729de860ea
+
+###
+GET http://localhost:5000/api/exercises-snapshots/506f191e810c19729de860ea
