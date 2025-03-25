@@ -1,11 +1,9 @@
 import { EditWorkoutModal } from "@/components/EditWorkoutModal";
+import { StartWorkoutModal } from "@/components/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
-import { Card, CardHeader } from "@/components/ui/Card";
-import { H1, H2, H3, H4 } from "@/components/ui/Typography";
 import { getWorkouts } from "@/lib/getWorkouts";
-import { generateUUID } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { Check, Pen } from "lucide-react-native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Pen } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -13,8 +11,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Modal,
-  ScrollView,
 } from "react-native";
 
 export default function Index() {
@@ -65,11 +61,17 @@ function Workout({
   workoutResponse: WorkoutResponse;
   workoutsData: WorkoutResponse[] | undefined;
 }) {
-  const [workoutModel, setWorkoutModel] = useState<Workout | undefined>();
+  const queryClient = useQueryClient();
 
-  const [selectedWorkout, setSelectedWorkout] = useState<Workout | undefined>();
+  const [workoutModel, setWorkoutModel] = useState<
+    WorkoutPutRequest | undefined
+  >();
+
+  const [selectedWorkout, setSelectedWorkout] = useState<
+    WorkoutPutRequest | undefined
+  >();
   const [selectedExercise, setSelectedExercise] = useState<
-    WorkoutExercise | undefined
+    WorkoutExercisePutRequest | undefined
   >();
 
   const startWorkout = () => {
@@ -84,6 +86,12 @@ function Workout({
         numberOfSets: exercise.numberOfSets,
       })),
     });
+
+    setTimeout(() => {
+      queryClient.invalidateQueries({
+        queryKey: ["snapshots"],
+      });
+    }, 0); // Gotta love the event loop!! xD
   };
 
   const startUpdatingWorkout = () => {
@@ -100,7 +108,10 @@ function Workout({
     });
   };
 
-  const setExerciseSetCount = (text: string, exercise: WorkoutExercise) => {
+  const setExerciseSetCount = (
+    text: string,
+    exercise: WorkoutExercisePutRequest
+  ) => {
     if (text === "") {
       const idx = workoutModel!.exercises.indexOf(exercise);
       setWorkoutModel({
@@ -135,87 +146,12 @@ function Workout({
         setExerciseSetCount={setExerciseSetCount}
       />
 
-      <Modal
-        visible={selectedWorkout !== undefined}
-        className="text-white flex-1"
-      >
-        <H1 className="m-5">{selectedWorkout?.name}</H1>
-
-        <ScrollView horizontal={true} className="flex-1 py-5 px-4">
-          {selectedWorkout?.exercises.map((exercise) => (
-            <Card key={exercise._id} className="aspect-square mr-5">
-              <TouchableOpacity
-                className="p-2 aspect-square"
-                onPress={() => setSelectedExercise(exercise)}
-              >
-                <Text className="text-[.75em]">{exercise.name}</Text>
-              </TouchableOpacity>
-            </Card>
-          ))}
-        </ScrollView>
-        <View className="flex-[8]">
-          <ScrollView className="flex-1 p-5">
-            {selectedExercise === undefined ? (
-              <H3>Select an exercise!</H3>
-            ) : (
-              <View className="gap-5">
-                <H2 className="m-2">{selectedExercise?.name}</H2>
-                <View className="flex-1 flex-row justify-evenly">
-                  <Card className="py-3 px-2 justify-center">
-                    <Text>kg</Text>
-                  </Card>
-                  <Card className="py-3 px-2 justify-center">
-                    <Text>reps</Text>
-                  </Card>
-                  <Card className="py-3 px-2 justify-center">
-                    <Text>vol</Text>
-                  </Card>
-                  <View className="px-7"></View>
-                </View>
-                <ScrollView>
-                  {new Array(selectedExercise?.numberOfSets)
-                    .fill(null)
-                    .map((_) => (
-                      <Card className="mb-1" key={generateUUID()}>
-                        <View className="flex-1 flex-row justify-evenly items-center py-2">
-                          <Text className="text-md">95</Text>
-                          <Text className="text-md">9</Text>
-                          <Text className="text-md">1710</Text>
-                          <TouchableOpacity>
-                            <Check />
-                          </TouchableOpacity>
-                        </View>
-                      </Card>
-                    ))}
-                </ScrollView>
-                <View className="flex-1"></View>
-                <H4>Previous records</H4>
-                <ScrollView>
-                  {new Array(selectedExercise?.numberOfSets)
-                    .fill(null)
-                    .map((_) => (
-                      <Card className="mb-1 bg-gray-200" key={generateUUID()}>
-                        <View className="flex-1 flex-row justify-evenly items-center py-2">
-                          <Text className="text-md">95</Text>
-                          <Text className="text-md">9</Text>
-                          <Text className="text-md">1710</Text>
-                        </View>
-                      </Card>
-                    ))}
-                </ScrollView>
-              </View>
-            )}
-          </ScrollView>
-          <View className="flex-row justify-between p-5 items-center">
-            <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
-              <Text>Go Back</Text>
-            </TouchableOpacity>
-            <Button>
-              <Text>Start Workout</Text>
-            </Button>
-          </View>
-        </View>
-      </Modal>
+      <StartWorkoutModal
+        selectedExercise={selectedExercise}
+        selectedWorkout={selectedWorkout}
+        setSelectedExercise={setSelectedExercise}
+        setSelectedWorkout={setSelectedWorkout}
+      />
 
       <View className="mt-2 w-5/12 ring-2 ring-primary bg-neutral-300 rounded aspect-square p-2 flex flex-col justify-end">
         <Text className="flex-1 text-xl p-3">{workoutResponse.name}</Text>

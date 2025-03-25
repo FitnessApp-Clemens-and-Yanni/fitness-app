@@ -9,16 +9,63 @@ import {
 } from "react-native";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export function EditWorkoutModal({
   workoutModel,
   setWorkoutModel,
   setExerciseSetCount,
 }: {
-  workoutModel: Workout | undefined;
-  setWorkoutModel: React.Dispatch<React.SetStateAction<Workout | undefined>>;
-  setExerciseSetCount: (text: string, exercise: WorkoutExercise) => void;
+  workoutModel: WorkoutPutRequest | undefined;
+  setWorkoutModel: React.Dispatch<
+    React.SetStateAction<WorkoutPutRequest | undefined>
+  >;
+  setExerciseSetCount: (
+    text: string,
+    exercise: WorkoutExercisePutRequest
+  ) => void;
 }) {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ["setWorkout"],
+    mutationFn: async (updatedWorkout: WorkoutPutRequest) => {
+      const res = await fetch(`http://localhost:3000/api/plans/workouts`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedWorkout),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to update workout", res);
+        return;
+      }
+
+      const json = await res.json();
+      console.log("Workout updated successfully", json);
+      return json as WorkoutResponse;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        ["workouts"],
+        (oldWorkouts: WorkoutResponse[]) => {
+          if (!oldWorkouts) {
+            return [];
+          }
+          return oldWorkouts.map((wo) => (wo._id === data!._id ? data : wo));
+        }
+      );
+    },
+  });
+
+  // const mutation = useMutation({ mutationKey: ["setWorkout"] });
+
   return (
     <Modal transparent={true} visible={workoutModel !== undefined}>
       <View className="flex-1 py-7 px-5">
@@ -58,7 +105,17 @@ export function EditWorkoutModal({
             <Button>
               <Plus />
             </Button>
-            <Button onPress={() => {}}>
+            <Button
+              onPress={() => {
+                mutation.mutate({
+                  _id: workoutModel!._id,
+                  name: workoutModel!.name,
+                  ...workoutModel,
+                  exercises: workoutModel!.exercises,
+                });
+                setWorkoutModel(undefined);
+              }}
+            >
               <Text>Save</Text>
             </Button>
           </View>

@@ -1,4 +1,8 @@
 export async function getWorkouts() {
+  const res = await fetch("http://localhost:3000/api/plans/workouts");
+  const json = await res.json();
+  return json as WorkoutResponse[];
+  /*
   return await new Promise<WorkoutResponse[]>((resolve, _) => {
     setTimeout(() => {
       resolve([
@@ -122,5 +126,5 @@ export async function getWorkouts() {
         },
       ]);
     }, 0);
-  });
+  });*/
 }

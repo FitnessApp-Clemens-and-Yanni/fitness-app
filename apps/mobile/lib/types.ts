@@ -17,16 +17,24 @@ type WorkoutExerciseResponse = {
   sorting: number;
 };
 
-type Workout = {
+type WorkoutPutRequest = {
   _id: string;
   name: string;
-  exercises: WorkoutExercise[];
+  exercises: WorkoutExercisePutRequest[];
 };
 
-type WorkoutExercise = {
+type WorkoutExercisePutRequest = {
   _id: string;
   name: string;
   numberOfSets: number;
   noteText: string;
   sorting: number;
+};
+
+type ExerciseSnapshot = {
+  exerciseId: string;
+  userId: null;
+  exerciseDefaults: {
+    sets: { weightsInKg: number; repetitions: number }[];
+  };
 };
