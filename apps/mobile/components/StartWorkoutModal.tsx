@@ -9,7 +9,7 @@ import {
 import { H1, H2, H3, H4 } from "./ui/Typography";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { Check } from "lucide-react-native";
+import { ArrowBigLeft, Check } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { getSnapshots } from "@/lib/getSnapshots";
@@ -182,7 +182,9 @@ export function StartWorkoutModal({
         </ScrollView>
         <View className="flex-row justify-between p-5 items-center">
           <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
-            <Text>Go Back</Text>
+            <Text>
+              <ArrowBigLeft />
+            </Text>
           </TouchableOpacity>
           <Button>
             <Text>Start Workout</Text>
