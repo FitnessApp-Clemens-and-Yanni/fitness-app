@@ -6,7 +6,6 @@
       "@/*": ["./*"]
     }
   },
-  "files": [],
   "references": [
     {
       "path": "../backend_and_homepage"

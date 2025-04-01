@@ -4,7 +4,7 @@ import {
   httpBatchStreamLink,
   loggerLink,
 } from "@trpc/react-query";
-import { type AppRouter } from "backend_and_homepage/src/server/api/root";
+import { type AppRouter } from "../../backend_and_homepage/generatedTypes/src/server/api/root";
 import { createQueryClient } from "./query-client";
 import { useState } from "react";
 import SuperJSON from "superjson";

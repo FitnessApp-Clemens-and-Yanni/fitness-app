@@ -20,12 +20,6 @@ export default function Index() {
     error,
     data: workoutsData,
   } = api.workouts.getAll.useQuery();
-  // .useQuery(["workouts.getAll"], {
-  //   queryFn: getWorkouts,
-  //   onSuccess: ({ data }) => {
-  //     console.log(data);
-  //   },
-  // });
 
   if (isLoading) {
     return (

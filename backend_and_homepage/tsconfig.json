@@ -9,29 +9,32 @@
     "moduleDetection": "force",
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-
     /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
-
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
-    "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "preserve",
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "incremental": true,
-
+    /* Emit types so that the mobile project can use the tRPC AppRouter */
+    "emitDeclarationOnly": true,
+    "outDir": "generatedTypes",
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
     },
-
     /* Allow that other projects import it for TRPC */
-    "composite": true
+    "composite": true,
+    "noEmit": false
   },
   "include": [
     ".eslintrc.cjs",
@@ -42,6 +45,5 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "generatedTypes"]
 }
