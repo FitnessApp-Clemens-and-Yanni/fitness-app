@@ -28,7 +28,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+
+    /* Allow that other projects import it for TRPC */
+    "composite": true
   },
   "include": [
     ".eslintrc.cjs",
@@ -39,5 +42,6 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
+
   "exclude": ["node_modules"]
 }

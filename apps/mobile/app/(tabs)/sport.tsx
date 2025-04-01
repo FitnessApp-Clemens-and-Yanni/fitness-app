@@ -2,7 +2,8 @@ import { EditWorkoutModal } from "@/components/EditWorkoutModal";
 import { StartWorkoutModal } from "@/components/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
 import { getWorkouts } from "@/lib/getWorkouts";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/utils/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Pen } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -18,10 +19,13 @@ export default function Index() {
     isLoading,
     error,
     data: workoutsData,
-  } = useQuery({
-    queryKey: ["workouts"],
-    queryFn: getWorkouts,
-  });
+  } = api.workouts.getAll.useQuery();
+  // .useQuery(["workouts.getAll"], {
+  //   queryFn: getWorkouts,
+  //   onSuccess: ({ data }) => {
+  //     console.log(data);
+  //   },
+  // });
 
   if (isLoading) {
     return (
