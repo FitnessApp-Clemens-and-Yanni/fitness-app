@@ -18,23 +18,20 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "jsx": "preserve",
+    "noEmit": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
     "incremental": true,
-    /* Emit types so that the mobile project can use the tRPC AppRouter */
-    "emitDeclarationOnly": true,
-    "outDir": "generatedTypes",
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
     },
     /* Allow that other projects import it for TRPC */
-    "composite": true,
-    "noEmit": false
+    "composite": true
   },
   "include": [
     ".eslintrc.cjs",

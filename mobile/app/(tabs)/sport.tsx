@@ -1,9 +1,7 @@
 import { EditWorkoutModal } from "@/components/EditWorkoutModal";
 import { StartWorkoutModal } from "@/components/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
-import { getWorkouts } from "@/lib/getWorkouts";
 import { api } from "@/utils/react";
-import { useQueryClient } from "@tanstack/react-query";
 import { Pen } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -59,7 +57,7 @@ function Workout({
   workoutResponse: WorkoutResponse;
   workoutsData: WorkoutResponse[] | undefined;
 }) {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const [workoutModel, setWorkoutModel] = useState<
     WorkoutPutRequest | undefined
@@ -85,11 +83,11 @@ function Workout({
       })),
     });
 
-    setTimeout(() => {
-      queryClient.invalidateQueries({
-        queryKey: ["snapshots"],
-      });
-    }, 0); // Gotta love the event loop!! xD
+    // setTimeout(() => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["snapshots"],
+    //   });
+    // }, 0); // Gotta love the event loop!! xD
   };
 
   const startUpdatingWorkout = () => {

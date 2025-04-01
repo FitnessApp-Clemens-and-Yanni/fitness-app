@@ -5,10 +5,5 @@
     "paths": {
       "@/*": ["./*"]
     }
-  },
-  "references": [
-    {
-      "path": "../backend_and_homepage"
-    }
-  ]
+  }
 }
