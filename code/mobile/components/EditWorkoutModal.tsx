@@ -35,6 +35,8 @@ export function EditWorkoutModal({
         }
         return oldWorkouts.map((wo) => (wo._id === data!._id ? data : wo));
       });
+
+      apiUtils.workouts.getAll.invalidate();
     },
   });
 

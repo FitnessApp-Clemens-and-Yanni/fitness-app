@@ -231,7 +231,12 @@ export function StartWorkoutModal({
           )}
         </ScrollView>
         <View className="flex-row justify-between p-5 items-center">
-          <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedExercise(undefined);
+              setSelectedWorkout(undefined);
+            }}
+          >
             <Text>
               <ArrowBigLeft />
             </Text>

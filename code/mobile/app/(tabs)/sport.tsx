@@ -3,7 +3,7 @@ import { StartWorkoutModal } from "@/components/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/utils/react";
 import { Pen } from "lucide-react-native";
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -38,9 +38,7 @@ export default function Index() {
   return (
     <FlatList
       data={workoutsData ?? []}
-      renderItem={({ item }) => (
-        <Workout workoutResponse={item} workoutsData={workoutsData} />
-      )}
+      renderItem={({ item }) => <Workout workoutResponse={item} />}
       className="mt-5"
       contentContainerClassName="gap-5"
       columnWrapperClassName="justify-evenly"
@@ -50,15 +48,7 @@ export default function Index() {
   );
 }
 
-function Workout({
-  workoutResponse,
-  workoutsData: workoutsResponse,
-}: {
-  workoutResponse: WorkoutResponse;
-  workoutsData: WorkoutResponse[] | undefined;
-}) {
-  const apiUtils = api.useUtils();
-
+function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
   const [workoutModel, setWorkoutModel] = useState<
     WorkoutPutRequest | undefined
   >();
@@ -82,10 +72,6 @@ function Workout({
         numberOfSets: exercise.numberOfSets,
       })),
     });
-
-    setTimeout(() => {
-      apiUtils.snapshots.invalidate();
-    }, 0); // Gotta love the event loop!! xD
   };
 
   const startUpdatingWorkout = () => {
