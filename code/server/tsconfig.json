@@ -14,5 +14,6 @@
     },
     "composite": true
   },
-  "exclude": ["node_modules", "types"]
+  "exclude": ["node_modules", "types"],
+  "references": [{ "path": "../shared" }]
 }

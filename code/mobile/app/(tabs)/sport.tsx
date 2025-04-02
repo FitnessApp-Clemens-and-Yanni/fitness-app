@@ -37,7 +37,7 @@ export default function Index() {
 
   return (
     <FlatList
-      data={workoutsData}
+      data={workoutsData ?? []}
       renderItem={({ item }) => (
         <Workout workoutResponse={item} workoutsData={workoutsData} />
       )}
@@ -57,7 +57,7 @@ function Workout({
   workoutResponse: WorkoutResponse;
   workoutsData: WorkoutResponse[] | undefined;
 }) {
-  // const queryClient = useQueryClient();
+  const apiUtils = api.useUtils();
 
   const [workoutModel, setWorkoutModel] = useState<
     WorkoutPutRequest | undefined
@@ -83,11 +83,9 @@ function Workout({
       })),
     });
 
-    // setTimeout(() => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: ["snapshots"],
-    //   });
-    // }, 0); // Gotta love the event loop!! xD
+    setTimeout(() => {
+      apiUtils.snapshots.invalidate();
+    }, 0); // Gotta love the event loop!! xD
   };
 
   const startUpdatingWorkout = () => {

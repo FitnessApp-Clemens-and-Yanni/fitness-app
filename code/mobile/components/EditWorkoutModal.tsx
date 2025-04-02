@@ -9,11 +9,7 @@ import {
 } from "react-native";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { api } from "@/utils/react";
 
 export function EditWorkoutModal({
   workoutModel,
@@ -29,42 +25,18 @@ export function EditWorkoutModal({
     exercise: WorkoutExercisePutRequest
   ) => void;
 }) {
-  const queryClient = useQueryClient();
+  const apiUtils = api.useUtils();
 
-  const mutation = useMutation({
-    mutationKey: ["setWorkout"],
-    mutationFn: async (updatedWorkout: WorkoutPutRequest) => {
-      const res = await fetch(`http://localhost:3000/api/plans/workouts`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedWorkout),
-      });
-
-      if (!res.ok) {
-        console.error("Failed to update workout", res);
-        return;
-      }
-
-      const json = await res.json();
-      console.log("Workout updated successfully", json);
-      return json as WorkoutResponse;
-    },
+  const mutation = api.workouts.setWorkout.useMutation({
     onSuccess: (data) => {
-      queryClient.setQueryData(
-        ["workouts"],
-        (oldWorkouts: WorkoutResponse[]) => {
-          if (!oldWorkouts) {
-            return [];
-          }
-          return oldWorkouts.map((wo) => (wo._id === data!._id ? data : wo));
+      apiUtils.workouts.getAll.setData((() => {})(), (oldWorkouts) => {
+        if (!oldWorkouts) {
+          return [];
         }
-      );
+        return oldWorkouts.map((wo) => (wo._id === data!._id ? data : wo));
+      });
     },
   });
-
-  // const mutation = useMutation({ mutationKey: ["setWorkout"] });
 
   return (
     <Modal transparent={true} visible={workoutModel !== undefined}>

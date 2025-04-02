@@ -11,9 +11,7 @@ import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { ArrowBigLeft, Check } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
-import { getSnapshots } from "@/lib/getSnapshots";
-import { useState } from "react";
+import { api } from "@/utils/react";
 
 export function StartWorkoutModal({
   selectedWorkout,
@@ -34,13 +32,12 @@ export function StartWorkoutModal({
     isLoading,
     error,
     data: snapshotData,
-  } = useQuery({
-    queryKey: ["snapshots"],
-    queryFn: async () => await getSnapshots(selectedWorkout),
+  } = api.snapshots.getExerciseDefaultsForWorkout.useQuery({
+    _id: selectedExercise?._id ?? null,
   });
 
-  if (error) {
-    console.error("Could not load snapshot, error:", error);
+  if (error || snapshotData instanceof Error) {
+    console.error("Could not load snapshot, error:", error, snapshotData);
 
     return (
       <Modal
@@ -56,9 +53,62 @@ export function StartWorkoutModal({
     return (
       <Modal
         visible={selectedWorkout !== undefined}
-        className="text-white flex-1 justify-center items-center"
+        className="text-white flex-1"
       >
-        <ActivityIndicator />
+        <H1 className="m-5">{selectedWorkout?.name}</H1>
+        <ScrollView horizontal={true} className="flex-1 py-5 px-4">
+          {selectedWorkout?.exercises.map((exercise) => (
+            <Card key={exercise._id} className="aspect-square mr-5">
+              <TouchableOpacity
+                className="p-2 aspect-square"
+                onPress={() => setSelectedExercise(exercise)}
+              >
+                <Text className="text-[.75em]">{exercise.name}</Text>
+              </TouchableOpacity>
+            </Card>
+          ))}
+        </ScrollView>
+        <View className="flex-[8]">
+          <ScrollView className="flex-1 p-5">
+            {selectedExercise === undefined ? (
+              <H3>Select an exercise!</H3>
+            ) : (
+              <View className="gap-5">
+                <H2 className="m-2">{selectedExercise?.name}</H2>
+                <View className="flex-1 flex-row justify-evenly">
+                  <Card className="py-3 px-2 justify-center">
+                    <Text>kg</Text>
+                  </Card>
+                  <Card className="py-3 px-2 justify-center">
+                    <Text>reps</Text>
+                  </Card>
+                  <Card className="py-3 px-2 justify-center">
+                    <Text>vol</Text>
+                  </Card>
+                  <View className="px-7"></View>
+                </View>
+                <ScrollView>
+                  <ActivityIndicator />
+                </ScrollView>
+                <View className="flex-1"></View>
+                <H4>Previous records</H4>
+                <ScrollView>
+                  <ActivityIndicator />
+                </ScrollView>
+              </View>
+            )}
+          </ScrollView>
+          <View className="flex-row justify-between p-5 items-center">
+            <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
+              <Text>
+                <ArrowBigLeft />
+              </Text>
+            </TouchableOpacity>
+            <Button>
+              <Text>Start Workout</Text>
+            </Button>
+          </View>
+        </View>
       </Modal>
     );
   }

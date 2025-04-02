@@ -2,6 +2,7 @@ import { WorkoutsRouter } from "@/routers/workouts";
 import { createCallerFactory, createTRPCRouter } from "@/trpc";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
+import { SnapshotsRouter } from "./routers/snapshots";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import cors from "cors";
  */
 export const appRouter = createTRPCRouter({
   workouts: WorkoutsRouter,
+  snapshots: SnapshotsRouter,
 });
 
 // export type definition of API
