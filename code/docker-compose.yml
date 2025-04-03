@@ -1,0 +1,6 @@
+services:
+  database:
+    image: mongodb/mongodb-community-server
+    ports:
+      - "27017:27017"
+    container_name: database-fitness-app-mongodb

@@ -7,8 +7,11 @@
  * need to use are documented accordingly near the end.
  */
 import { initTRPC } from "@trpc/server";
+import { MongoClient } from "mongodb";
+// import { MongoClient } from "mongodb";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { db } from "./data/meta";
 
 /**
  * 1. CONTEXT
@@ -24,6 +27,7 @@ import { ZodError } from "zod";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
+    db,
     ...opts,
   };
 };

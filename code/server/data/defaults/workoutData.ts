@@ -1,3 +1,5 @@
+import { Workout } from "../meta/models";
+
 export const workouts = [
   {
     _id: "507f191e310c19729de860ea",
@@ -86,22 +88,3 @@ export const workouts = [
     ],
   },
 ] as Workout[];
-
-type Workout = {
-  _id: string;
-  name: string;
-  sorting: number;
-  exercises: WorkoutExercise[];
-};
-
-type WorkoutExercise = {
-  _id: string;
-  name: string;
-  equipmentInfo: string;
-  involvedMuscles: string[];
-  showcaseImage: string;
-  isUserExercise: boolean;
-  numberOfSets: number;
-  noteText: string;
-  sorting: number;
-};
