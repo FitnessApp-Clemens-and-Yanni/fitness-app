@@ -127,6 +127,7 @@ function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
       />
 
       <StartWorkoutModal
+        workoutResponse={workoutResponse}
         selectedExercise={selectedExercise}
         selectedWorkout={selectedWorkout}
         setSelectedExercise={setSelectedExercise}
