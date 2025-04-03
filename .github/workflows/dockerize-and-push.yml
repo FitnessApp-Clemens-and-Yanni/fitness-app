@@ -30,8 +30,8 @@ jobs:
       - name: Build images
         run: |
           cd code && \
-          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest -f Docker.server . && \
-          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest -f Docker.mobile .
+          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest -f Dockerfile.server . && \
+          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest -f Dockerfile.mobile .
 
       - name: Push images
         run: |
