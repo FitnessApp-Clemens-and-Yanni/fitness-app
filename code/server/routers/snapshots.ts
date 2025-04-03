@@ -20,6 +20,8 @@ export const SnapshotsRouter = createTRPCRouter({
       }
 
       const snapshot = await collection.findOne({ exerciseId: input._id });
-      return snapshot === null ? [] : [snapshot];
+      return snapshot === null
+        ? []
+        : [{ ...snapshot, _id: snapshot._id.toString() }];
     }),
 });

@@ -28,3 +28,15 @@ export type ExerciseSnapshot = {
     sets: { weightsInKg: number; repetitions: number }[];
   };
 };
+
+export const FINISHED_WORKOUTS_COLLECTION = "finishedWorkouts";
+
+export type FinishedWorkout = {
+  workoutId: string;
+  workoutName: string;
+  totalTimeInMinutes: number;
+  exercises: {
+    id: string;
+    sets: { weightsInKg: number; repetitions: number }[];
+  }[];
+};

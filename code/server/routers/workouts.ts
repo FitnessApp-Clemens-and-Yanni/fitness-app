@@ -1,6 +1,14 @@
-import { Workout, WORKOUTS_COLLECTION } from "@/data/meta/models";
+import {
+  ExerciseSnapshot,
+  FINISHED_WORKOUTS_COLLECTION,
+  FinishedWorkout,
+  SNAPSHOTS_COLLECTION,
+  Workout,
+  WORKOUTS_COLLECTION,
+} from "@/data/meta/models";
 import { createTRPCRouter, publicProcedure } from "@/trpc";
 import z from "zod";
+import { OBJECT_ID_SCHEMA } from "../../shared/src/zod-schemas/ObjectId";
 
 export const WorkoutsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -63,5 +71,49 @@ export const WorkoutsRouter = createTRPCRouter({
       }
 
       return newWorkout;
+    }),
+
+  finishWorkout: publicProcedure
+    .input(
+      z.object({
+        workoutId: OBJECT_ID_SCHEMA,
+        workoutName: z.string(),
+        exercises: z.array(
+          z.object({
+            id: OBJECT_ID_SCHEMA,
+            sets: z.array(
+              z.object({
+                weightsInKg: z.number(),
+                repetitions: z.number(),
+              })
+            ),
+          })
+        ),
+        totalTimeInMinutes: z.number(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      // I am adding the journal entry first because we would rather have a journal entry without a snapshot entry than otherwise
+      const finishedWorkoutsCollection = ctx.db.collection<FinishedWorkout>(
+        FINISHED_WORKOUTS_COLLECTION
+      );
+      await finishedWorkoutsCollection.insertOne(input);
+
+      //
+      const snapshotsCollection =
+        ctx.db.collection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
+
+      for (const exercise of input.exercises) {
+        const res = await snapshotsCollection.updateOne(
+          { exerciseId: exercise.id },
+          { $set: { exerciseDefaults: { sets: exercise.sets } } }
+        );
+
+        if (res.matchedCount === 0) {
+          return new Error(
+            "Sorry, one of the exercises could not be updated in the snapshots collection on the database."
+          );
+        }
+      }
     }),
 });

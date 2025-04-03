@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { H1, H2, H3, H4 } from "./ui/Typography";
-import { Card, CardContent, CardFooter, CardTitle } from "./ui/Card";
+import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { ArrowBigLeft, Check, Disc } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
@@ -39,8 +39,21 @@ export function StartWorkoutModal({
     _id: selectedExercise?._id ?? null,
   });
 
+  const apiUtils = api.useUtils();
+
+  const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({
+    onSuccess: () => {
+      apiUtils.snapshots.getExerciseDefaultsForWorkout.invalidate();
+    },
+  });
+
   const [finishedSets, setFinishedSets] = useState<
-    { exerciseId: string; setIndex: number }[]
+    {
+      exerciseId: string;
+      setIndex: number;
+      weightsInKg: number;
+      repetitions: number;
+    }[]
   >([]);
   const [timingInterval, setTimingInterval] = useState<
     NodeJS.Timeout | undefined
@@ -67,12 +80,42 @@ export function StartWorkoutModal({
             <Text className="text-lg">minutes!</Text>
             <View className="justify-end">
               <Button
-                onPress={() => {
+                onPress={async () => {
                   setShowSuccessScreen(false);
                   setStartTimestamp(undefined);
                   setCurrentTimestamp(undefined);
                   setFinishedSets([]);
-                  // TODO
+
+                  if (
+                    selectedWorkout === undefined ||
+                    snapshotData === undefined
+                  ) {
+                    console.error("selectedWorkout", selectedWorkout);
+                    console.error("snapshotData", snapshotData);
+                    return;
+                  }
+
+                  await finishWorkoutMutation.mutateAsync({
+                    workoutId: selectedWorkout._id,
+                    workoutName: selectedWorkout.name,
+                    totalTimeInMinutes:
+                      (currentTimestamp! - startTimestamp!) / 60_000,
+                    exercises: Object.values(
+                      Object.groupBy(finishedSets, (x) => x.exerciseId)
+                    ).map((sets) => {
+                      return {
+                        id: sets![0].exerciseId,
+                        sets: finishedSets
+                          .filter(
+                            (set) => set.exerciseId === sets![0].exerciseId
+                          )
+                          .map((finishedSet) => ({
+                            weightsInKg: finishedSet.weightsInKg,
+                            repetitions: finishedSet.repetitions,
+                          })),
+                      };
+                    }),
+                  });
                 }}
               >
                 <Text className="font-bold text-white">Yay! :D</Text>
@@ -174,7 +217,7 @@ export function StartWorkoutModal({
   ) {
     const snapshotExerciseSets = snapshotData?.find(
       (s) => s.exerciseId === selectedExercise._id
-    )!.exerciseDefaults.sets!;
+    )!.exerciseDefaults.sets!; // When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
 
     temporaryDefaultSets = [...snapshotExerciseSets.map((x) => ({ ...x }))];
     if (snapshotExerciseSets.length < selectedExercise.numberOfSets) {
@@ -231,61 +274,68 @@ export function StartWorkoutModal({
                 <View className="px-7"></View>
               </View>
               <ScrollView>
-                {temporaryDefaultSets?.map((previousSet, currentSetIndex) => (
-                  <Card className="mb-1" key={currentSetIndex}>
-                    <View
-                      className={`flex-1 flex-row justify-evenly items-center py-2 ${
-                        finishedSets.some(
-                          (setsAlreadyFinished) =>
-                            setsAlreadyFinished.exerciseId ===
-                              selectedExercise._id &&
-                            setsAlreadyFinished.setIndex === currentSetIndex
-                        )
-                          ? "bg-green-300"
-                          : ""
-                      }`}
-                    >
-                      <Text className="text-md">{previousSet.weightsInKg}</Text>
-                      <Text className="text-md">{previousSet.repetitions}</Text>
-                      <Text className="text-md">
-                        {temporaryDefaultSets.length *
-                          previousSet.repetitions *
-                          previousSet.weightsInKg}
-                      </Text>
-                      <TouchableOpacity
-                        disabled={startTimestamp === undefined}
-                        onPress={() => {
-                          if (
-                            finishedSets.some(
-                              (x) =>
-                                x.exerciseId === selectedExercise._id &&
-                                x.setIndex === currentSetIndex
-                            )
-                          ) {
-                            setFinishedSets(
-                              finishedSets.filter(
-                                (x) =>
-                                  x.exerciseId !== selectedExercise._id ||
-                                  x.setIndex !== currentSetIndex
-                              )
-                            );
-                            return;
-                          }
-
-                          setFinishedSets([
-                            ...finishedSets,
-                            {
-                              exerciseId: selectedExercise._id,
-                              setIndex: currentSetIndex,
-                            },
-                          ]);
-                        }}
+                {temporaryDefaultSets?.map(
+                  (setFromSnapshot, currentSetIndex) => (
+                    <Card className="mb-1" key={currentSetIndex}>
+                      <View
+                        className={`flex-1 flex-row justify-evenly items-center py-2 ${
+                          finishedSets.some(
+                            (setsAlreadyFinished) =>
+                              setsAlreadyFinished.exerciseId ===
+                                selectedExercise._id &&
+                              setsAlreadyFinished.setIndex === currentSetIndex
+                          )
+                            ? "bg-green-300"
+                            : ""
+                        }`}
                       >
-                        {startTimestamp === undefined ? <Disc /> : <Check />}
-                      </TouchableOpacity>
-                    </View>
-                  </Card>
-                ))}
+                        <Text className="text-md">
+                          {setFromSnapshot.weightsInKg}
+                        </Text>
+                        <Text className="text-md">
+                          {setFromSnapshot.repetitions}
+                        </Text>
+                        <Text className="text-md">
+                          {temporaryDefaultSets.length *
+                            setFromSnapshot.repetitions *
+                            setFromSnapshot.weightsInKg}
+                        </Text>
+                        <TouchableOpacity
+                          disabled={startTimestamp === undefined}
+                          onPress={() => {
+                            if (
+                              finishedSets.some(
+                                (x) =>
+                                  x.exerciseId === selectedExercise._id &&
+                                  x.setIndex === currentSetIndex
+                              )
+                            ) {
+                              setFinishedSets(
+                                finishedSets.filter(
+                                  (x) =>
+                                    x.exerciseId !== selectedExercise._id ||
+                                    x.setIndex !== currentSetIndex
+                                )
+                              );
+                              return;
+                            }
+
+                            setFinishedSets([
+                              ...finishedSets,
+                              {
+                                exerciseId: selectedExercise._id,
+                                setIndex: currentSetIndex,
+                                ...setFromSnapshot,
+                              },
+                            ]);
+                          }}
+                        >
+                          {startTimestamp === undefined ? <Disc /> : <Check />}
+                        </TouchableOpacity>
+                      </View>
+                    </Card>
+                  )
+                )}
               </ScrollView>
               <View className="flex-1"></View>
               <H4>Previous records</H4>
@@ -335,23 +385,37 @@ export function StartWorkoutModal({
             </TouchableOpacity>
           )}
           {startTimestamp !== undefined ? (
-            <Button
-              onPress={() => {
-                clearInterval(timingInterval);
-                setTimingInterval(undefined);
-                setShowSuccessScreen(!showSuccessScreen);
-              }}
-            >
-              <Text>Finish Workout</Text>
-              <Text className="text-sm">
-                (
-                {workoutResponse?.exercises.reduce(
-                  (acc, cur) => acc + cur.numberOfSets,
-                  0
-                ) - finishedSets.length}{" "}
-                exercises left)
-              </Text>
-            </Button>
+            <View className="flex-row gap-5">
+              <Button
+                onPress={() => {
+                  clearInterval(timingInterval);
+                  setTimingInterval(undefined);
+
+                  setStartTimestamp(undefined);
+                  setCurrentTimestamp(undefined);
+                  setFinishedSets([]);
+                }}
+              >
+                <Text>Cancle Workout</Text>
+              </Button>
+              <Button
+                onPress={() => {
+                  clearInterval(timingInterval);
+                  setTimingInterval(undefined);
+                  setShowSuccessScreen(true);
+                }}
+              >
+                <Text>Finish Workout</Text>
+                <Text className="text-sm">
+                  (
+                  {workoutResponse?.exercises.reduce(
+                    (acc, cur) => acc + cur.numberOfSets,
+                    0
+                  ) - finishedSets.length}{" "}
+                  exercises left)
+                </Text>
+              </Button>
+            </View>
           ) : (
             <Button
               onPress={() => {
