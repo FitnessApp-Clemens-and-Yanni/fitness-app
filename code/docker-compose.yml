@@ -1,6 +1,6 @@
 services:
   phone-web:
-    image: tmp-phone-web
+    image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
     ports:
       - "4000:4000"
     container_name: phone-web-fitness-app-react-native
@@ -8,7 +8,7 @@ services:
       - fitness-app-network
 
   backend:
-    image: tmp-server
+    image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest
     ports:
       - "3000:3000"
     container_name: server-fitness-app-tsx
