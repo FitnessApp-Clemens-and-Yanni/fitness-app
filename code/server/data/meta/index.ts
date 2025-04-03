@@ -7,8 +7,10 @@ import {
 } from "./models";
 import { workouts } from "../defaults/workoutData";
 import { snapshots } from "../defaults/snapshotsData";
+import { configDotenv } from "dotenv";
 
-const client = new MongoClient("mongodb://database-fitness-app-mongodb:27017");
+configDotenv({ path: ".env" });
+const client = new MongoClient(process.env.DB_CONN_STRING!);
 
 export const db = client.db();
 ensureCollectionsInitializedAndPopulated();
