@@ -25,35 +25,13 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.6.1
-
-      - name: Install dependencies
-        run: pnpm install
-
       - name: Build images
-        run: pnpm docker-build
-
-      - name: Tag images
-        run: pnpm docker-tag
+        run: |
+          cd code && \
+          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest -f Docker.server . && \
+          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest -f Docker.mobile .
 
       - name: Push images
-        run: pnpm docker-push
-
-  # deploy:
-  #   needs: dockerize
-  #   name: Deploy images
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: install ssh keys
-  #       run: |
-  #         install -m 600 -D /dev/null ~/.ssh/id_rsa
-  #         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-  #         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-  #     - name: connect and pull
-  #       run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && docker compose pull && docker compose up -d && exit"
-  #     - name: cleanup
-  #       run: rm -rf ~/.ssh
+        run: |
+          docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest && \
+          docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest

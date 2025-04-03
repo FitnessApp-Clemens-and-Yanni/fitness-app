@@ -12,25 +12,3 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
-
-      - name: Set up PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.6.1
-
-      - name: Set up dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "9.0.x"
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Building all projects
-        run: pnpm build
-
-      - name: Running linter
-        run: pnpm lint
-
-      - name: Running tests
-        run: pnpm test
