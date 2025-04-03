@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "@/trpc";
 import z from "zod";
 
-import { OBJECT_ID_SCHEMA } from "../../shared/types/zod-schemas/ObjectId";
+import { OBJECT_ID_SCHEMA } from "../../shared/build/zod-schemas/ObjectId";
 import { ExerciseSnapshot, SNAPSHOTS_COLLECTION } from "@/data/meta/models";
 
 export const SnapshotsRouter = createTRPCRouter({

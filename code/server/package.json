@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc -b",
     "start": "tsx root",
-    "dev": "tsx watch root"
+    "dev": "tsx watch root",
+    "prod": "tsx root"
   },
   "keywords": [],
   "author": "",

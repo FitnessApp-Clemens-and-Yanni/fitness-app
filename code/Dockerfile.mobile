@@ -1,0 +1,17 @@
+FROM node:23-alpine
+
+WORKDIR /app/shared
+COPY ./shared/package*.json .
+RUN npm install --only=prod
+COPY ./shared .
+
+WORKDIR /app/mobile
+COPY ./mobile/package*.json .
+RUN npm install --only=prod
+COPY ./mobile .
+
+# RUN npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios/assets
+# RUN npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+
+EXPOSE 4000
+CMD ["npm", "run", "prod"]

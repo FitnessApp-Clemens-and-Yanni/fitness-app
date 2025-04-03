@@ -2,9 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "NodeNext",
-    "emitDeclarationOnly": true,
     "sourceMap": true,
-    "outDir": "./types",
+    "outDir": "./build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -14,6 +13,6 @@
     },
     "composite": true
   },
-  "exclude": ["node_modules", "types"],
+  "exclude": ["node_modules", "build"],
   "references": [{ "path": "../shared" }]
 }

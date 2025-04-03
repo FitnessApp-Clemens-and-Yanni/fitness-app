@@ -1,0 +1,17 @@
+# BUILD
+FROM node:23-alpine
+
+WORKDIR /app/shared
+COPY ./shared/package*.json .
+RUN npm install --only=prod
+COPY ./shared .
+
+WORKDIR /app/server
+COPY ./server/package*.json .
+RUN npm install --only=prod
+RUN npm install -D tsx
+COPY ./server .
+
+RUN npm run build
+EXPOSE 3000
+CMD [ "npm", "run", "prod" ]
