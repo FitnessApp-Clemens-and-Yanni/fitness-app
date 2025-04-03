@@ -1,3 +1,5 @@
+import { ExerciseSnapshot } from "../meta/models";
+
 export const snapshots = [
   {
     exerciseId: "506f191e810c19729de860ea",
@@ -64,11 +66,3 @@ export const snapshots = [
     },
   },
 ] as ExerciseSnapshot[];
-
-type ExerciseSnapshot = {
-  exerciseId: string;
-  userId: null;
-  exerciseDefaults: {
-    sets: { weightsInKg: number; repetitions: number }[];
-  };
-};

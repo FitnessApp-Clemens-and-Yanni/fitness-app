@@ -3,6 +3,7 @@ import { createCallerFactory, createTRPCRouter } from "@/trpc";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { SnapshotsRouter } from "./routers/snapshots";
+import { db } from "./data/meta";
 
 /**
  * This is the primary router for your server.
@@ -31,6 +32,7 @@ const server = createHTTPServer({
   middleware: cors(),
   createContext() {
     return {
+      db,
       headers: new Headers(),
     };
   },

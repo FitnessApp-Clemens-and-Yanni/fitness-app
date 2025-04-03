@@ -1,0 +1,26 @@
+services:
+  phone-web:
+    image: tmp-phone-web
+    ports:
+      - "4000:4000"
+    container_name: phone-web-fitness-app-react-native
+    networks:
+      - fitness-app-network
+
+  backend:
+    image: tmp-server
+    ports:
+      - "3000:3000"
+    container_name: server-fitness-app-tsx
+    networks:
+      - fitness-app-network
+
+  database:
+    image: mongodb/mongodb-community-server
+    container_name: database-fitness-app-mongodb
+    networks:
+      - fitness-app-network
+
+networks:
+  fitness-app-network:
+    driver: bridge

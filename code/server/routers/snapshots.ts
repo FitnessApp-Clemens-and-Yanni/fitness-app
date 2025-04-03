@@ -1,9 +1,8 @@
-import { snapshots } from "@/data/snapshotsData";
-
 import { createTRPCRouter, publicProcedure } from "@/trpc";
 import z from "zod";
 
-import { OBJECT_ID_SCHEMA } from "../../shared/types/zod-schemas/ObjectId";
+import { OBJECT_ID_SCHEMA } from "../../shared/build/zod-schemas/ObjectId";
+import { ExerciseSnapshot, SNAPSHOTS_COLLECTION } from "@/data/meta/models";
 
 export const SnapshotsRouter = createTRPCRouter({
   getExerciseDefaultsForWorkout: publicProcedure
@@ -12,11 +11,15 @@ export const SnapshotsRouter = createTRPCRouter({
         _id: z.union([OBJECT_ID_SCHEMA, z.null()]),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const collection =
+        ctx.db.collection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
+
       if (input._id === null) {
         return [];
       }
-      const idx = snapshots.findIndex((x) => x.exerciseId === input._id);
-      return idx === -1 ? [] : [snapshots[idx]];
+
+      const snapshot = await collection.findOne({ exerciseId: input._id });
+      return snapshot === null ? [] : [snapshot];
     }),
 });

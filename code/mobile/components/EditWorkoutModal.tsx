@@ -30,10 +30,15 @@ export function EditWorkoutModal({
   const mutation = api.workouts.setWorkout.useMutation({
     onSuccess: (data) => {
       apiUtils.workouts.getAll.setData((() => {})(), (oldWorkouts) => {
-        if (!oldWorkouts) {
+        if (oldWorkouts === undefined) {
           return [];
         }
-        return oldWorkouts.map((wo) => (wo._id === data!._id ? data : wo));
+
+        if (data instanceof Error) {
+          console.error(data.message);
+          return [];
+        }
+        return oldWorkouts.map((wo) => (wo._id === data._id ? data : wo));
       });
 
       apiUtils.workouts.getAll.invalidate();
