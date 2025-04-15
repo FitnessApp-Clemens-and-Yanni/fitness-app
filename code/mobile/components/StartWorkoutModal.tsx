@@ -3,16 +3,18 @@ import {
   Modal,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { H1, H2, H3, H4 } from "./ui/Typography";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { ArrowBigLeft, Check, Disc } from "lucide-react-native";
+import { ArrowBigLeft, Check, Disc, Pen } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { api } from "@/utils/react";
 import { useState } from "react";
+import { useForm } from "@tanstack/react-form";
 
 export function StartWorkoutModal({
   workoutResponse,
@@ -63,6 +65,7 @@ export function StartWorkoutModal({
     number | undefined
   >();
   const [showSuccessScreen, setShowSuccessScreen] = useState<boolean>(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
 
   if (showSuccessScreen) {
     return (
@@ -140,11 +143,15 @@ export function StartWorkoutModal({
     );
   }
 
+  if (isEditModalVisible) {
+    return <EditSetModal isVisible={isEditModalVisible} setIsVisible={setIsEditModalVisible} />
+  }
+
   if (isLoading) {
     return (
       <Modal
         visible={selectedWorkout !== undefined}
-        className="text-white flex-1"
+        className="text-white flex-1 relative"
       >
         <H1 className="m-5">{selectedWorkout?.name}</H1>
         <ScrollView horizontal={true} className="flex-1 py-5 px-4">
@@ -206,9 +213,9 @@ export function StartWorkoutModal({
 
   let temporaryDefaultSets:
     | {
-        weightsInKg: number;
-        repetitions: number;
-      }[]
+      weightsInKg: number;
+      repetitions: number;
+    }[]
     | undefined = undefined;
 
   if (
@@ -278,16 +285,15 @@ export function StartWorkoutModal({
                   (setFromSnapshot, currentSetIndex) => (
                     <Card className="mb-1" key={currentSetIndex}>
                       <View
-                        className={`flex-1 flex-row justify-evenly items-center py-2 ${
-                          finishedSets.some(
-                            (setsAlreadyFinished) =>
-                              setsAlreadyFinished.exerciseId ===
-                                selectedExercise._id &&
-                              setsAlreadyFinished.setIndex === currentSetIndex
-                          )
-                            ? "bg-green-300"
-                            : ""
-                        }`}
+                        className={`flex-1 flex-row justify-evenly items-center py-2 ${finishedSets.some(
+                          (setsAlreadyFinished) =>
+                            setsAlreadyFinished.exerciseId ===
+                            selectedExercise._id &&
+                            setsAlreadyFinished.setIndex === currentSetIndex
+                        )
+                          ? "bg-green-300"
+                          : ""
+                          }`}
                       >
                         <Text className="text-md">
                           {setFromSnapshot.weightsInKg}
@@ -300,38 +306,52 @@ export function StartWorkoutModal({
                             setFromSnapshot.repetitions *
                             setFromSnapshot.weightsInKg}
                         </Text>
-                        <TouchableOpacity
-                          disabled={startTimestamp === undefined}
-                          onPress={() => {
-                            if (
-                              finishedSets.some(
-                                (x) =>
-                                  x.exerciseId === selectedExercise._id &&
-                                  x.setIndex === currentSetIndex
-                              )
-                            ) {
-                              setFinishedSets(
-                                finishedSets.filter(
+                        {startTimestamp === undefined ||
+                          finishedSets.some(
+                            (s) =>
+                              s.exerciseId === selectedExercise._id &&
+                              s.setIndex === currentSetIndex
+                          ) ? (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setIsEditModalVisible(true);
+                            }}
+                          >
+                            <Pen />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => {
+                              if (
+                                finishedSets.some(
                                   (x) =>
-                                    x.exerciseId !== selectedExercise._id ||
-                                    x.setIndex !== currentSetIndex
+                                    x.exerciseId === selectedExercise._id &&
+                                    x.setIndex === currentSetIndex
                                 )
-                              );
-                              return;
-                            }
+                              ) {
+                                setFinishedSets(
+                                  finishedSets.filter(
+                                    (x) =>
+                                      x.exerciseId !== selectedExercise._id ||
+                                      x.setIndex !== currentSetIndex
+                                  )
+                                );
+                                return;
+                              }
 
-                            setFinishedSets([
-                              ...finishedSets,
-                              {
-                                exerciseId: selectedExercise._id,
-                                setIndex: currentSetIndex,
-                                ...setFromSnapshot,
-                              },
-                            ]);
-                          }}
-                        >
-                          {startTimestamp === undefined ? <Disc /> : <Check />}
-                        </TouchableOpacity>
+                              setFinishedSets([
+                                ...finishedSets,
+                                {
+                                  exerciseId: selectedExercise._id,
+                                  setIndex: currentSetIndex,
+                                  ...setFromSnapshot,
+                                },
+                              ]);
+                            }}
+                          >
+                            <Check />
+                          </TouchableOpacity>
+                        )}
                       </View>
                     </Card>
                   )
@@ -446,4 +466,63 @@ function TimeDisplay(props: { timeInMinutes: number; className?: string }) {
         .padStart(2, "0")}
     </Text>
   );
+}
+
+function EditSetModal(props: { isVisible: boolean, setIsVisible: React.Dispatch<React.SetStateAction<boolean>> }) {
+  const form = useForm({
+    defaultValues: {
+      weightsInKg: 0,
+      repetitions: 0,
+    },
+  });
+
+  return (
+    <Modal visible={props.isVisible} transparent={true}>
+      <TouchableOpacity className="flex-1 justify-center items-center bg-gray-50" onPress={() => props.setIsVisible(false)}>
+        <View className="w-5/6 h-[90%] bg-white rounded-lg shadow">
+          <form.Field
+            name="weightsInKg"
+            validators={{
+              onChange: (val) =>
+                val.value <= 0
+                  ? "You cannot be only using 0 or less kilograms of weight."
+                  : undefined,
+            }}
+          >
+            {(field) => (
+              <>
+                <Text>Age:</Text>
+                <TextInput
+                  value={field.state.value.toString()}
+                  onChangeText={(inp) => field.handleChange(+inp)}
+                />
+                {field.state.meta.errors ? (
+                  <Text>{field.state.meta.errors.join(", ")}</Text>
+                ) : null}
+              </>
+            )}
+          </form.Field>
+        </View></TouchableOpacity>
+    </Modal>
+  );
+
+  /*
+  <form.Field
+  name="age"
+  validators={{
+    onChange: (val) =>
+      val < 13 ? 'You must be 13 to make an account' : undefined,
+  }}
+>
+  {(field) => (
+    <>
+      <Text>Age:</Text>
+      <TextInput value={field.state.value} onChangeText={field.handleChange} />
+      {field.state.meta.errors ? (
+        <Text>{field.state.meta.errors.join(', ')}</Text>
+      ) : null}
+    </>
+  )}
+</form.Field>
+  */
 }

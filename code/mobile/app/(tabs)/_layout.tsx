@@ -19,7 +19,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="food"
         options={{
-          title: "Essen",
+          title: "Food",
           tabBarIcon: ({ color }) => <Banana color={color} />,
         }}
       />
