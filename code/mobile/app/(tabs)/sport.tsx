@@ -3,7 +3,7 @@ import { StartWorkoutModal } from "@/components/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/utils/react";
 import { Pen } from "lucide-react-native";
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -127,6 +127,7 @@ function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
       />
 
       <StartWorkoutModal
+        workoutResponse={workoutResponse}
         selectedExercise={selectedExercise}
         selectedWorkout={selectedWorkout}
         setSelectedExercise={setSelectedExercise}

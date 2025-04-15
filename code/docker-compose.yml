@@ -14,6 +14,8 @@ services:
     container_name: server-fitness-app-tsx
     networks:
       - fitness-app-network
+    environment:
+      - "DB_CONN_STRING=mongodb://database-fitness-app-mongodb:27017"
 
   database:
     image: mongodb/mongodb-community-server

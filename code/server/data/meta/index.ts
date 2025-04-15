@@ -1,14 +1,18 @@
 import { MongoClient } from "mongodb";
 import {
   ExerciseSnapshot,
+  FINISHED_WORKOUTS_COLLECTION,
+  FinishedWorkout,
   SNAPSHOTS_COLLECTION,
   Workout,
   WORKOUTS_COLLECTION,
 } from "./models";
 import { workouts } from "../defaults/workoutData";
 import { snapshots } from "../defaults/snapshotsData";
+import { configDotenv } from "dotenv";
 
-const client = new MongoClient("mongodb://database-fitness-app-mongodb:27017");
+configDotenv({ path: ".env" });
+const client = new MongoClient(process.env.DB_CONN_STRING!);
 
 export const db = client.db();
 ensureCollectionsInitializedAndPopulated();
@@ -20,6 +24,8 @@ async function ensureCollectionsInitializedAndPopulated() {
   const snapshotsCollection = await db.createCollection<ExerciseSnapshot>(
     SNAPSHOTS_COLLECTION
   );
+
+  await db.createCollection<FinishedWorkout>(FINISHED_WORKOUTS_COLLECTION);
 
   if ((await workoutsCollection.countDocuments()) === 0) {
     workoutsCollection.insertMany(workouts);
