@@ -1,46 +1,61 @@
-import { useState } from "react";
-import { Progress } from "@/components/ui/progress";
-import { Text } from "@/components/ui/Text";
+import {useState} from "react";
+import {Progress} from "@/components/ui/progress";
+import {Text} from "@/components/ui/Text";
 import {TouchableOpacity, View, Modal, ActivityIndicator} from "react-native";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { PlusCircle, X } from "lucide-react-native";
-import { api } from "@/utils/react";
+import {Card} from "@/components/ui/Card";
+import {Button} from "@/components/ui/Button";
+import {PlusCircle, X} from "lucide-react-native";
+import {api} from "@/utils/react";
 
 export default function Index() {
-
     const [addMealModalVisible, setAddMealModalVisible] = useState(false);
+    const [currentDate] = useState(new Date());
 
-    // Fetch target nutritional values from the API
+
     const {
-        isLoading,
-        error,
-        data: targetNutritionalValue,
+        isLoading: isLoadingTargets,
+        error: targetError,
+        data: targetNutritionalData,
     } = api.food.getTargetNutritionalValues.useQuery();
 
-    if (isLoading || targetNutritionalValue === undefined) {
+    // Fetch CURRENT day's nutritional values
+    const {
+        isLoading: isLoadingDailyValues,
+        error: dailyError,
+        data: dailyNutritionalData,
+    } = api.food.getNutritionalValuesOfDay.useQuery(
+        {
+            date: currentDate,
+        }
+    );
+
+    if (isLoadingTargets || isLoadingDailyValues || targetNutritionalData === undefined || dailyNutritionalData === undefined) {
         return (
             <View className="flex-1 justify-center items-center">
-                <ActivityIndicator />
+                <ActivityIndicator/>
             </View>
         );
     }
 
-    if (error) {
+    if (targetError || dailyError) {
+        const errorMessage = targetError?.message || dailyError?.message;
+
         return (
             <View className="flex-1 justify-center items-center">
-                <Text>Sorry, an error occured... {error.message}</Text>
+                <Text>Sorry, an error occurred... {errorMessage}</Text>
             </View>
         );
     }
 
-    // Sample progress data
-    const progressData = [
-        { value: 80, total: 100, name: "Calories" },
-        { value: 45, total: 150, name: "Protein" },
-        { value: 120, total: 200, name: "Carbs" },
-        { value: 30, total: 50, name: "Fats" },
-    ];
+    if (dailyNutritionalData instanceof Error || targetNutritionalData instanceof Error) {
+        const errorMessage = dailyNutritionalData instanceof Error ? dailyNutritionalData.message : targetNutritionalData
+                                                        instanceof Error ? targetNutritionalData.message : "Unknown error";
+        return (
+            <View className="flex-1 justify-center items-center">
+                <Text>Sorry, an error occurred... {errorMessage}</Text>
+            </View>
+        );
+    }
 
     return (
         <View className="flex-1 p-4">
@@ -50,10 +65,10 @@ export default function Index() {
 
                     <View>
                         <View className="flex flex-row justify-center">
-                            <Text>{progressData[0].name} {progressData[0].value}/{targetNutritionalValue.caloriesInKcal}</Text>
+                            <Text>Calories {dailyNutritionalData.caloriesInKcal}/{targetNutritionalData.caloriesInKcal}</Text>
                         </View>
                         <Progress
-                            value={(progressData[0].value / targetNutritionalValue.caloriesInKcal) * 100}
+                            value={(dailyNutritionalData.caloriesInKcal / targetNutritionalData.caloriesInKcal) * 100}
                             className="w-full h-3"
                         />
                     </View>
@@ -62,26 +77,26 @@ export default function Index() {
 
                     <View className="w-full">
                         <View className="flex flex-row justify-start">
-                            <Text>{progressData[1].name} {progressData[1].value}/{targetNutritionalValue.proteinInG}</Text>
+                            <Text>Protein {dailyNutritionalData.proteinInG}/{targetNutritionalData.proteinInG}</Text>
                         </View>
                         <Progress
-                            value={(progressData[1].value / targetNutritionalValue.proteinInG) * 100}
+                            value={(dailyNutritionalData.proteinInG / targetNutritionalData.proteinInG) * 100}
                         />
                     </View>
                     <View className="w-full">
                         <View className="flex flex-row justify-start">
-                            <Text>{progressData[2].name} {progressData[2].value}/{targetNutritionalValue.carbsInG}</Text>
+                            <Text>Carbs {dailyNutritionalData.carbsInG}/{targetNutritionalData.carbsInG}</Text>
                         </View>
                         <Progress
-                            value={(progressData[2].value / targetNutritionalValue.carbsInG) * 100}
+                            value={(dailyNutritionalData.carbsInG / targetNutritionalData.carbsInG) * 100}
                         />
                     </View>
                     <View className="w-full">
                         <View className="flex flex-row justify-start">
-                            <Text>{progressData[3].name} {progressData[3].value}/{targetNutritionalValue.fatsInG}</Text>
+                            <Text>Fats {dailyNutritionalData.fatsInG}/{targetNutritionalData.fatsInG}</Text>
                         </View>
                         <Progress
-                            value={(progressData[3].value / targetNutritionalValue.fatsInG) * 100}
+                            value={(dailyNutritionalData.fatsInG / targetNutritionalData.fatsInG) * 100}
                         />
                     </View>
 
@@ -126,22 +141,32 @@ export default function Index() {
             </View>
 
 
-            {/* Add Meal Modal */}
             <AddMealModal
                 isVisible={addMealModalVisible}
                 onClose={() => setAddMealModalVisible(false)}
             />
+
+
         </View>
     );
 }
 
-function AddMealModal({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) {
+function AddMealModal({isVisible, onClose}: { isVisible: boolean; onClose: () => void }) {
     return (
         <Modal visible={isVisible} transparent={true}>
             <View className="flex-1 justify-center items-center bg-black/40">
                 <View className="w-5/6 bg-white rounded-lg shadow p-5">
 
+                    <View className="flex-row justify-between items-center mb-4">
+                        <Text className="text-lg font-semibold">ASJDFKLÖASDJKFLÖK</Text>
+                        <TouchableOpacity onPress={onClose}>
+                            <X size={24}/>
+                        </TouchableOpacity>
+                    </View>
 
+                    <View className="h-40 justify-center items-center">
+                        <Text className="text-gray-500">Food selection will go here</Text>
+                    </View>
 
                     <View className="flex-row justify-end mt-4">
                         <Button onPress={onClose}>
