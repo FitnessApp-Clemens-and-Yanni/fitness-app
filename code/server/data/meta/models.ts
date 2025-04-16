@@ -40,3 +40,12 @@ export type FinishedWorkout = {
     sets: { weightsInKg: number; repetitions: number }[];
   }[];
 };
+
+export const TARGET_NUTRITIONAL_VALUE_COLLECTION = "TargetNutritionalValue";
+
+export type TargetNutritionalValue = {
+  caloriesInKcal: number,
+  proteinInG: number,
+  carbsInG: number,
+  fatsInG: number
+}
