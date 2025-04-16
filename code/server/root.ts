@@ -4,6 +4,7 @@ import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { SnapshotsRouter } from "./routers/snapshots";
 import { db } from "./data/meta";
+import {FoodRouter} from "@/routers/food";
 
 /**
  * This is the primary router for your server.
@@ -11,6 +12,7 @@ import { db } from "./data/meta";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  food: FoodRouter,
   workouts: WorkoutsRouter,
   snapshots: SnapshotsRouter,
 });

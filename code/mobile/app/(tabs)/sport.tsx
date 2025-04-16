@@ -17,7 +17,8 @@ export default function Index() {
     isLoading,
     error,
     data: workoutsData,
-  } = api.workouts.getAll.useQuery();
+  }  = api.workouts.getAll.useQuery();
+
 
   if (isLoading) {
     return (

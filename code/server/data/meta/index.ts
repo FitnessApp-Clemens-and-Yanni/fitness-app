@@ -10,7 +10,7 @@ import {
 import { workouts } from "../defaults/workoutData";
 import { snapshots } from "../defaults/snapshotsData";
 import { configDotenv } from "dotenv";
-import {targetNutritionalValue} from "@/data/defaults/targerValueData";
+import {targetNutritionalValue} from "@/data/defaults/targerNutritionalValueData";
 
 configDotenv({ path: ".env" });
 const client = new MongoClient(process.env.DB_CONN_STRING!);
