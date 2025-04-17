@@ -1,7 +1,7 @@
 import {NutritionalValueOfDay} from "@/data/meta/models";
 
 export const nutritionalValueOfDayData: NutritionalValueOfDay = {
-    dayOfEntry: {year: 2025, month: 4, day: 16},
+    dayOfEntry: {year: 2025, month: 4, day: 17},
     caloriesInKcal: 1717,
     proteinInG: 122.8,
     carbsInG: 211.2,

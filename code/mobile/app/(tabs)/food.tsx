@@ -3,11 +3,9 @@ import {Progress} from "@/components/ui/progress";
 import {Text} from "@/components/ui/Text";
 import {TouchableOpacity, View, Modal, ActivityIndicator, ScrollView} from "react-native";
 import {Card} from "@/components/ui/Card";
-import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/Button";
-import {PlusCircle, X, Trash} from "lucide-react-native";
+import {PlusCircle, X, Search, ScanBarcode, Trash2} from "lucide-react-native";
 import {api} from "@/utils/react";
-import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 
 export default function Index() {
     const [modalState, setModalState] = useState({
@@ -22,18 +20,13 @@ export default function Index() {
         data: targetNutritionalData,
     } = api.food.getTargetNutritionalValues.useQuery();
 
-    // Fetch CURRENT day's nutritional values with retry disabled
+
     const {
         isLoading: isLoadingDailyValues,
         error: dailyError,
         data: dailyNutritionalData,
     } = api.food.getNutritionalValuesOfDay.useQuery(
         { date: currentDate },
-        {
-            retry: false,
-            refetchOnWindowFocus: false,
-            refetchOnMount: false
-        }
     );
 
     if (isLoadingTargets || targetNutritionalData === undefined || dailyNutritionalData === undefined) {
@@ -159,6 +152,8 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
     const [selectedFoodFilter, setSelectedFoodFilter] = useState('Often');
 
 
+    //Warum hole ich mir das nochmal, wenn ich es eh alles oben schonmal geholt habe????
+
     const {
         isLoading: isLoadingFoodItems,
         error: foodItemsError,
@@ -168,12 +163,6 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
             date: currentDate,
             mealType: mealType as "Breakfast" | "Lunch" | "Dinner" | "Snack"
         },
-        {
-            enabled: isVisible,
-            retry: false,
-            refetchOnWindowFocus: false,
-            refetchOnMount: false
-        }
     );
 
     if (isLoadingFoodItems || foodData === undefined) {
@@ -211,7 +200,8 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
     return (
         <Modal visible={isVisible} transparent={true}>
             <View className="flex-1 justify-center items-center bg-black/40">
-                <View className="w-5/6 bg-white rounded-lg shadow p-5">
+                <View className="h-3/4 w-5/6 bg-white rounded-lg shadow gap-4 p-5">
+
                     <View className="flex-row justify-between items-center">
                         <Text className="text-lg font-semibold">{mealType}</Text>
                         <TouchableOpacity onPress={onClose}>
@@ -219,73 +209,92 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
                         </TouchableOpacity>
                     </View>
 
-                    <View className="flex flex-row">
+                    <View className="flex flex-row h-32 gap-2">
                         <View className="flex flex-1">
                             <View className="flex flex-row justify-between">
-                                <Text>Calories:</Text>
-                                <Text>{foodData.foods.reduce((sum, food) => sum + food.caloriesInKcal, 0)}</Text>
+                                <Text className="text-sm">Calories:</Text>
+                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.caloriesInKcal, 0)}</Text>
                             </View>
                             <View className="flex flex-row justify-between">
-                                <Text>Protein:</Text>
-                                <Text>{foodData.foods.reduce((sum, food) => sum + food.proteinInG, 0)}g</Text>
+                                <Text className="text-sm">Protein:</Text>
+                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.proteinInG, 0)}g</Text>
                             </View>
                             <View className="flex flex-row justify-between">
-                                <Text>Carbs:</Text>
-                                <Text>{foodData.foods.reduce((sum, food) => sum + food.carbsInG, 0)}g</Text>
+                                <Text className="text-sm">Carbs:</Text>
+                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.carbsInG, 0)}g</Text>
                             </View>
                             <View className="flex flex-row justify-between">
-                                <Text>Fats:</Text>
-                                <Text>{foodData.foods.reduce((sum, food) => sum + food.fatsInG, 0)}g</Text>
+                                <Text className="text-sm">Fats:</Text>
+                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.fatsInG, 0)}g</Text>
                             </View>
                         </View>
                         <View>
-                            <ScrollView className="bg-stone-500">
+                            <ScrollView className="bg-stone-500 h-20 w-40 border border-stone-700">
                                 {foodData.foods.map((food, index) => (
-                                    <View key={index} className="flex flex-row justify-between bg-stone-300 w-full">
-                                        <Text>
+                                    <View key={index} className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
+                                        <View className="flex flex-row justify-between gap-1">
                                             <TouchableOpacity>
-                                                <Trash className="inline"/>
+                                                <Trash2 className="inline self-center flex"/>
                                             </TouchableOpacity>
-                                            {food.name}
-                                        </Text>
-                                        <Text>{food.weightInG}g</Text>
+                                            <Text className="text-xs self-center flex">
+                                                {food.name}
+                                            </Text>
+                                        </View>
+                                        <Text className="text-xs self-center">{food.weightInG}g</Text>
                                     </View>
                                 ))}
+                                {foodData.foods.length === 0 && (
+                                    <View className="flex justify-center items-center h-full">
+                                        <Text className="text-stone-600 text-xs">No foods yet</Text>
+                                    </View>
+                                )}
                             </ScrollView>
                         </View>
                     </View>
 
-                    <RadioGroup
-                        value={selectedFoodFilter}
-                        onValueChange={setSelectedFoodFilter}
-                        className="flex flex-row justify-around">
+                    <View className="flex flex-row items-center gap-1">
+                        <View className="flex flex-row items-center justify-between flex-1 bg-stone-300 border border-stone-500 rounded-md p-2">
+                            <Text className="text-stone-600">Search</Text>
+                            <Search size={20} color="#78716c" />
+                        </View>
+                        <TouchableOpacity>
+                            <ScanBarcode size={40} />
+                        </TouchableOpacity>
+                    </View>
 
-                        <View className="flex flex-row items-center">
-                            <RadioGroupItem value="Often" id="often">
-                                <Text>Often</Text>
-                            </RadioGroupItem>
+                    <View className="bg-stone-400 border border-stone-500 rounded-md p-1 w-3/4 self-center">
+                        <View className="flex flex-row justify-around">
+                            {["Often", "Favorite", "Last"].map((option) => (
+                                <TouchableOpacity
+                                    key={option}
+                                    onPress={() => setSelectedFoodFilter(option)}
+                                >
+                                    <Text
+                                        className={selectedFoodFilter === option ?
+                                            "font-medium underline" :
+                                            "text-stone-600"}
+                                    >
+                                        {option}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
-                        <View className="flex flex-row items-center">
-                            <RadioGroupItem value="Favorite" id="favorite" />
-                        </View>
-                        <View className="flex flex-row items-center">
-                            <RadioGroupItem value="Last" id="last" />
-                        </View>
-                    </RadioGroup>
+                    </View>
 
-                    <ScrollView className="bg-stone-500 h-40 w-full ">
+
+                    <ScrollView className="bg-stone-500 h-40 w-full border border-stone-700">
                         {foodData.foods.map((food, index) => (
-                            <View key={index} className="flex flex-row justify-between bg-stone-300">
-                                <Text>{food.name}</Text>
-                                <Text>{food.weightInG}g</Text>
+                            <View key={index} className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
+                                <Text className="text-sm">{food.name}</Text>
+                                <Text className="text-sm">{food.weightInG}g</Text>
                                 <TouchableOpacity>
-                                    <PlusCircle/>
+                                    <PlusCircle size={16} />
                                 </TouchableOpacity>
                             </View>
                         ))}
                         {foodData.foods.length === 0 && (
                             <View className="flex justify-center items-center h-full">
-                                <Text className="text-stone-600">No foods yet</Text>
+                                <Text className="text-stone-600 text-xs">No foods yet</Text>
                             </View>
                         )}
                     </ScrollView>
