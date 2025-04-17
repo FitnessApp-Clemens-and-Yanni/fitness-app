@@ -12,7 +12,7 @@ import { Button } from "./ui/Button";
 import { ArrowBigLeft, Check, Disc, Pen } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { api } from "@/utils/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TimeDisplay } from "./TimeDisplay";
 import { EditSetModal } from "./EditSetModal";
 
@@ -65,7 +65,52 @@ export function StartWorkoutModal({
     number | undefined
   >();
   const [showSuccessScreen, setShowSuccessScreen] = useState<boolean>(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const [editModalValues, setEditModalValues] = useState<
+    { weightsInKg: number; repetitions: number } | undefined
+  >();
+
+  const [frontendSets, setFrontendSets] = useState<
+    | {
+        weightsInKg: number;
+        repetitions: number;
+      }[]
+    | undefined
+  >();
+
+  useEffect(() => {
+    if (
+      selectedExercise !== undefined &&
+      (snapshotData?.some((s) => s.exerciseId === selectedExercise._id) ??
+        false)
+    ) {
+      const snapshotExerciseSets = snapshotData?.find(
+        (s) => s.exerciseId === selectedExercise._id
+      )!.exerciseDefaults.sets!; // When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
+
+      let temporarySets = [...snapshotExerciseSets.map((x) => ({ ...x }))];
+
+      if (snapshotExerciseSets.length < selectedExercise.numberOfSets) {
+        const countNew =
+          selectedExercise.numberOfSets - snapshotExerciseSets!.length;
+
+        temporarySets = [
+          ...temporarySets,
+          ...new Array(countNew)
+            .fill(null)
+            .map((_) => temporarySets![temporarySets!.length - 1]),
+        ];
+      }
+
+      if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
+        setFrontendSets(
+          temporarySets.slice(0, selectedExercise.numberOfSets - 1) // TODO FIX INCORRECT TRANCATING
+        );
+      }
+    }
+    return () => {
+      setFrontendSets(undefined);
+    };
+  }, [snapshotData, selectedExercise, selectedWorkout]);
 
   if (showSuccessScreen) {
     return (
@@ -143,11 +188,17 @@ export function StartWorkoutModal({
     );
   }
 
-  if (isEditModalVisible) {
+  if (editModalValues !== undefined) {
     return (
       <EditSetModal
-        isVisible={isEditModalVisible}
-        setIsVisible={setIsEditModalVisible}
+        isModalVisible={editModalValues !== undefined}
+        hideModal={() => setEditModalValues(undefined)}
+        currentWeightsInKg={editModalValues.weightsInKg}
+        setCurrentWeightsInKg={(weights) => {
+          // apiUtils.snapshots.getExerciseDefaultsForWorkout.setData({ _id: selectedWorkout!.id }, [...(snapshotData!.)])
+        }}
+        currentRepetitions={editModalValues.repetitions}
+        setCurrentRepetition={(reps) => {}}
       />
     );
   }
@@ -216,37 +267,6 @@ export function StartWorkoutModal({
     );
   }
 
-  let temporaryDefaultSets:
-    | {
-        weightsInKg: number;
-        repetitions: number;
-      }[]
-    | undefined = undefined;
-
-  if (
-    selectedExercise !== undefined &&
-    snapshotData?.some((s) => s.exerciseId === selectedExercise._id)
-  ) {
-    const snapshotExerciseSets = snapshotData?.find(
-      (s) => s.exerciseId === selectedExercise._id
-    )!.exerciseDefaults.sets!; // When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
-
-    temporaryDefaultSets = [...snapshotExerciseSets.map((x) => ({ ...x }))];
-    if (snapshotExerciseSets.length < selectedExercise.numberOfSets) {
-      const countNew =
-        selectedExercise.numberOfSets - snapshotExerciseSets!.length;
-
-      temporaryDefaultSets.push(
-        ...new Array(countNew)
-          .fill(null)
-          .map((_) => temporaryDefaultSets![temporaryDefaultSets!.length - 1])
-      );
-    }
-    if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
-      temporaryDefaultSets.splice(selectedExercise.numberOfSets);
-    }
-  }
-
   return (
     <Modal
       visible={selectedWorkout !== undefined}
@@ -286,82 +306,83 @@ export function StartWorkoutModal({
                 <View className="px-7"></View>
               </View>
               <ScrollView>
-                {temporaryDefaultSets?.map(
-                  (setFromSnapshot, currentSetIndex) => (
-                    <Card className="mb-1" key={currentSetIndex}>
-                      <View
-                        className={`flex-1 flex-row justify-evenly items-center py-2 ${
-                          finishedSets.some(
-                            (setsAlreadyFinished) =>
-                              setsAlreadyFinished.exerciseId ===
-                                selectedExercise._id &&
-                              setsAlreadyFinished.setIndex === currentSetIndex
-                          )
-                            ? "bg-green-300"
-                            : ""
-                        }`}
-                      >
-                        <Text className="text-md">
-                          {setFromSnapshot.weightsInKg}
-                        </Text>
-                        <Text className="text-md">
-                          {setFromSnapshot.repetitions}
-                        </Text>
-                        <Text className="text-md">
-                          {temporaryDefaultSets.length *
-                            setFromSnapshot.repetitions *
-                            setFromSnapshot.weightsInKg}
-                        </Text>
-                        {startTimestamp === undefined ||
+                {frontendSets?.map((setFromSnapshot, currentSetIndex) => (
+                  <Card className="mb-1" key={currentSetIndex}>
+                    <View
+                      className={`flex-1 flex-row justify-evenly items-center py-2 ${
                         finishedSets.some(
-                          (s) =>
-                            s.exerciseId === selectedExercise._id &&
-                            s.setIndex === currentSetIndex
-                        ) ? (
-                          <TouchableOpacity
-                            onPress={() => {
-                              setIsEditModalVisible(true);
-                            }}
-                          >
-                            <Pen />
-                          </TouchableOpacity>
-                        ) : (
-                          <TouchableOpacity
-                            onPress={() => {
-                              if (
-                                finishedSets.some(
+                          (setsAlreadyFinished) =>
+                            setsAlreadyFinished.exerciseId ===
+                              selectedExercise._id &&
+                            setsAlreadyFinished.setIndex === currentSetIndex
+                        )
+                          ? "bg-green-300"
+                          : ""
+                      }`}
+                    >
+                      <Text className="text-md">
+                        {setFromSnapshot.weightsInKg}
+                      </Text>
+                      <Text className="text-md">
+                        {setFromSnapshot.repetitions}
+                      </Text>
+                      <Text className="text-md">
+                        {frontendSets.length *
+                          setFromSnapshot.repetitions *
+                          setFromSnapshot.weightsInKg}
+                      </Text>
+                      {startTimestamp === undefined ||
+                      finishedSets.some(
+                        (s) =>
+                          s.exerciseId === selectedExercise._id &&
+                          s.setIndex === currentSetIndex
+                      ) ? (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setEditModalValues({
+                              weightsInKg: setFromSnapshot.weightsInKg,
+                              repetitions: setFromSnapshot.repetitions,
+                            });
+                          }}
+                        >
+                          <Pen />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (
+                              finishedSets.some(
+                                (x) =>
+                                  x.exerciseId === selectedExercise._id &&
+                                  x.setIndex === currentSetIndex
+                              )
+                            ) {
+                              setFinishedSets(
+                                finishedSets.filter(
                                   (x) =>
-                                    x.exerciseId === selectedExercise._id &&
-                                    x.setIndex === currentSetIndex
+                                    x.exerciseId !== selectedExercise._id ||
+                                    x.setIndex !== currentSetIndex
                                 )
-                              ) {
-                                setFinishedSets(
-                                  finishedSets.filter(
-                                    (x) =>
-                                      x.exerciseId !== selectedExercise._id ||
-                                      x.setIndex !== currentSetIndex
-                                  )
-                                );
-                                return;
-                              }
+                              );
+                              return;
+                            }
 
-                              setFinishedSets([
-                                ...finishedSets,
-                                {
-                                  exerciseId: selectedExercise._id,
-                                  setIndex: currentSetIndex,
-                                  ...setFromSnapshot,
-                                },
-                              ]);
-                            }}
-                          >
-                            <Check />
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    </Card>
-                  )
-                )}
+                            setFinishedSets([
+                              ...finishedSets,
+                              {
+                                exerciseId: selectedExercise._id,
+                                setIndex: currentSetIndex,
+                                ...setFromSnapshot,
+                              },
+                            ]);
+                          }}
+                        >
+                          <Check />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </Card>
+                ))}
               </ScrollView>
               <View className="flex-1"></View>
               <H4>Previous records</H4>

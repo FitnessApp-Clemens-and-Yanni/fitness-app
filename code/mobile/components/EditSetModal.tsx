@@ -1,68 +1,109 @@
-import { useForm } from "@tanstack/react-form";
-import { Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { AnyFieldApi, useForm } from "@tanstack/react-form";
+import { Modal, Text, TouchableOpacity, View } from "react-native";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { z } from "zod";
+import { Button } from "./ui/Button";
+import {
+  postiveIntegerStringSchema,
+  positiveNumberStringSchema,
+} from "@/lib/zodSchemas";
+import { X } from "lucide-react-native";
+
+const formSchema = z.object({
+  weightsInKg: positiveNumberStringSchema(
+    "Please provide the weights you want to use for the set."
+  ),
+  repetitions: postiveIntegerStringSchema(
+    "Please provide how many reps the set has."
+  ),
+});
+
+function FieldInfo({ field }: { field: AnyFieldApi }) {
+  return (
+    <>
+      {field.state.meta.isTouched && field.state.meta.errors.length ? (
+        <Text className="text-sm text-red-500">
+          {field.state.meta.errors.map((err) => err.message).join(",")}
+        </Text>
+      ) : null}
+    </>
+  );
+}
 
 export function EditSetModal(props: {
-  isVisible: boolean;
-  setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  isModalVisible: boolean;
+  hideModal: () => void;
+  currentWeightsInKg: number;
+  setCurrentWeightsInKg: (weights: number) => void;
+  currentRepetitions: number;
+  setCurrentRepetition: (weights: number) => void;
 }) {
   const form = useForm({
     defaultValues: {
-      weightsInKg: 0,
-      repetitions: 0,
+      weightsInKg: `${props.currentWeightsInKg}`,
+      repetitions: `${props.currentRepetitions}`,
+    },
+    validators: {
+      onChange: formSchema,
     },
   });
 
   return (
-    <Modal visible={props.isVisible} transparent={true}>
-      <TouchableOpacity
-        className="flex-1 justify-center items-center bg-gray-50"
-        onPress={() => props.setIsVisible(false)}
-      >
-        <View className="w-5/6 h-[90%] bg-white rounded-lg shadow">
-          <form.Field
-            name="weightsInKg"
-            validators={{
-              onChange: (val) =>
-                val.value <= 0
-                  ? "You cannot be only using 0 or less kilograms of weight."
-                  : undefined,
-            }}
-          >
+    <Modal visible={props.isModalVisible} transparent={true}>
+      <View className="flex-1 justify-center items-center bg-gray-50">
+        <View className="w-5/6 h-[90%] bg-white rounded-lg shadow gap-3 p-5">
+          <View className="flex-row justify-end mb-5">
+            <TouchableOpacity onPressIn={props.hideModal}>
+              <X />
+            </TouchableOpacity>
+          </View>
+          <form.Field name="weightsInKg">
             {(field) => (
-              <>
-                <Text>Age:</Text>
-                <TextInput
+              <View className="gap-2">
+                <Label>Weights (in kg):</Label>
+                <Input
                   value={field.state.value.toString()}
-                  onChangeText={(inp) => field.handleChange(+inp)}
+                  onChangeText={field.handleChange}
                 />
-                {field.state.meta.errors ? (
-                  <Text>{field.state.meta.errors.join(", ")}</Text>
-                ) : null}
-              </>
+                <FieldInfo field={field} />
+              </View>
             )}
           </form.Field>
+
+          <form.Field name="repetitions">
+            {(field) => (
+              <View className="gap-2">
+                <Label>Reps:</Label>
+                <Input
+                  value={field.state.value}
+                  onChangeText={field.handleChange}
+                />
+                <FieldInfo field={field} />
+              </View>
+            )}
+          </form.Field>
+
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <Button
+                disabled={!canSubmit}
+                onPressIn={() => {
+                  props.setCurrentWeightsInKg(
+                    +form.getFieldValue("weightsInKg")
+                  );
+                  props.setCurrentRepetition(
+                    +form.getFieldValue("repetitions")
+                  );
+                }}
+              >
+                <Text>{isSubmitting ? "..." : "OK"}</Text>
+              </Button>
+            )}
+          ></form.Subscribe>
         </View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
-
-  /*
-    <form.Field
-    name="age"
-    validators={{
-      onChange: (val) =>
-        val < 13 ? 'You must be 13 to make an account' : undefined,
-    }}
-  >
-    {(field) => (
-      <>
-        <Text>Age:</Text>
-        <TextInput value={field.state.value} onChangeText={field.handleChange} />
-        {field.state.meta.errors ? (
-          <Text>{field.state.meta.errors.join(', ')}</Text>
-        ) : null}
-      </>
-    )}
-  </form.Field>
-    */
 }
