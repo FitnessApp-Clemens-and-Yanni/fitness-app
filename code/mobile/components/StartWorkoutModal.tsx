@@ -15,7 +15,8 @@ import { api } from "@/utils/react";
 import { useEffect, useState } from "react";
 import { TimeDisplay } from "./TimeDisplay";
 import { EditSetModal } from "./EditSetModal";
-import { useExerciseSetStore } from "@/lib/stores/workout-stores";
+import { useExerciseSetStore } from "@/lib/stores/fe-sets-store";
+import { useFinishedSetsStore } from "@/lib/stores/finished-fe-sets-store";
 
 export function StartWorkoutModal({
   workoutResponse,
@@ -50,14 +51,8 @@ export function StartWorkoutModal({
     },
   });
 
-  const [finishedSets, setFinishedSets] = useState<
-    {
-      exerciseId: string;
-      setIndex: number;
-      weightsInKg: number;
-      repetitions: number;
-    }[]
-  >([]);
+  const finishedSetStore = useFinishedSetsStore();
+
   const [timingInterval, setTimingInterval] = useState<
     NodeJS.Timeout | undefined
   >();
@@ -128,7 +123,7 @@ export function StartWorkoutModal({
                   setShowSuccessScreen(false);
                   setStartTimestamp(undefined);
                   setCurrentTimestamp(undefined);
-                  setFinishedSets([]);
+                  finishedSetStore.reset();
 
                   if (
                     selectedWorkout === undefined ||
@@ -145,11 +140,14 @@ export function StartWorkoutModal({
                     totalTimeInMinutes:
                       (currentTimestamp! - startTimestamp!) / 60_000,
                     exercises: Object.values(
-                      Object.groupBy(finishedSets, (x) => x.exerciseId)
+                      Object.groupBy(
+                        finishedSetStore.finishedSets,
+                        (x) => x.exerciseId
+                      )
                     ).map((sets) => {
                       return {
                         id: sets![0].exerciseId,
-                        sets: finishedSets
+                        sets: finishedSetStore.finishedSets
                           .filter(
                             (set) => set.exerciseId === sets![0].exerciseId
                           )
@@ -195,6 +193,12 @@ export function StartWorkoutModal({
             idx: editModalValues.idx,
             repetitions: reps,
             weightsInKg: weights,
+          });
+          finishedSetStore.updateSetIfExists({
+            exerciseId: selectedExercise._id,
+            setIndex: editModalValues.idx,
+            weightsInKg: weights,
+            repetitions: reps,
           });
         }}
         currentRepetitions={editModalValues.repetitions}
@@ -316,7 +320,7 @@ export function StartWorkoutModal({
                     <Card className="mb-1" key={currentSetIndex}>
                       <View
                         className={`flex-1 flex-row justify-evenly items-center py-2 ${
-                          finishedSets.some(
+                          finishedSetStore.finishedSets.some(
                             (setsAlreadyFinished) =>
                               setsAlreadyFinished.exerciseId ===
                                 selectedExercise._id &&
@@ -340,7 +344,7 @@ export function StartWorkoutModal({
                             setFromSnapshot.weightsInKg}
                         </Text>
                         {startTimestamp === undefined ||
-                        finishedSets.some(
+                        finishedSetStore.finishedSets.some(
                           (s) =>
                             s.exerciseId === selectedExercise._id &&
                             s.setIndex === currentSetIndex
@@ -360,30 +364,25 @@ export function StartWorkoutModal({
                           <TouchableOpacity
                             onPress={() => {
                               if (
-                                finishedSets.some(
+                                finishedSetStore.finishedSets.some(
                                   (x) =>
                                     x.exerciseId === selectedExercise._id &&
                                     x.setIndex === currentSetIndex
                                 )
                               ) {
-                                setFinishedSets(
-                                  finishedSets.filter(
-                                    (x) =>
-                                      x.exerciseId !== selectedExercise._id ||
-                                      x.setIndex !== currentSetIndex
-                                  )
+                                finishedSetStore.removeFinishedSet(
+                                  selectedExercise._id,
+                                  currentSetIndex
                                 );
+
                                 return;
                               }
 
-                              setFinishedSets([
-                                ...finishedSets,
-                                {
-                                  exerciseId: selectedExercise._id,
-                                  setIndex: currentSetIndex,
-                                  ...setFromSnapshot,
-                                },
-                              ]);
+                              finishedSetStore.addFinishedSet({
+                                exerciseId: selectedExercise._id,
+                                setIndex: currentSetIndex,
+                                ...setFromSnapshot,
+                              });
                             }}
                           >
                             <Check />
@@ -450,7 +449,7 @@ export function StartWorkoutModal({
 
                   setStartTimestamp(undefined);
                   setCurrentTimestamp(undefined);
-                  setFinishedSets([]);
+                  finishedSetStore.reset();
                 }}
               >
                 <Text>Cancle Workout</Text>
@@ -468,7 +467,7 @@ export function StartWorkoutModal({
                   {workoutResponse?.exercises.reduce(
                     (acc, cur) => acc + cur.numberOfSets,
                     0
-                  ) - finishedSets.length}{" "}
+                  ) - finishedSetStore.finishedSets.length}{" "}
                   exercises left)
                 </Text>
               </Button>
