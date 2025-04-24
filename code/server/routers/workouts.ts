@@ -8,7 +8,7 @@ import {
 } from "@/data/meta/models";
 import { createTRPCRouter, publicProcedure } from "@/trpc";
 import z from "zod";
-import { OBJECT_ID_SCHEMA } from "../../shared/src/zod-schemas/ObjectId";
+import { OBJECT_ID_SCHEMA } from "@shared/zod-schemas/ObjectId";
 
 export const WorkoutsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
