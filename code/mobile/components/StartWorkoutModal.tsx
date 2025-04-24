@@ -90,7 +90,7 @@ export function StartWorkoutModal({
           ...new Array(countNew)
             .fill(null)
             .map((_) => temporarySets![temporarySets!.length - 1]),
-        ];
+        ].map((set, i) => ({ ...set, idx: i }));
       }
 
       if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
@@ -316,43 +316,46 @@ export function StartWorkoutModal({
               <ScrollView>
                 {frontendSetsStore.setsPerExercise
                   .get(selectedExercise._id)
-                  ?.map((setFromSnapshot, currentSetIndex) => (
-                    <Card className="mb-1" key={currentSetIndex}>
+                  ?.map((setFromSnapshot) => (
+                    <Card className="mb-1" key={setFromSnapshot.idx}>
                       <View
                         className={`flex-1 flex-row justify-evenly items-center py-2 ${
                           finishedSetStore.finishedSets.some(
                             (setsAlreadyFinished) =>
                               setsAlreadyFinished.exerciseId ===
                                 selectedExercise._id &&
-                              setsAlreadyFinished.setIndex === currentSetIndex
+                              setsAlreadyFinished.setIndex ===
+                                setFromSnapshot.idx
                           )
                             ? "bg-green-300"
                             : ""
                         }`}
                       >
                         <Text className="text-md">
-                          {setFromSnapshot.weightsInKg}
+                          {setFromSnapshot.weightsInKg.toFixed(2)}
                         </Text>
                         <Text className="text-md">
                           {setFromSnapshot.repetitions}
                         </Text>
                         <Text className="text-md">
-                          {frontendSetsStore.setsPerExercise.get(
-                            selectedExercise._id
-                          )!.length *
+                          {(
+                            frontendSetsStore.setsPerExercise.get(
+                              selectedExercise._id
+                            )!.length *
                             setFromSnapshot.repetitions *
-                            setFromSnapshot.weightsInKg}
+                            setFromSnapshot.weightsInKg
+                          ).toFixed(2)}
                         </Text>
                         {startTimestamp === undefined ||
                         finishedSetStore.finishedSets.some(
                           (s) =>
                             s.exerciseId === selectedExercise._id &&
-                            s.setIndex === currentSetIndex
+                            s.setIndex === setFromSnapshot.idx
                         ) ? (
                           <TouchableOpacity
                             onPress={() => {
                               setEditModalValues({
-                                idx: currentSetIndex,
+                                idx: setFromSnapshot.idx,
                                 weightsInKg: setFromSnapshot.weightsInKg,
                                 repetitions: setFromSnapshot.repetitions,
                               });
@@ -367,12 +370,12 @@ export function StartWorkoutModal({
                                 finishedSetStore.finishedSets.some(
                                   (x) =>
                                     x.exerciseId === selectedExercise._id &&
-                                    x.setIndex === currentSetIndex
+                                    x.setIndex === setFromSnapshot.idx
                                 )
                               ) {
                                 finishedSetStore.removeFinishedSet(
                                   selectedExercise._id,
-                                  currentSetIndex
+                                  setFromSnapshot.idx
                                 );
 
                                 return;
@@ -380,7 +383,7 @@ export function StartWorkoutModal({
 
                               finishedSetStore.addFinishedSet({
                                 exerciseId: selectedExercise._id,
-                                setIndex: currentSetIndex,
+                                setIndex: setFromSnapshot.idx,
                                 ...setFromSnapshot,
                               });
                             }}
@@ -403,15 +406,17 @@ export function StartWorkoutModal({
                         <Card className="mb-1 bg-gray-200" key={generateUUID()}>
                           <View className="flex-1 flex-row justify-evenly items-center py-2">
                             <Text className="text-md">
-                              {previousSet.weightsInKg}
+                              {previousSet.weightsInKg.toFixed(2)}
                             </Text>
                             <Text className="text-md">
                               {previousSet.repetitions}
                             </Text>
                             <Text className="text-md">
-                              {previousSet.weightsInKg *
+                              {(
+                                previousSet.weightsInKg *
                                 previousSet.repetitions *
-                                snapshot.exerciseDefaults.sets.length}
+                                snapshot.exerciseDefaults.sets.length
+                              ).toFixed(2)}
                             </Text>
                           </View>
                         </Card>
