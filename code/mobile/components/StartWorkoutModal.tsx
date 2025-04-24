@@ -9,12 +9,13 @@ import {
 import { H1, H2, H3, H4 } from "./ui/Typography";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { ArrowBigLeft, Check, Disc, Pen } from "lucide-react-native";
+import { ArrowBigLeft, Check, Pen } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { api } from "@/utils/react";
 import { useEffect, useState } from "react";
 import { TimeDisplay } from "./TimeDisplay";
 import { EditSetModal } from "./EditSetModal";
+import { useExerciseSetStore } from "@/lib/stores/workout-stores";
 
 export function StartWorkoutModal({
   workoutResponse,
@@ -66,30 +67,26 @@ export function StartWorkoutModal({
   >();
   const [showSuccessScreen, setShowSuccessScreen] = useState<boolean>(false);
   const [editModalValues, setEditModalValues] = useState<
-    { weightsInKg: number; repetitions: number } | undefined
+    { idx: number; weightsInKg: number; repetitions: number } | undefined
   >();
 
-  const [frontendSets, setFrontendSets] = useState<
-    | {
-        weightsInKg: number;
-        repetitions: number;
-      }[]
-    | undefined
-  >();
+  const frontendSetsStore = useExerciseSetStore();
 
   useEffect(() => {
     if (
       selectedExercise !== undefined &&
+      frontendSetsStore.setsPerExercise.get(selectedExercise._id) ===
+        undefined &&
       (snapshotData?.some((s) => s.exerciseId === selectedExercise._id) ??
         false)
     ) {
-      const snapshotExerciseSets = snapshotData?.find(
-        (s) => s.exerciseId === selectedExercise._id
-      )!.exerciseDefaults.sets!; // When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
+      const snapshotExerciseSets = snapshotData
+        ?.find((s) => s.exerciseId === selectedExercise._id)!
+        .exerciseDefaults.sets!.map((set, idx) => ({ ...set, idx })); // TODO: When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
 
-      let temporarySets = [...snapshotExerciseSets.map((x) => ({ ...x }))];
+      let temporarySets = [...snapshotExerciseSets!.map((x) => ({ ...x }))];
 
-      if (snapshotExerciseSets.length < selectedExercise.numberOfSets) {
+      if (snapshotExerciseSets!.length < selectedExercise.numberOfSets) {
         const countNew =
           selectedExercise.numberOfSets - snapshotExerciseSets!.length;
 
@@ -102,14 +99,13 @@ export function StartWorkoutModal({
       }
 
       if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
-        setFrontendSets(
-          temporarySets.slice(0, selectedExercise.numberOfSets - 1) // TODO FIX INCORRECT TRANCATING
-        );
+        temporarySets = temporarySets.slice(0, selectedExercise.numberOfSets);
+      }
+
+      for (const set of temporarySets) {
+        frontendSetsStore.upsertSetForExercise(selectedExercise._id, set);
       }
     }
-    return () => {
-      setFrontendSets(undefined);
-    };
   }, [snapshotData, selectedExercise, selectedWorkout]);
 
   if (showSuccessScreen) {
@@ -188,17 +184,20 @@ export function StartWorkoutModal({
     );
   }
 
-  if (editModalValues !== undefined) {
+  if (selectedExercise !== undefined && editModalValues !== undefined) {
     return (
       <EditSetModal
         isModalVisible={editModalValues !== undefined}
         hideModal={() => setEditModalValues(undefined)}
         currentWeightsInKg={editModalValues.weightsInKg}
-        setCurrentWeightsInKg={(weights) => {
-          // apiUtils.snapshots.getExerciseDefaultsForWorkout.setData({ _id: selectedWorkout!.id }, [...(snapshotData!.)])
+        setCurrentSet={(weights, reps) => {
+          frontendSetsStore.upsertSetForExercise(selectedExercise._id, {
+            idx: editModalValues.idx,
+            repetitions: reps,
+            weightsInKg: weights,
+          });
         }}
         currentRepetitions={editModalValues.repetitions}
-        setCurrentRepetition={(reps) => {}}
       />
     );
   }
@@ -253,7 +252,12 @@ export function StartWorkoutModal({
             )}
           </ScrollView>
           <View className="flex-row justify-between p-5 items-center">
-            <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
+            <TouchableOpacity
+              onPress={() => {
+                frontendSetsStore.reset();
+                setSelectedWorkout(undefined);
+              }}
+            >
               <Text>
                 <ArrowBigLeft />
               </Text>
@@ -306,83 +310,88 @@ export function StartWorkoutModal({
                 <View className="px-7"></View>
               </View>
               <ScrollView>
-                {frontendSets?.map((setFromSnapshot, currentSetIndex) => (
-                  <Card className="mb-1" key={currentSetIndex}>
-                    <View
-                      className={`flex-1 flex-row justify-evenly items-center py-2 ${
+                {frontendSetsStore.setsPerExercise
+                  .get(selectedExercise._id)
+                  ?.map((setFromSnapshot, currentSetIndex) => (
+                    <Card className="mb-1" key={currentSetIndex}>
+                      <View
+                        className={`flex-1 flex-row justify-evenly items-center py-2 ${
+                          finishedSets.some(
+                            (setsAlreadyFinished) =>
+                              setsAlreadyFinished.exerciseId ===
+                                selectedExercise._id &&
+                              setsAlreadyFinished.setIndex === currentSetIndex
+                          )
+                            ? "bg-green-300"
+                            : ""
+                        }`}
+                      >
+                        <Text className="text-md">
+                          {setFromSnapshot.weightsInKg}
+                        </Text>
+                        <Text className="text-md">
+                          {setFromSnapshot.repetitions}
+                        </Text>
+                        <Text className="text-md">
+                          {frontendSetsStore.setsPerExercise.get(
+                            selectedExercise._id
+                          )!.length *
+                            setFromSnapshot.repetitions *
+                            setFromSnapshot.weightsInKg}
+                        </Text>
+                        {startTimestamp === undefined ||
                         finishedSets.some(
-                          (setsAlreadyFinished) =>
-                            setsAlreadyFinished.exerciseId ===
-                              selectedExercise._id &&
-                            setsAlreadyFinished.setIndex === currentSetIndex
-                        )
-                          ? "bg-green-300"
-                          : ""
-                      }`}
-                    >
-                      <Text className="text-md">
-                        {setFromSnapshot.weightsInKg}
-                      </Text>
-                      <Text className="text-md">
-                        {setFromSnapshot.repetitions}
-                      </Text>
-                      <Text className="text-md">
-                        {frontendSets.length *
-                          setFromSnapshot.repetitions *
-                          setFromSnapshot.weightsInKg}
-                      </Text>
-                      {startTimestamp === undefined ||
-                      finishedSets.some(
-                        (s) =>
-                          s.exerciseId === selectedExercise._id &&
-                          s.setIndex === currentSetIndex
-                      ) ? (
-                        <TouchableOpacity
-                          onPress={() => {
-                            setEditModalValues({
-                              weightsInKg: setFromSnapshot.weightsInKg,
-                              repetitions: setFromSnapshot.repetitions,
-                            });
-                          }}
-                        >
-                          <Pen />
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          onPress={() => {
-                            if (
-                              finishedSets.some(
-                                (x) =>
-                                  x.exerciseId === selectedExercise._id &&
-                                  x.setIndex === currentSetIndex
-                              )
-                            ) {
-                              setFinishedSets(
-                                finishedSets.filter(
+                          (s) =>
+                            s.exerciseId === selectedExercise._id &&
+                            s.setIndex === currentSetIndex
+                        ) ? (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setEditModalValues({
+                                idx: currentSetIndex,
+                                weightsInKg: setFromSnapshot.weightsInKg,
+                                repetitions: setFromSnapshot.repetitions,
+                              });
+                            }}
+                          >
+                            <Pen />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => {
+                              if (
+                                finishedSets.some(
                                   (x) =>
-                                    x.exerciseId !== selectedExercise._id ||
-                                    x.setIndex !== currentSetIndex
+                                    x.exerciseId === selectedExercise._id &&
+                                    x.setIndex === currentSetIndex
                                 )
-                              );
-                              return;
-                            }
+                              ) {
+                                setFinishedSets(
+                                  finishedSets.filter(
+                                    (x) =>
+                                      x.exerciseId !== selectedExercise._id ||
+                                      x.setIndex !== currentSetIndex
+                                  )
+                                );
+                                return;
+                              }
 
-                            setFinishedSets([
-                              ...finishedSets,
-                              {
-                                exerciseId: selectedExercise._id,
-                                setIndex: currentSetIndex,
-                                ...setFromSnapshot,
-                              },
-                            ]);
-                          }}
-                        >
-                          <Check />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  </Card>
-                ))}
+                              setFinishedSets([
+                                ...finishedSets,
+                                {
+                                  exerciseId: selectedExercise._id,
+                                  setIndex: currentSetIndex,
+                                  ...setFromSnapshot,
+                                },
+                              ]);
+                            }}
+                          >
+                            <Check />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </Card>
+                  ))}
               </ScrollView>
               <View className="flex-1"></View>
               <H4>Previous records</H4>
@@ -422,6 +431,7 @@ export function StartWorkoutModal({
           ) : (
             <TouchableOpacity
               onPress={() => {
+                frontendSetsStore.reset();
                 setSelectedExercise(undefined);
                 setSelectedWorkout(undefined);
               }}

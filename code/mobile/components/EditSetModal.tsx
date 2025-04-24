@@ -12,10 +12,12 @@ import { X } from "lucide-react-native";
 
 const formSchema = z.object({
   weightsInKg: positiveNumberStringSchema(
-    "Please provide the weights you want to use for the set."
+    "Please provide the weights you want to use for the set.",
+    { zeroAllowed: false }
   ),
   repetitions: postiveIntegerStringSchema(
-    "Please provide how many reps the set has."
+    "Please provide how many reps the set has.",
+    { zeroAllowed: false }
   ),
 });
 
@@ -35,9 +37,8 @@ export function EditSetModal(props: {
   isModalVisible: boolean;
   hideModal: () => void;
   currentWeightsInKg: number;
-  setCurrentWeightsInKg: (weights: number) => void;
   currentRepetitions: number;
-  setCurrentRepetition: (weights: number) => void;
+  setCurrentSet: (weights: number, reps: number) => void;
 }) {
   const form = useForm({
     defaultValues: {
@@ -90,12 +91,12 @@ export function EditSetModal(props: {
               <Button
                 disabled={!canSubmit}
                 onPressIn={() => {
-                  props.setCurrentWeightsInKg(
-                    +form.getFieldValue("weightsInKg")
-                  );
-                  props.setCurrentRepetition(
+                  props.setCurrentSet(
+                    +form.getFieldValue("weightsInKg"),
                     +form.getFieldValue("repetitions")
                   );
+
+                  props.hideModal();
                 }}
               >
                 <Text>{isSubmitting ? "..." : "OK"}</Text>
