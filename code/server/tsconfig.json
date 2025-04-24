@@ -16,5 +16,5 @@
     "composite": true
   },
   "exclude": ["node_modules", "build"],
-  "references": [{ "path": "../shared", "prepend": true}]
+  "references": [{ "path": "../shared" }]
 }
