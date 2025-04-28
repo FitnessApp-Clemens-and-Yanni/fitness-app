@@ -6,6 +6,7 @@ import {Card} from "@/components/ui/Card";
 import {Button} from "@/components/ui/Button";
 import {PlusCircle, X, Search, ScanBarcode, Trash2} from "lucide-react-native";
 import {api} from "@/utils/react";
+import {Input} from "@/components/ui/input";
 
 export default function Index() {
     const [modalState, setModalState] = useState({
@@ -20,14 +21,19 @@ export default function Index() {
         data: targetNutritionalData,
     } = api.food.getTargetNutritionalValues.useQuery();
 
-
     const {
         isLoading: isLoadingDailyValues,
         error: dailyError,
         data: dailyNutritionalData,
+        refetch: refetchDailyData
     } = api.food.getNutritionalValuesOfDay.useQuery(
-        { date: currentDate },
+        {date: currentDate},
     );
+
+    const handleModalClose = () => {
+        refetchDailyData();
+        setModalState({visible: false, mealType: ""});
+    };
 
     if (isLoadingTargets || targetNutritionalData === undefined || dailyNutritionalData === undefined) {
         return (
@@ -57,7 +63,7 @@ export default function Index() {
         <View className="flex-1 p-4">
             {dailyError && (
                 <View className="bg-amber-100 p-2 rounded-md mb-2">
-                    <Text className="text-amber-800">No data found for today. Using default values.</Text>
+                    <Text className="text-amber-800">No data found for today.</Text>
                 </View>
             )}
 
@@ -105,7 +111,7 @@ export default function Index() {
                     <Card className="flex flex-row justify-between bg-stone-300">
                         <Text className="p-4">Breakfast</Text>
                         <TouchableOpacity onPress={() => {
-                            setModalState({ visible: true, mealType: "Breakfast" });
+                            setModalState({visible: true, mealType: "Breakfast"});
                         }}>
                             <PlusCircle className="m-4"></PlusCircle>
                         </TouchableOpacity>
@@ -113,7 +119,7 @@ export default function Index() {
                     <Card className="flex flex-row justify-between bg-stone-300">
                         <Text className="p-4">Lunch</Text>
                         <TouchableOpacity onPress={() => {
-                            setModalState({ visible: true, mealType: "Lunch" });
+                            setModalState({visible: true, mealType: "Lunch"});
                         }}>
                             <PlusCircle className="m-4"></PlusCircle>
                         </TouchableOpacity>
@@ -121,7 +127,7 @@ export default function Index() {
                     <Card className="flex flex-row justify-between bg-stone-300">
                         <Text className="p-4">Dinner</Text>
                         <TouchableOpacity onPress={() => {
-                            setModalState({ visible: true, mealType: "Dinner" });
+                            setModalState({visible: true, mealType: "Dinner"});
                         }}>
                             <PlusCircle className="m-4"></PlusCircle>
                         </TouchableOpacity>
@@ -129,7 +135,7 @@ export default function Index() {
                     <Card className="flex flex-row justify-between bg-stone-300">
                         <Text className="p-4">Snack</Text>
                         <TouchableOpacity onPress={() => {
-                            setModalState({ visible: true, mealType: "Snack" });
+                            setModalState({visible: true, mealType: "Snack"});
                         }}>
                             <PlusCircle className="m-4"></PlusCircle>
                         </TouchableOpacity>
@@ -140,17 +146,36 @@ export default function Index() {
             <AddMealModal
                 isVisible={modalState.visible}
                 mealType={modalState.mealType}
-                onClose={() => setModalState({ visible: false, mealType: "" })}
+                closeBtnClick={handleModalClose}
             />
         </View>
     );
 }
 
-function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; mealType: string; onClose: () => void }) {
+function AddMealModal({isVisible, mealType, closeBtnClick}: { isVisible: boolean; mealType: string; closeBtnClick: () => void }) {
 
     const [currentDate] = useState(new Date());
-    const [selectedFoodFilter, setSelectedFoodFilter] = useState('Often');
+    const [selectedFoodFilter, setSelectedFoodFilter] = useState('Favorite');
 
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const deleteFoodMutation = api.food.deleteFood.useMutation({
+        onSuccess: () => {
+            refetchFoodData();
+        }
+    });
+
+    const addFoodMutation = api.food.addFood.useMutation({
+        onSuccess: () => {
+            refetchFoodData();
+        }
+    });
+
+    // Create a query for food search
+    const searchFood = api.fatSecret.getSerachFood.useQuery(
+        {search: searchTerm},
+        {enabled: false} // Don't run automatically
+    );
 
     //Warum hole ich mir das nochmal, wenn ich es eh alles oben schonmal geholt habe????
 
@@ -158,11 +183,15 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
         isLoading: isLoadingFoodItems,
         error: foodItemsError,
         data: foodData,
+        refetch: refetchFoodData
     } = api.food.getFoodItemsByMeal.useQuery(
         {
             date: currentDate,
             mealType: mealType as "Breakfast" | "Lunch" | "Dinner" | "Snack"
         },
+        {
+            enabled: mealType !== ""
+        }
     );
 
     if (isLoadingFoodItems || foodData === undefined) {
@@ -204,7 +233,7 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
 
                     <View className="flex-row justify-between items-center">
                         <Text className="text-lg font-semibold">{mealType}</Text>
-                        <TouchableOpacity onPress={onClose}>
+                        <TouchableOpacity onPress={closeBtnClick}>
                             <X size={24}/>
                         </TouchableOpacity>
                     </View>
@@ -213,28 +242,37 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
                         <View className="flex flex-1">
                             <View className="flex flex-row justify-between">
                                 <Text className="text-sm">Calories:</Text>
-                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.caloriesInKcal, 0)}</Text>
+                                <Text
+                                    className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.caloriesInKcal, 0)}</Text>
                             </View>
                             <View className="flex flex-row justify-between">
                                 <Text className="text-sm">Protein:</Text>
-                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.proteinInG, 0)}g</Text>
+                                <Text
+                                    className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.proteinInG, 0)}g</Text>
                             </View>
                             <View className="flex flex-row justify-between">
                                 <Text className="text-sm">Carbs:</Text>
-                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.carbsInG, 0)}g</Text>
+                                <Text
+                                    className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.carbsInG, 0)}g</Text>
                             </View>
                             <View className="flex flex-row justify-between">
                                 <Text className="text-sm">Fats:</Text>
-                                <Text className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.fatsInG, 0)}g</Text>
+                                <Text
+                                    className="text-sm">{foodData.foods.reduce((sum, food) => sum + food.fatsInG, 0)}g</Text>
                             </View>
                         </View>
                         <View>
                             <ScrollView className="bg-stone-500 h-20 w-40 border border-stone-700">
                                 {foodData.foods.map((food, index) => (
-                                    <View key={index} className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
+                                    <View key={`${food.name}-${index}`}
+                                          className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
                                         <View className="flex flex-row justify-between gap-1">
-                                            <TouchableOpacity>
-                                                <Trash2 className="inline self-center flex"/>
+                                            <TouchableOpacity onPress={() => deleteFoodMutation.mutate({
+                                                date: currentDate,
+                                                mealType: mealType,
+                                                foodName: food.name
+                                            })}>
+                                                <Trash2 className="inline self-center flex" />
                                             </TouchableOpacity>
                                             <Text className="text-xs self-center flex">
                                                 {food.name}
@@ -253,22 +291,26 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
                     </View>
 
                     <View className="flex flex-row items-center gap-1">
-                        <View className="flex flex-row items-center justify-between flex-1 bg-stone-300 border border-stone-500 rounded-md p-2">
-                            <Text className="text-stone-600">Search</Text>
-                            <Search size={20} color="#78716c" />
+                        <View
+                            className="flex flex-row items-center justify-between flex-1 bg-stone-300 border border-stone-500 rounded-md">
+                            <Input className="bg-transparent border-none"
+                                   placeholder={"Search"}
+                                   value={searchTerm}
+                                   onChangeText={setSearchTerm}>
+                            </Input>
+                            <TouchableOpacity onPress={() => searchFood.refetch()}>
+                                <Search size={20} color="#78716c" />
+                            </TouchableOpacity>
                         </View>
                         <TouchableOpacity>
-                            <ScanBarcode size={40} />
+                            <ScanBarcode size={40}/>
                         </TouchableOpacity>
                     </View>
 
                     <View className="bg-stone-400 border border-stone-500 rounded-md p-1 w-3/4 self-center">
                         <View className="flex flex-row justify-around">
                             {["Often", "Favorite", "Last"].map((option) => (
-                                <TouchableOpacity
-                                    key={option}
-                                    onPress={() => setSelectedFoodFilter(option)}
-                                >
+                                <TouchableOpacity key={option} onPress={() => setSelectedFoodFilter(option)}>
                                     <Text
                                         className={selectedFoodFilter === option ?
                                             "font-medium underline" :
@@ -284,11 +326,16 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
 
                     <ScrollView className="bg-stone-500 h-40 w-full border border-stone-700">
                         {foodData.foods.map((food, index) => (
-                            <View key={index} className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
+                            <View key={`${food.name}-${index}`}
+                                  className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
                                 <Text className="text-sm">{food.name}</Text>
                                 <Text className="text-sm">{food.weightInG}g</Text>
-                                <TouchableOpacity>
-                                    <PlusCircle size={16} />
+                                <TouchableOpacity onPress={() => addFoodMutation.mutate({
+                                    mealType: mealType,
+                                    foodName: food.name,
+                                    weightInG: food.weightInG
+                                })}>
+                                    <PlusCircle size={16}/>
                                 </TouchableOpacity>
                             </View>
                         ))}
@@ -300,8 +347,8 @@ function AddMealModal({isVisible, mealType, onClose}: { isVisible: boolean; meal
                     </ScrollView>
 
                     <View className="flex-row justify-end">
-                        <Button onPress={onClose}>
-                            <Text>Submit</Text>
+                        <Button onPress={closeBtnClick}>
+                            <Text>Ok</Text>
                         </Button>
                     </View>
                 </View>

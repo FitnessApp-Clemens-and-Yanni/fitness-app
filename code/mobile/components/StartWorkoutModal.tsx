@@ -10,7 +10,7 @@ import {
 import { H1, H2, H3, H4 } from "./ui/Typography";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { ArrowBigLeft, Check, Disc, Pen } from "lucide-react-native";
+import { ArrowBigLeft, Check, Pen } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { api } from "@/utils/react";
 import { useState } from "react";
