@@ -152,6 +152,19 @@ export default function Index() {
     );
 }
 
+type FoodItem = {
+    food_name: string;
+    food_description: string;
+    food_id: string;
+};
+
+type SearchFoodResult = {
+    foods: {
+        food: FoodItem[] | FoodItem;
+    };
+};
+
+
 function AddMealModal({isVisible, mealType, closeBtnClick}: { isVisible: boolean; mealType: string; closeBtnClick: () => void }) {
 
     const [currentDate] = useState(new Date());
@@ -165,16 +178,20 @@ function AddMealModal({isVisible, mealType, closeBtnClick}: { isVisible: boolean
         }
     });
 
-    const addFoodMutation = api.food.addFood.useMutation({
+    const addFoodWithIdMutation = api.fatSecret.addFoodWithId.useMutation({
         onSuccess: () => {
             refetchFoodData();
         }
     });
 
-    // Create a query for food search
-    const searchFood = api.fatSecret.getSerachFood.useQuery(
+    const {
+        isLoading: isLoadingSearchFood,
+        error: searchFoodError,
+        data: searchFoodResultData,
+        refetch: searchFood
+    } = api.fatSecret.getSearchFood.useQuery<SearchFoodResult>(
         {search: searchTerm},
-        {enabled: false} // Don't run automatically
+        {enabled: false}
     );
 
     //Warum hole ich mir das nochmal, wenn ich es eh alles oben schonmal geholt habe????
@@ -290,60 +307,81 @@ function AddMealModal({isVisible, mealType, closeBtnClick}: { isVisible: boolean
                         </View>
                     </View>
 
-                    <View className="flex flex-row items-center gap-1">
-                        <View
-                            className="flex flex-row items-center justify-between flex-1 bg-stone-300 border border-stone-500 rounded-md">
-                            <Input className="bg-transparent border-none"
-                                   placeholder={"Search"}
-                                   value={searchTerm}
-                                   onChangeText={setSearchTerm}>
-                            </Input>
-                            <TouchableOpacity onPress={() => searchFood.refetch()}>
-                                <Search size={20} color="#78716c" />
+                    <View className="flex flex-col">
+                        <View className="flex flex-row items-center gap-1 mb-2">
+                            <View className="flex flex-row items-center justify-between flex-1 bg-stone-300 border border-stone-500 rounded-md">
+                                <Input className="bg-transparent border-none"
+                                       placeholder={"Search"}
+                                       value={searchTerm}
+                                       onChangeText={setSearchTerm}>
+                                </Input>
+                                <TouchableOpacity onPress={() => searchFood()}>
+                                    <Search size={20} color="#78716c" />
+                                </TouchableOpacity>
+                            </View>
+                            <TouchableOpacity>
+                                <ScanBarcode size={40}/>
                             </TouchableOpacity>
                         </View>
-                        <TouchableOpacity>
-                            <ScanBarcode size={40}/>
-                        </TouchableOpacity>
+
+                        {searchFoodResultData?.foods && (
+                            <ScrollView className="max-h-28 w-full border border-stone-500 mb-2 bg-stone-200 rounded-md">
+                                {Array.isArray(searchFoodResultData.foods.food)
+                                    ? searchFoodResultData.foods.food.map((item, index) => (
+                                        <View key={`search-${index}`} className="flex flex-row justify-between items-center bg-stone-300 w-full border-b border-stone-700 p-1">
+                                            <Text className="text-sm flex-1">{item.food_name}</Text>
+                                            <Text className="text-xs text-stone-600 mr-2">
+                                                {item.food_description?.match(/Per \S+/)?.[0] || ''}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => addFoodWithIdMutation.mutate({
+                                                foodId: item.food_id,
+                                                mealType: mealType,
+                                                date: currentDate
+                                            })}>
+                                                <PlusCircle size={16}/>
+                                            </TouchableOpacity>
+                                        </View>
+                                    ))
+                                    : (
+                                        <View key={searchFoodResultData.foods.food.food_id} className="flex flex-row justify-between items-center bg-stone-300 w-full border-b border-stone-700 p-1">
+                                            <Text className="text-sm flex-1">{searchFoodResultData.foods.food.food_name}</Text>
+                                            <Text className="text-xs text-stone-600 mr-2">
+                                                {searchFoodResultData.foods.food.food_description?.match(/Per \S+/)?.[0] || ''}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => addFoodWithIdMutation.mutate({
+                                                foodId: (searchFoodResultData.foods.food as FoodItem).food_id,
+                                                mealType: mealType,
+                                                date: currentDate
+                                            })}>
+                                                <PlusCircle size={16}/>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                            </ScrollView>
+                        )}
                     </View>
 
                     <View className="bg-stone-400 border border-stone-500 rounded-md p-1 w-3/4 self-center">
                         <View className="flex flex-row justify-around">
-                            {["Often", "Favorite", "Last"].map((option) => (
-                                <TouchableOpacity key={option} onPress={() => setSelectedFoodFilter(option)}>
-                                    <Text
-                                        className={selectedFoodFilter === option ?
-                                            "font-medium underline" :
-                                            "text-stone-600"}
-                                    >
-                                        {option}
-                                    </Text>
-                                </TouchableOpacity>
+                            {["Often", "Favorite", "Last"].map((option, index) => (
+                                <View key={`${option}-${index}`}>
+                                    <TouchableOpacity key={index} onPress={() => setSelectedFoodFilter(option)}>
+                                        <Text
+                                            className={selectedFoodFilter === option ?
+                                                "font-medium underline" :
+                                                "text-stone-600"}
+                                        >
+                                            {option}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                             ))}
                         </View>
                     </View>
 
 
                     <ScrollView className="bg-stone-500 h-40 w-full border border-stone-700">
-                        {foodData.foods.map((food, index) => (
-                            <View key={`${food.name}-${index}`}
-                                  className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1">
-                                <Text className="text-sm">{food.name}</Text>
-                                <Text className="text-sm">{food.weightInG}g</Text>
-                                <TouchableOpacity onPress={() => addFoodMutation.mutate({
-                                    mealType: mealType,
-                                    foodName: food.name,
-                                    weightInG: food.weightInG
-                                })}>
-                                    <PlusCircle size={16}/>
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                        {foodData.foods.length === 0 && (
-                            <View className="flex justify-center items-center h-full">
-                                <Text className="text-stone-600 text-xs">No foods yet</Text>
-                            </View>
-                        )}
+                        <Text>Not implemented yet</Text>
                     </ScrollView>
 
                     <View className="flex-row justify-end">
