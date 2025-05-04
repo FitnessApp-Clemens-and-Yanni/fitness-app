@@ -3,7 +3,6 @@ import {
   Modal,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -13,8 +12,11 @@ import { Button } from "./ui/Button";
 import { ArrowBigLeft, Check, Pen } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { api } from "@/utils/react";
-import { useState } from "react";
-import { useForm } from "@tanstack/react-form";
+import { useEffect, useState } from "react";
+import { TimeDisplay } from "./TimeDisplay";
+import { EditSetModal } from "./EditSetModal";
+import { useExerciseSetStore } from "@/lib/stores/fe-sets-store";
+import { useFinishedSetsStore } from "@/lib/stores/finished-fe-sets-store";
 
 export function StartWorkoutModal({
   workoutResponse,
@@ -49,14 +51,8 @@ export function StartWorkoutModal({
     },
   });
 
-  const [finishedSets, setFinishedSets] = useState<
-    {
-      exerciseId: string;
-      setIndex: number;
-      weightsInKg: number;
-      repetitions: number;
-    }[]
-  >([]);
+  const finishedSetStore = useFinishedSetsStore();
+
   const [timingInterval, setTimingInterval] = useState<
     NodeJS.Timeout | undefined
   >();
@@ -65,7 +61,47 @@ export function StartWorkoutModal({
     number | undefined
   >();
   const [showSuccessScreen, setShowSuccessScreen] = useState<boolean>(false);
-  const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const [editModalValues, setEditModalValues] = useState<
+    { idx: number; weightsInKg: number; repetitions: number } | undefined
+  >();
+
+  const frontendSetsStore = useExerciseSetStore();
+
+  useEffect(() => {
+    if (
+      selectedExercise !== undefined &&
+      frontendSetsStore.setsPerExercise.get(selectedExercise._id) ===
+        undefined &&
+      (snapshotData?.some((s) => s.exerciseId === selectedExercise._id) ??
+        false)
+    ) {
+      const snapshotExerciseSets = snapshotData
+        ?.find((s) => s.exerciseId === selectedExercise._id)!
+        .exerciseDefaults.sets!.map((set, idx) => ({ ...set, idx })); // TODO: When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
+
+      let temporarySets = [...snapshotExerciseSets!.map((x) => ({ ...x }))];
+
+      if (snapshotExerciseSets!.length < selectedExercise.numberOfSets) {
+        const countNew =
+          selectedExercise.numberOfSets - snapshotExerciseSets!.length;
+
+        temporarySets = [
+          ...temporarySets,
+          ...new Array(countNew)
+            .fill(null)
+            .map((_) => temporarySets![temporarySets!.length - 1]),
+        ].map((set, i) => ({ ...set, idx: i }));
+      }
+
+      if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
+        temporarySets = temporarySets.slice(0, selectedExercise.numberOfSets);
+      }
+
+      for (const set of temporarySets) {
+        frontendSetsStore.upsertSetForExercise(selectedExercise._id, set);
+      }
+    }
+  }, [snapshotData, selectedExercise, selectedWorkout]);
 
   if (showSuccessScreen) {
     return (
@@ -87,7 +123,7 @@ export function StartWorkoutModal({
                   setShowSuccessScreen(false);
                   setStartTimestamp(undefined);
                   setCurrentTimestamp(undefined);
-                  setFinishedSets([]);
+                  finishedSetStore.reset();
 
                   if (
                     selectedWorkout === undefined ||
@@ -104,11 +140,14 @@ export function StartWorkoutModal({
                     totalTimeInMinutes:
                       (currentTimestamp! - startTimestamp!) / 60_000,
                     exercises: Object.values(
-                      Object.groupBy(finishedSets, (x) => x.exerciseId)
+                      Object.groupBy(
+                        finishedSetStore.finishedSets,
+                        (x) => x.exerciseId
+                      )
                     ).map((sets) => {
                       return {
                         id: sets![0].exerciseId,
-                        sets: finishedSets
+                        sets: finishedSetStore.finishedSets
                           .filter(
                             (set) => set.exerciseId === sets![0].exerciseId
                           )
@@ -143,8 +182,28 @@ export function StartWorkoutModal({
     );
   }
 
-  if (isEditModalVisible) {
-    return <EditSetModal isVisible={isEditModalVisible} setIsVisible={setIsEditModalVisible} />
+  if (selectedExercise !== undefined && editModalValues !== undefined) {
+    return (
+      <EditSetModal
+        isModalVisible={editModalValues !== undefined}
+        hideModal={() => setEditModalValues(undefined)}
+        currentWeightsInKg={editModalValues.weightsInKg}
+        setCurrentSet={(weights, reps) => {
+          frontendSetsStore.upsertSetForExercise(selectedExercise._id, {
+            idx: editModalValues.idx,
+            repetitions: reps,
+            weightsInKg: weights,
+          });
+          finishedSetStore.updateSetIfExists({
+            exerciseId: selectedExercise._id,
+            setIndex: editModalValues.idx,
+            weightsInKg: weights,
+            repetitions: reps,
+          });
+        }}
+        currentRepetitions={editModalValues.repetitions}
+      />
+    );
   }
 
   if (isLoading) {
@@ -197,7 +256,12 @@ export function StartWorkoutModal({
             )}
           </ScrollView>
           <View className="flex-row justify-between p-5 items-center">
-            <TouchableOpacity onPress={() => setSelectedWorkout(undefined)}>
+            <TouchableOpacity
+              onPress={() => {
+                frontendSetsStore.reset();
+                setSelectedWorkout(undefined);
+              }}
+            >
               <Text>
                 <ArrowBigLeft />
               </Text>
@@ -209,37 +273,6 @@ export function StartWorkoutModal({
         </View>
       </Modal>
     );
-  }
-
-  let temporaryDefaultSets:
-    | {
-      weightsInKg: number;
-      repetitions: number;
-    }[]
-    | undefined = undefined;
-
-  if (
-    selectedExercise !== undefined &&
-    snapshotData?.some((s) => s.exerciseId === selectedExercise._id)
-  ) {
-    const snapshotExerciseSets = snapshotData?.find(
-      (s) => s.exerciseId === selectedExercise._id
-    )!.exerciseDefaults.sets!; // When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
-
-    temporaryDefaultSets = [...snapshotExerciseSets.map((x) => ({ ...x }))];
-    if (snapshotExerciseSets.length < selectedExercise.numberOfSets) {
-      const countNew =
-        selectedExercise.numberOfSets - snapshotExerciseSets!.length;
-
-      temporaryDefaultSets.push(
-        ...new Array(countNew)
-          .fill(null)
-          .map((_) => temporaryDefaultSets![temporaryDefaultSets!.length - 1])
-      );
-    }
-    if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
-      temporaryDefaultSets.splice(selectedExercise.numberOfSets);
-    }
   }
 
   return (
@@ -281,40 +314,51 @@ export function StartWorkoutModal({
                 <View className="px-7"></View>
               </View>
               <ScrollView>
-                {temporaryDefaultSets?.map(
-                  (setFromSnapshot, currentSetIndex) => (
-                    <Card className="mb-1" key={currentSetIndex}>
+                {frontendSetsStore.setsPerExercise
+                  .get(selectedExercise._id)
+                  ?.map((setFromSnapshot) => (
+                    <Card className="mb-1" key={setFromSnapshot.idx}>
                       <View
-                        className={`flex-1 flex-row justify-evenly items-center py-2 ${finishedSets.some(
-                          (setsAlreadyFinished) =>
-                            setsAlreadyFinished.exerciseId ===
-                            selectedExercise._id &&
-                            setsAlreadyFinished.setIndex === currentSetIndex
-                        )
-                          ? "bg-green-300"
-                          : ""
-                          }`}
+                        className={`flex-1 flex-row justify-evenly items-center py-2 ${
+                          finishedSetStore.finishedSets.some(
+                            (setsAlreadyFinished) =>
+                              setsAlreadyFinished.exerciseId ===
+                                selectedExercise._id &&
+                              setsAlreadyFinished.setIndex ===
+                                setFromSnapshot.idx
+                          )
+                            ? "bg-green-300"
+                            : ""
+                        }`}
                       >
                         <Text className="text-md">
-                          {setFromSnapshot.weightsInKg}
+                          {setFromSnapshot.weightsInKg.toFixed(2)}
                         </Text>
                         <Text className="text-md">
                           {setFromSnapshot.repetitions}
                         </Text>
                         <Text className="text-md">
-                          {temporaryDefaultSets.length *
+                          {(
+                            frontendSetsStore.setsPerExercise.get(
+                              selectedExercise._id
+                            )!.length *
                             setFromSnapshot.repetitions *
-                            setFromSnapshot.weightsInKg}
+                            setFromSnapshot.weightsInKg
+                          ).toFixed(2)}
                         </Text>
                         {startTimestamp === undefined ||
-                          finishedSets.some(
-                            (s) =>
-                              s.exerciseId === selectedExercise._id &&
-                              s.setIndex === currentSetIndex
-                          ) ? (
+                        finishedSetStore.finishedSets.some(
+                          (s) =>
+                            s.exerciseId === selectedExercise._id &&
+                            s.setIndex === setFromSnapshot.idx
+                        ) ? (
                           <TouchableOpacity
                             onPress={() => {
-                              setIsEditModalVisible(true);
+                              setEditModalValues({
+                                idx: setFromSnapshot.idx,
+                                weightsInKg: setFromSnapshot.weightsInKg,
+                                repetitions: setFromSnapshot.repetitions,
+                              });
                             }}
                           >
                             <Pen />
@@ -323,30 +367,25 @@ export function StartWorkoutModal({
                           <TouchableOpacity
                             onPress={() => {
                               if (
-                                finishedSets.some(
+                                finishedSetStore.finishedSets.some(
                                   (x) =>
                                     x.exerciseId === selectedExercise._id &&
-                                    x.setIndex === currentSetIndex
+                                    x.setIndex === setFromSnapshot.idx
                                 )
                               ) {
-                                setFinishedSets(
-                                  finishedSets.filter(
-                                    (x) =>
-                                      x.exerciseId !== selectedExercise._id ||
-                                      x.setIndex !== currentSetIndex
-                                  )
+                                finishedSetStore.removeFinishedSet(
+                                  selectedExercise._id,
+                                  setFromSnapshot.idx
                                 );
+
                                 return;
                               }
 
-                              setFinishedSets([
-                                ...finishedSets,
-                                {
-                                  exerciseId: selectedExercise._id,
-                                  setIndex: currentSetIndex,
-                                  ...setFromSnapshot,
-                                },
-                              ]);
+                              finishedSetStore.addFinishedSet({
+                                exerciseId: selectedExercise._id,
+                                setIndex: setFromSnapshot.idx,
+                                ...setFromSnapshot,
+                              });
                             }}
                           >
                             <Check />
@@ -354,8 +393,7 @@ export function StartWorkoutModal({
                         )}
                       </View>
                     </Card>
-                  )
-                )}
+                  ))}
               </ScrollView>
               <View className="flex-1"></View>
               <H4>Previous records</H4>
@@ -368,15 +406,17 @@ export function StartWorkoutModal({
                         <Card className="mb-1 bg-gray-200" key={generateUUID()}>
                           <View className="flex-1 flex-row justify-evenly items-center py-2">
                             <Text className="text-md">
-                              {previousSet.weightsInKg}
+                              {previousSet.weightsInKg.toFixed(2)}
                             </Text>
                             <Text className="text-md">
                               {previousSet.repetitions}
                             </Text>
                             <Text className="text-md">
-                              {previousSet.weightsInKg *
+                              {(
+                                previousSet.weightsInKg *
                                 previousSet.repetitions *
-                                snapshot.exerciseDefaults.sets.length}
+                                snapshot.exerciseDefaults.sets.length
+                              ).toFixed(2)}
                             </Text>
                           </View>
                         </Card>
@@ -395,6 +435,7 @@ export function StartWorkoutModal({
           ) : (
             <TouchableOpacity
               onPress={() => {
+                frontendSetsStore.reset();
                 setSelectedExercise(undefined);
                 setSelectedWorkout(undefined);
               }}
@@ -413,7 +454,7 @@ export function StartWorkoutModal({
 
                   setStartTimestamp(undefined);
                   setCurrentTimestamp(undefined);
-                  setFinishedSets([]);
+                  finishedSetStore.reset();
                 }}
               >
                 <Text>Cancle Workout</Text>
@@ -431,7 +472,7 @@ export function StartWorkoutModal({
                   {workoutResponse?.exercises.reduce(
                     (acc, cur) => acc + cur.numberOfSets,
                     0
-                  ) - finishedSets.length}{" "}
+                  ) - finishedSetStore.finishedSets.length}{" "}
                   exercises left)
                 </Text>
               </Button>
@@ -455,74 +496,4 @@ export function StartWorkoutModal({
       </View>
     </Modal>
   );
-}
-
-function TimeDisplay(props: { timeInMinutes: number; className?: string }) {
-  return (
-    <Text className={props.className ?? ""}>
-      {Math.floor(props.timeInMinutes).toString().padStart(2, "0")}:
-      {Math.floor(props.timeInMinutes * 60)
-        .toString()
-        .padStart(2, "0")}
-    </Text>
-  );
-}
-
-function EditSetModal(props: { isVisible: boolean, setIsVisible: React.Dispatch<React.SetStateAction<boolean>> }) {
-  const form = useForm({
-    defaultValues: {
-      weightsInKg: 0,
-      repetitions: 0,
-    },
-  });
-
-  return (
-    <Modal visible={props.isVisible} transparent={true}>
-      <TouchableOpacity className="flex-1 justify-center items-center bg-gray-50" onPress={() => props.setIsVisible(false)}>
-        <View className="w-5/6 h-[90%] bg-white rounded-lg shadow">
-          <form.Field
-            name="weightsInKg"
-            validators={{
-              onChange: (val) =>
-                val.value <= 0
-                  ? "You cannot be only using 0 or less kilograms of weight."
-                  : undefined,
-            }}
-          >
-            {(field) => (
-              <>
-                <Text>Age:</Text>
-                <TextInput
-                  value={field.state.value.toString()}
-                  onChangeText={(inp) => field.handleChange(+inp)}
-                />
-                {field.state.meta.errors ? (
-                  <Text>{field.state.meta.errors.join(", ")}</Text>
-                ) : null}
-              </>
-            )}
-          </form.Field>
-        </View></TouchableOpacity>
-    </Modal>
-  );
-
-  /*
-  <form.Field
-  name="age"
-  validators={{
-    onChange: (val) =>
-      val < 13 ? 'You must be 13 to make an account' : undefined,
-  }}
->
-  {(field) => (
-    <>
-      <Text>Age:</Text>
-      <TextInput value={field.state.value} onChangeText={field.handleChange} />
-      {field.state.meta.errors ? (
-        <Text>{field.state.meta.errors.join(', ')}</Text>
-      ) : null}
-    </>
-  )}
-</form.Field>
-  */
 }
