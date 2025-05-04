@@ -83,7 +83,6 @@ export const FatSecretRouter = createTRPCRouter({
                     const errorData = data as ErrorData;
                     throw new Error(`API error: ${errorData.error.code}, ${errorData.error.message}`);
                 }
-                console.log(data)
 
                 return data;
 
