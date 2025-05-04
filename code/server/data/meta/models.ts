@@ -1,3 +1,5 @@
+import z from "zod";
+
 export const WORKOUTS_COLLECTION = "workouts";
 
 export type Workout = {
@@ -40,3 +42,48 @@ export type FinishedWorkout = {
     sets: { weightsInKg: number; repetitions: number }[];
   }[];
 };
+
+export const TARGET_NUTRITIONAL_VALUE_COLLECTION = "TargetNutritionalValues";
+
+export type TargetNutritionalValue = {
+  caloriesInKcal: number,
+  proteinInG: number,
+  carbsInG: number,
+  fatsInG: number
+}
+
+export const NUTRITIONAL_VALUE_OF_DAY_COLLECTION = "NutritionalValueOfDays";
+
+export type NutritionalValueOfDay = {
+  dayOfEntry: DateOnly;
+  caloriesInKcal: number;
+  proteinInG: number;
+  carbsInG: number;
+  fatsInG: number;
+
+  breakfastMeals: MealEntry,
+  lunchMeals: MealEntry,
+  dinnerMeals: MealEntry,
+  snackMeals: MealEntry,
+}
+
+export const MEAL_ENTRIES_COLLECTION = "MealEntries";
+
+export type MealEntry = {
+  createdAt: number;
+  foods: {
+    name: string;
+    weightInG: number;
+
+    caloriesInKcal: number;
+    proteinInG: number;
+    carbsInG: number;
+    fatsInG: number;
+  }[]
+}
+
+type DateOnly = {
+  year: number;
+  month: number;
+  day: number;
+}
