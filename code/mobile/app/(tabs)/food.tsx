@@ -248,7 +248,7 @@ function AddMealModal({
     { enabled: false }
   );
 
-  //Warum hole ich mir das nochmal, wenn ich es eh alles oben schonmal geholt habe????
+  // Warum hole ich mir das nochmal, wenn ich es eh alles oben schonmal geholt habe????
 
   const {
     isLoading: isLoadingFoodItems,
@@ -388,7 +388,7 @@ function AddMealModal({
                   value={searchTerm}
                   onChangeText={setSearchTerm}
                 ></Input>
-                <TouchableOpacity onPress={() => searchFood()}>
+                <TouchableOpacity onPress={() => searchFood()} className="px-2">
                   <Search size={20} color="#78716c" />
                 </TouchableOpacity>
               </View>
