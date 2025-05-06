@@ -10,15 +10,10 @@ import {
 } from "react-native";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import {
-  PlusCircle,
-  X,
-  Search,
-  ScanBarcode,
-  Trash2,
-} from "lucide-react-native";
+import { X, Search, ScanBarcode, Trash2, Pen } from "lucide-react-native";
 import { api } from "@/utils/react";
 import { Input } from "@/components/ui/input";
+import { UserSelect } from "@/components/UserSelect";
 
 export default function Index() {
   const [modalState, setModalState] = useState({
@@ -74,6 +69,8 @@ export default function Index() {
 
   return (
     <View className="flex-1 p-4">
+      <UserSelect />
+
       {dailyError && (
         <View className="bg-amber-100 p-2 rounded-md mb-2">
           <Text className="text-amber-800">No data found for today.</Text>
@@ -155,7 +152,7 @@ export default function Index() {
                 setModalState({ visible: true, mealType: "Breakfast" });
               }}
             >
-              <PlusCircle className="m-4"></PlusCircle>
+              <Pen className="m-4" />
             </TouchableOpacity>
           </Card>
           <Card className="flex flex-row justify-between bg-stone-300">
@@ -165,7 +162,7 @@ export default function Index() {
                 setModalState({ visible: true, mealType: "Lunch" });
               }}
             >
-              <PlusCircle className="m-4"></PlusCircle>
+              <Pen className="m-4"></Pen>
             </TouchableOpacity>
           </Card>
           <Card className="flex flex-row justify-between bg-stone-300">
@@ -175,7 +172,7 @@ export default function Index() {
                 setModalState({ visible: true, mealType: "Dinner" });
               }}
             >
-              <PlusCircle className="m-4"></PlusCircle>
+              <Pen className="m-4"></Pen>
             </TouchableOpacity>
           </Card>
           <Card className="flex flex-row justify-between bg-stone-300">
@@ -185,7 +182,7 @@ export default function Index() {
                 setModalState({ visible: true, mealType: "Snack" });
               }}
             >
-              <PlusCircle className="m-4"></PlusCircle>
+              <Pen className="m-4"></Pen>
             </TouchableOpacity>
           </Card>
         </View>
@@ -388,7 +385,14 @@ function AddMealModal({
                   value={searchTerm}
                   onChangeText={setSearchTerm}
                 ></Input>
-                <TouchableOpacity onPress={() => searchFood()} className="px-2">
+                <TouchableOpacity
+                  onPress={() => {
+                    if (searchTerm.length > 0) {
+                      searchFood();
+                    }
+                  }}
+                  className="px-2"
+                >
                   <Search size={20} color="#78716c" />
                 </TouchableOpacity>
               </View>
@@ -418,7 +422,7 @@ function AddMealModal({
                           })
                         }
                       >
-                        <PlusCircle size={16} />
+                        <Pen size={16} />
                       </TouchableOpacity>
                     </View>
                   ))
@@ -445,7 +449,7 @@ function AddMealModal({
                         })
                       }
                     >
-                      <PlusCircle size={16} />
+                      <Pen size={16} />
                     </TouchableOpacity>
                   </View>
                 )}
