@@ -1,15 +1,14 @@
-FROM node:23
+FROM node:23 AS build
 
 WORKDIR /app/mobile
 COPY ./mobile/package*.json .
 RUN npm install --only=prod
 COPY ./mobile .
 RUN npx expo export -p web
-WORKDIR /app/mobile/dist
-
 
 # RUN npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios/assets
 # RUN npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
 
-EXPOSE 4000
-CMD ["npx", "serve", "."]
+#
+FROM nginx:alpine
+COPY --from=build /app/mobile/dist /usr/share/nginx/html
