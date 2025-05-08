@@ -135,6 +135,7 @@ export function StartWorkoutModal({
                   }
 
                   await finishWorkoutMutation.mutateAsync({
+                    userId: "gugi",
                     workoutId: selectedWorkout._id,
                     workoutName: selectedWorkout.name,
                     totalTimeInMinutes:

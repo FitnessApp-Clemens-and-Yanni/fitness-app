@@ -1,5 +1,3 @@
-import z from "zod";
-
 export const WORKOUTS_COLLECTION = "workouts";
 
 export type Workout = {

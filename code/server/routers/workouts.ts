@@ -21,6 +21,7 @@ export const WorkoutsRouter = createTRPCRouter({
     .input(
       z.object({
         _id: z.string(),
+        userId: z.string(),
         name: z.string(),
         exercises: z.array(
           z.object({
@@ -76,6 +77,7 @@ export const WorkoutsRouter = createTRPCRouter({
   finishWorkout: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         workoutId: OBJECT_ID_SCHEMA,
         workoutName: z.string(),
         exercises: z.array(
