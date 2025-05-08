@@ -45,6 +45,7 @@ jobs:
           username: ${{secrets.HOST_USERNAME}}
           key: ${{secrets.KEY}}
           script: |
+            cd ~/dockerization
             docker compose down || echo 'No running docker images by docker compose...'
             wget 'https://raw.githubusercontent.com/FitnessApp-Clemens-and-Yanni/fitness-app/refs/heads/main/code/docker-compose.yml'
             docker compose up -d
