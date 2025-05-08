@@ -10,8 +10,8 @@ import {
 } from "@react-navigation/native";
 import { NAV_THEME } from "@/lib/constants";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useColorScheme } from "@/lib/userColorScheme";
 import { Platform } from "react-native";
+import { PortalHost } from "@rn-primitives/portal";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -50,6 +50,7 @@ export default function MainLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
+        <PortalHost />
       </TRPCReactProvider>
     </ThemeProvider>
   );
