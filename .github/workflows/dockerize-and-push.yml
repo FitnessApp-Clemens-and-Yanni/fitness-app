@@ -39,7 +39,7 @@ jobs:
       #     docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
 
       - name: Deploy remote using SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{secrets.HOST}}
           username: ${{secrets.HOST_USERNAME}}
