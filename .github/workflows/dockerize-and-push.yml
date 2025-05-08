@@ -46,4 +46,4 @@ jobs:
           key: ${{secrets.KEY}}
           script: |
             echo Hi from $(whoami)
-            echo I'm running at $(pwd)
+            echo "I'm running at $(pwd)"
