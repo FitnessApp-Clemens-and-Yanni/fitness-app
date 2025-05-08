@@ -1,9 +1,4 @@
-FROM node:23-alpine
-
-WORKDIR /app/shared
-COPY ./shared/package*.json .
-RUN npm install --only=prod
-COPY ./shared .
+FROM node:23
 
 WORKDIR /app/mobile
 COPY ./mobile/package*.json .
