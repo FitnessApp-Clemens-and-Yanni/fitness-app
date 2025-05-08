@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import {Card} from "@/components/ui/Card";
 import {Button} from "@/components/ui/Button";
-import {X, Search, ScanBarcode, Trash2, Pen} from "lucide-react-native";
+import {X, Search, ScanBarcode, Trash2, Pen, PlusCircle} from "lucide-react-native";
 import {api} from "@/utils/react";
 import {Input} from "@/components/ui/input";
 import {UserSelect} from "@/components/UserSelect";
@@ -82,8 +82,7 @@ export default function Index() {
                     <View>
                         <View className="flex flex-row justify-center">
                             <Text>
-                                Calories {dailyNutritionalData.caloriesInKcal}/
-                                {targetNutritionalData.caloriesInKcal}
+                                Calories {dailyNutritionalData.caloriesInKcal.toFixed(1)}{" / "}{targetNutritionalData.caloriesInKcal}
                             </Text>
                         </View>
                         <Progress
@@ -101,8 +100,7 @@ export default function Index() {
                     <View className="w-full">
                         <View className="flex flex-row justify-start">
                             <Text>
-                                Protein {dailyNutritionalData.proteinInG.toFixed(2)}/
-                                {targetNutritionalData.proteinInG.toFixed(2)}
+                                Protein {dailyNutritionalData.proteinInG.toFixed(1)}{" / "}{targetNutritionalData.proteinInG}
                             </Text>
                         </View>
                         <Progress
@@ -116,8 +114,7 @@ export default function Index() {
                     <View className="w-full">
                         <View className="flex flex-row justify-start">
                             <Text>
-                                Carbs {dailyNutritionalData.carbsInG.toFixed(2)}/
-                                {targetNutritionalData.carbsInG.toFixed(2)}
+                                Carbs {dailyNutritionalData.carbsInG.toFixed(1)}{" / "}{targetNutritionalData.carbsInG}
                             </Text>
                         </View>
                         <Progress
@@ -131,8 +128,7 @@ export default function Index() {
                     <View className="w-full">
                         <View className="flex flex-row justify-start">
                             <Text>
-                                Fats {dailyNutritionalData.fatsInG.toFixed(2)}/
-                                {targetNutritionalData.fatsInG.toFixed(2)}
+                                Fats {dailyNutritionalData.fatsInG.toFixed(1)}{" / "}{targetNutritionalData.fatsInG}
                             </Text>
                         </View>
                         <Progress
@@ -424,7 +420,7 @@ function AddMealModal({
                                                     })
                                                 }
                                             >
-                                                <Pen size={16}/>
+                                                <PlusCircle size={16}/>
                                             </TouchableOpacity>
                                         </View>
                                     ))
