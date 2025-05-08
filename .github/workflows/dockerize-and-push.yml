@@ -27,21 +27,21 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build images
-        run: |
-          cd code && \
-          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest -f Dockerfile.server . && \
-          docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest -f Dockerfile.mobile .
+      # - name: Build images
+      #   run: |
+      #     cd code && \
+      #     docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest -f Dockerfile.server . && \
+      #     docker build -t ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest -f Dockerfile.mobile .
 
-      - name: Push images
-        run: |
-          docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest && \
-          docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
+      # - name: Push images
+      #   run: |
+      #     docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest && \
+      #     docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
 
       - name: Deploy remote using SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.HOST }}
+          host: 64.227.116.189
           username: ${{ secrets.HOST_USERNAME }}
           password: ${{ secrets.HOST_PASSWORD }}
           port: 22
