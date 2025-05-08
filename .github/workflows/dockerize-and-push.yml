@@ -39,9 +39,11 @@ jobs:
       #     docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
 
       - name: Deploy remote using SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@master
         with:
-          host: 64.227.116.189
-          username: ${{ secrets.HOST_USERNAME }}
-          password: ${{ secrets.HOST_PASSWORD }}
-          script: whoami
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.KEY}}
+          script: |
+            echo Hi from $(whoami)
+            echo I'm running at $(pwd)
