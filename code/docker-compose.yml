@@ -2,10 +2,8 @@ services:
   phone-web:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
     ports:
-      - "4000:80"
+      - "4000:3000"
     container_name: phone-web-fitness-app-react-native
-    environment:
-      - "IS_PRODUCTION=yes"
     networks:
       - fitness-app-network
 

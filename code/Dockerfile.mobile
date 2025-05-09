@@ -10,5 +10,8 @@ RUN npx expo export -p web
 # RUN npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
 
 #
-FROM nginx:alpine
-COPY --from=build /app/mobile/dist /usr/share/nginx/html
+FROM node:23-alpine
+WORKDIR /app
+COPY --from=build /app/mobile/dist .
+CMD ["npx", "serve", "."]
+EXPOSE 3000
