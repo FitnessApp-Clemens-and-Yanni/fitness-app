@@ -40,7 +40,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
           },
         }),
       ],
-    })
+    }),
   );
 
   return (
@@ -53,5 +53,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 }
 
 function getBaseUrl() {
-  return `http://127.0.0.1:${process.env.PORT ?? 3000}`;
+  return (process.env.IS_PRODUCTION ?? "no") === "yes"
+    ? `http://server-fitness-app-tsx:${process.env.PORT ?? 3000}`
+    : `http://127.0.0.1:${process.env.PORT ?? 3000}`;
 }

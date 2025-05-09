@@ -4,6 +4,8 @@ services:
     ports:
       - "4000:80"
     container_name: phone-web-fitness-app-react-native
+    environment:
+      - "IS_PRODUCTION=yes"
     networks:
       - fitness-app-network
 
