@@ -48,6 +48,6 @@ jobs:
             cd ~/dockerization
             docker compose down || echo 'No running docker images by docker compose...'
             docker compose pull
-            docker compose up -d
+            docker compose --env-file ".env" up -d
 
           # wget 'https://raw.githubusercontent.com/FitnessApp-Clemens-and-Yanni/fitness-app/refs/heads/main/code/docker-compose.yml docker-compose.yml'

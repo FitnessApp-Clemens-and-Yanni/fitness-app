@@ -15,7 +15,8 @@ services:
     networks:
       - fitness-app-network
     environment:
-      - "DB_CONN_STRING=mongodb://database-fitness-app-mongodb:27017"
+      FATSECRET_CONSUMER_KEY: ${FATSECRET_CONSUMER_KEY}
+      FATSECRET_CONSUMER_SECRET: ${FATSECRET_CONSUMER_SECRET}
 
   database:
     image: mongodb/mongodb-community-server
