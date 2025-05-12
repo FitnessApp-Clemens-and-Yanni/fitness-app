@@ -1,5 +1,5 @@
-import { EditWorkoutModal } from "@/components/EditWorkoutModal";
-import { StartWorkoutModal } from "@/components/StartWorkoutModal";
+import { EditWorkoutModal } from "@/components/sport/EditWorkoutModal";
+import { StartWorkoutModal } from "@/components/sport/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/utils/react";
 import { Pen } from "lucide-react-native";
