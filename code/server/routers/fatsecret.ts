@@ -1,4 +1,4 @@
-import {createTRPCRouter, publicProcedure} from "@/trpc";
+import {createTRPCRouter, publicProcedure} from "@/trpc.js";
 import z, {unknown} from "zod";
 import crypto from "crypto";
 import OAuth from "oauth-1.0a";
@@ -6,7 +6,7 @@ import {
     MealEntry,
     NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
     NutritionalValueOfDay,
-} from "@/data/meta/models";
+} from "@/data/meta/models.js";
 
 export const FatSecretRouter = createTRPCRouter({
     getSearchFood: publicProcedure

@@ -4,8 +4,8 @@ import {
     NutritionalValueOfDay,
     TARGET_NUTRITIONAL_VALUE_COLLECTION,
     TargetNutritionalValue
-} from "@/data/meta/models";
-import {createTRPCRouter, publicProcedure} from "@/trpc";
+} from "@/data/meta/models.js";
+import {createTRPCRouter, publicProcedure} from "@/trpc.js";
 import z from "zod";
 
 

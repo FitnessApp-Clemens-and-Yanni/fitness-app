@@ -5,10 +5,10 @@ import {
   SNAPSHOTS_COLLECTION,
   Workout,
   WORKOUTS_COLLECTION,
-} from "@/data/meta/models";
-import { createTRPCRouter, publicProcedure } from "@/trpc";
+} from "@/data/meta/models.js";
+import { createTRPCRouter, publicProcedure } from "@/trpc.js";
 import z from "zod";
-import { OBJECT_ID_SCHEMA } from "@shared/zod-schemas/ObjectId";
+import { OBJECT_ID_SCHEMA } from "@shared/zod-schemas/ObjectId.js";
 
 export const WorkoutsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {

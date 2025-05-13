@@ -9,7 +9,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { db } from "./data/meta";
+import { db } from "@/data/meta/index.js";
 
 /**
  * 1. CONTEXT

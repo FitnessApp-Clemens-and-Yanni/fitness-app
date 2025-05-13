@@ -1,4 +1,4 @@
-import { ExerciseSnapshot } from "../meta/models";
+import { ExerciseSnapshot } from "@/data/meta/models.js";
 
 export const snapshots = [
   {

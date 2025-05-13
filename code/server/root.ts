@@ -1,11 +1,11 @@
-import { WorkoutsRouter } from "@/routers/workouts";
-import { createCallerFactory, createTRPCRouter } from "@/trpc";
+import { WorkoutsRouter } from "@/routers/workouts.js";
+import { createCallerFactory, createTRPCRouter } from "@/trpc.js";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
-import { SnapshotsRouter } from "./routers/snapshots";
-import { db } from "./data/meta";
-import {FoodRouter} from "@/routers/food";
-import {FatSecretRouter} from "@/routers/fatsecret";
+import { SnapshotsRouter } from "@/routers/snapshots.js";
+import { db } from "@/data/meta/index.js";
+import {FoodRouter} from "@/routers/food.js";
+import {FatSecretRouter} from "@/routers/fatsecret.js";
 
 /**
  * This is the primary router for your server.

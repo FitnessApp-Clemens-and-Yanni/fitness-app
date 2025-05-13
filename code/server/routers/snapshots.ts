@@ -1,8 +1,8 @@
-import { createTRPCRouter, publicProcedure } from "@/trpc";
+import { createTRPCRouter, publicProcedure } from "@/trpc.js";
 import z from "zod";
 
-import { OBJECT_ID_SCHEMA } from "@shared/zod-schemas/ObjectId";
-import { ExerciseSnapshot, SNAPSHOTS_COLLECTION } from "@/data/meta/models";
+import { OBJECT_ID_SCHEMA } from "@shared/zod-schemas/ObjectId.js";
+import { ExerciseSnapshot, SNAPSHOTS_COLLECTION } from "@/data/meta/models.js";
 
 export const SnapshotsRouter = createTRPCRouter({
   getExerciseDefaultsForWorkout: publicProcedure

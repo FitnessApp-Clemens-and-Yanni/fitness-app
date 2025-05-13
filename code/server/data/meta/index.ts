@@ -10,11 +10,11 @@ import {
   TargetNutritionalValue,
   Workout,
   WORKOUTS_COLLECTION,
-} from "./models";
-import { workouts } from "../defaults/workoutData";
-import { snapshots } from "../defaults/snapshotsData";
+} from "./models.js";
+import { workouts } from "@/data/defaults/workoutData.js";
+import { snapshots } from "@/data/defaults/snapshotsData.js";
 import { configDotenv } from "dotenv";
-import { targetNutritionalValue } from "@/data/defaults/targetNutritionalValueData";
+import { targetNutritionalValue } from "@/data/defaults/targetNutritionalValueData.js";
 
 configDotenv({ path: ".env" });
 const client = new MongoClient(

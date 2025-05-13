@@ -1,4 +1,4 @@
-import { Workout } from "../meta/models";
+import { Workout } from "@/data/meta/models.js";
 
 export const workouts = [
   {

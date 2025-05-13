@@ -1,4 +1,4 @@
-import {TargetNutritionalValue} from "@/data/meta/models";
+import {TargetNutritionalValue} from "@/data/meta/models.js";
 
 export const targetNutritionalValue: TargetNutritionalValue[] = [
     {
