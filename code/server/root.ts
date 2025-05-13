@@ -3,9 +3,9 @@ import { createCallerFactory, createTRPCRouter } from "@/trpc.js";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { SnapshotsRouter } from "@/routers/snapshots.js";
-import { db } from "@/data/meta/index.js";
-import {FoodRouter} from "@/routers/food.js";
-import {FatSecretRouter} from "@/routers/fatsecret.js";
+import { FoodRouter } from "@/routers/food.js";
+import { FatSecretRouter } from "@/routers/fatsecret.js";
+import { doDb } from "./data/meta/index.js";
 
 /**
  * This is the primary router for your server.
@@ -36,7 +36,7 @@ const server = createHTTPServer({
   middleware: cors(),
   createContext() {
     return {
-      db,
+      doDb: doDb,
       headers: new Headers(),
     };
   },

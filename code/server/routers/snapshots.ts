@@ -9,19 +9,21 @@ export const SnapshotsRouter = createTRPCRouter({
     .input(
       z.object({
         _id: z.union([OBJECT_ID_SCHEMA, z.null()]),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
-      const collection =
-        ctx.db.collection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
+      return await ctx.doDb(async (db) => {
+        const collection =
+          db.collection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
 
-      if (input._id === null) {
-        return [];
-      }
+        if (input._id === null) {
+          return [];
+        }
 
-      const snapshot = await collection.findOne({ exerciseId: input._id });
-      return snapshot === null
-        ? []
-        : [{ ...snapshot, _id: snapshot._id.toString() }];
+        const snapshot = await collection.findOne({ exerciseId: input._id });
+        return snapshot === null
+          ? []
+          : [{ ...snapshot, _id: snapshot._id.toString() }];
+      });
     }),
 });

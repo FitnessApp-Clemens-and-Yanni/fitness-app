@@ -9,7 +9,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { db } from "@/data/meta/index.js";
+import { doDb } from "@/data/meta/index.js";
 
 /**
  * 1. CONTEXT
@@ -25,7 +25,7 @@ import { db } from "@/data/meta/index.js";
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
   return {
-    db,
+    doDb,
     ...opts,
   };
 };
