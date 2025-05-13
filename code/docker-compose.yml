@@ -19,19 +19,8 @@ services:
     environment:
       FATSECRET_CONSUMER_KEY: ${FATSECRET_CONSUMER_KEY}
       FATSECRET_CONSUMER_SECRET: ${FATSECRET_CONSUMER_SECRET}
-      IS_DEV: "no"
-    depends_on:
-      database:
-        condition: service_started
-        restart: true
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
 
-  database:
-    image: mongodb/mongodb-community-server
-    container_name: database
-    ports:
-      - "27017:27017"
-    networks:
-      - fitness-app-network
 
 networks:
   fitness-app-network:

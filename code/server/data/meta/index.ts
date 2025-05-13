@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 import {
   ExerciseSnapshot,
   FINISHED_WORKOUTS_COLLECTION,
@@ -17,13 +17,28 @@ import { configDotenv } from "dotenv";
 import { targetNutritionalValue } from "@/data/defaults/targetNutritionalValueData.js";
 
 configDotenv({ path: ".env" });
-const client = new MongoClient(
-  (process.env.IS_DEV ?? "no") === "yes"
-    ? "mongodb://localhost:27017"
-    : "mongodb://database:27017",
-);
+const client = new MongoClient(process.env.MONGO_DB_CONNECTION_STRING!!, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
-export const db = client.db();
+async function run() {
+  try {
+    await client.connect();
+
+    const db = client.db();
+    return db;
+  } catch (error) {
+    await client.close();
+    throw error;
+  }
+}
+
+export const db = await run();
+
 ensureCollectionsInitializedAndPopulated();
 
 async function ensureCollectionsInitializedAndPopulated() {
