@@ -20,7 +20,7 @@ configDotenv({ path: ".env" });
 const client = new MongoClient(
   (process.env.IS_DEV ?? "no") === "yes"
     ? "mongodb://localhost:27017"
-    : "mongodb://database-fitness-app-mongodb:27017",
+    : "mongodb://database:27017",
 );
 
 export const db = client.db();
