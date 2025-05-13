@@ -54,6 +54,6 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
 function getBaseUrl() {
   return (process.env.EXPO_PUBLIC_IS_DEV ?? "no") === "yes"
-    ? `http://127.0.0.1:3000`
-    : `http://backend:3000`;
+    ? "http://127.0.0.1:3000"
+    : "http://backend:3000";
 }
