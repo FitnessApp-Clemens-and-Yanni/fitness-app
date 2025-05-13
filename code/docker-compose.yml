@@ -6,6 +6,8 @@ services:
     container_name: phone-web-fitness-app-react-native
     networks:
       - fitness-app-network
+    environment:
+      EXPO_PUBLIC_IS_DEV: "no"
 
   backend:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest
@@ -17,10 +19,17 @@ services:
     environment:
       FATSECRET_CONSUMER_KEY: ${FATSECRET_CONSUMER_KEY}
       FATSECRET_CONSUMER_SECRET: ${FATSECRET_CONSUMER_SECRET}
+      IS_DEV: "no"
+    depends_on:
+      database:
+        condition: service_started
+        restart: true
 
   database:
     image: mongodb/mongodb-community-server
     container_name: database-fitness-app-mongodb
+    ports:
+      - "27017:27017"
     networks:
       - fitness-app-network
 
