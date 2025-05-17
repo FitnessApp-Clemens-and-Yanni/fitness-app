@@ -1,23 +1,17 @@
-import {useState} from "react";
-import {Progress} from "@/components/ui/progress";
-import {Text} from "@/components/ui/Text";
+import { useState } from "react";
+import { Text } from "@/components/ui/Text";
 import {
-    TouchableOpacity,
     View,
 } from "react-native";
-import {Card} from "@/components/ui/Card";
-import {Pen} from "lucide-react-native";
-import {api} from "@/utils/react";
-import {UserSelect} from "@/components/UserSelect";
-import {ErrorDisplay} from "@/components/ErrorDisplay";
-import {AddMealModal} from "@/components/food/AddMealModal";
-import {LoadingDisplay} from "@/components/LoadingDisplay";
+import { api } from "@/utils/react";
+import { UserSelect } from "@/components/UserSelect";
+import { ErrorDisplay } from "@/components/ErrorDisplay";
+import { LoadingDisplay } from "@/components/LoadingDisplay";
+import { NutritionalDataDisplay } from "@/components/food/NutritionalDataDisplay";
+import {MealsAddingOptions} from "@/components/food/MealsAddingOptions";
 
 export default function Index() {
-    const [modalState, setModalState] = useState({
-        visible: false,
-        mealType: "",
-    });
+
     const [currentDate] = useState(new Date());
 
     const {
@@ -33,10 +27,6 @@ export default function Index() {
         refetch: refetchDailyData,
     } = api.food.getNutritionalValuesOfDay.useQuery({date: currentDate});
 
-    const handleModalClose = () => {
-        refetchDailyData();
-        setModalState({visible: false, mealType: ""});
-    };
 
     if (
         isLoadingTargets === true ||
@@ -73,119 +63,13 @@ export default function Index() {
             )}
 
             <View className="flex-1 flex-col justify-between">
-                <View className="flex-1 flex-col justify-evenly">
-                    <View>
-                        <View className="flex flex-row justify-center">
-                            <Text>
-                                Calories {dailyNutritionalData.caloriesInKcal.toFixed(1)}{" / "}{targetNutritionalData.caloriesInKcal}
-                            </Text>
-                        </View>
-                        <Progress
-                            value={
-                                (dailyNutritionalData.caloriesInKcal /
-                                    targetNutritionalData.caloriesInKcal) *
-                                100
-                            }
-                            className="w-full h-3"
-                        />
-                    </View>
 
-                    <Text className="text-lg font-semibold pl-4">Nutritional Values</Text>
+                <NutritionalDataDisplay dailyNutritionalData={dailyNutritionalData}
+                                        targetNutritionalData={targetNutritionalData}/>
 
-                    <View className="w-full">
-                        <View className="flex flex-row justify-start">
-                            <Text>
-                                Protein {dailyNutritionalData.proteinInG.toFixed(1)}{" / "}{targetNutritionalData.proteinInG}
-                            </Text>
-                        </View>
-                        <Progress
-                            value={
-                                (dailyNutritionalData.proteinInG /
-                                    targetNutritionalData.proteinInG) *
-                                100
-                            }
-                        />
-                    </View>
-                    <View className="w-full">
-                        <View className="flex flex-row justify-start">
-                            <Text>
-                                Carbs {dailyNutritionalData.carbsInG.toFixed(1)}{" / "}{targetNutritionalData.carbsInG}
-                            </Text>
-                        </View>
-                        <Progress
-                            value={
-                                (dailyNutritionalData.carbsInG /
-                                    targetNutritionalData.carbsInG) *
-                                100
-                            }
-                        />
-                    </View>
-                    <View className="w-full">
-                        <View className="flex flex-row justify-start">
-                            <Text>
-                                Fats {dailyNutritionalData.fatsInG.toFixed(1)}{" / "}{targetNutritionalData.fatsInG}
-                            </Text>
-                        </View>
-                        <Progress
-                            value={
-                                (dailyNutritionalData.fatsInG / targetNutritionalData.fatsInG) *
-                                100
-                            }
-                        />
-                    </View>
-                </View>
+                <MealsAddingOptions refetchDailyData={refetchDailyData} />
 
-                <View className="flex-1 flex-col justify-evenly">
-                    <Card className="flex flex-row justify-between bg-stone-300">
-                        <Text className="p-4">Breakfast</Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                setModalState({visible: true, mealType: "Breakfast"});
-                            }}
-                        >
-                            <Pen className="m-4"/>
-                        </TouchableOpacity>
-                    </Card>
-                    <Card className="flex flex-row justify-between bg-stone-300">
-                        <Text className="p-4">Lunch</Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                setModalState({visible: true, mealType: "Lunch"});
-                            }}
-                        >
-                            <Pen className="m-4"></Pen>
-                        </TouchableOpacity>
-                    </Card>
-                    <Card className="flex flex-row justify-between bg-stone-300">
-                        <Text className="p-4">Dinner</Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                setModalState({visible: true, mealType: "Dinner"});
-                            }}
-                        >
-                            <Pen className="m-4"></Pen>
-                        </TouchableOpacity>
-                    </Card>
-                    <Card className="flex flex-row justify-between bg-stone-300">
-                        <Text className="p-4">Snack</Text>
-                        <TouchableOpacity
-                            onPress={() => {
-                                setModalState({visible: true, mealType: "Snack"});
-                            }}
-                        >
-                            <Pen className="m-4"></Pen>
-                        </TouchableOpacity>
-                    </Card>
-                </View>
             </View>
-
-
-            <AddMealModal
-                isVisible={modalState.visible}
-                mealType={modalState.mealType}
-                closeBtnClick={handleModalClose}
-            />
-
         </View>
     );
 }
