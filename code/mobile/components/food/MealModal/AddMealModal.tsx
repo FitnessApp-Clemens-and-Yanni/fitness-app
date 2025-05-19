@@ -1,7 +1,6 @@
 import {useState} from "react";
 import {api} from "@/utils/react";
-import {ActivityIndicator, Modal, ScrollView, TouchableOpacity, View} from "react-native";
-import {Text} from "@/components/ui/Text";
+import {ActivityIndicator, Modal, ScrollView, TouchableOpacity, View, Text} from "react-native";
 import {X} from "lucide-react-native";
 import {Button} from "@/components/ui/Button";
 import {SearchFoodResult } from "../../../../server/data/meta/models";

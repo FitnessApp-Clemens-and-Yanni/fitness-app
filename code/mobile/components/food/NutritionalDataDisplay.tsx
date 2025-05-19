@@ -1,5 +1,4 @@
-import {View} from "react-native";
-import {Text} from "@/components/ui/Text";
+import {View, Text} from "react-native";
 import {NutritionalValueOfDay, TargetNutritionalValue} from "../../../server/data/meta/models";
 import {NutritionalValuesProgressBars} from "@/components/food/NutritionalValuesProgressBars";
 

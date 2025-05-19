@@ -1,5 +1,4 @@
-import {Text} from "@/components/ui/Text";
-import {TouchableOpacity} from "react-native";
+import {TouchableOpacity, Text} from "react-native";
 import {Pen} from "lucide-react-native";
 import {Card} from "@/components/ui/Card";
 import {AddMealModal} from "@/components/food/MealModal/AddMealModal";
@@ -22,7 +21,7 @@ export function MealCard(props: {
 
     return (
         <Card className="flex flex-row justify-between bg-stone-300">
-            <Text className="p-4">{props.mealType}</Text>
+            <Text className="p-4 content-center">{props.mealType}</Text>
             <TouchableOpacity
                 onPress={() => {
                     setModalState({visible: true, mealType: props.mealType});

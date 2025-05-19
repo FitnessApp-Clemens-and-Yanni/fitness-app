@@ -8,7 +8,8 @@ import { UserSelect } from "@/components/UserSelect";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { LoadingDisplay } from "@/components/LoadingDisplay";
 import { NutritionalDataDisplay } from "@/components/food/NutritionalDataDisplay";
-import {MealsAddingOptions} from "@/components/food/MealsAddingOptions";
+import { MealsAddingOptions } from "@/components/food/MealsAddingOptions";
+import { DateDisplay } from "@/components/DateDisplay";
 
 export default function Index() {
 

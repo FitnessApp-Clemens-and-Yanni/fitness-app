@@ -1,5 +1,4 @@
-import {View} from "react-native";
-import {Text} from "@/components/ui/Text";
+import {View, Text} from "react-native";
 import {MealEntry} from "../../../../server/data/meta/models";
 
 export function NutritionalDataDisplay(props:{foodData: MealEntry}){

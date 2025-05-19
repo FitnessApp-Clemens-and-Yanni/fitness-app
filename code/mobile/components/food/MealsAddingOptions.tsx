@@ -1,9 +1,4 @@
-import {Card} from "@/components/ui/Card";
-import {Text} from "@/components/ui/Text";
-import {TouchableOpacity, View} from "react-native";
-import {Pen} from "lucide-react-native";
-import {useState} from "react";
-import {AddMealModal} from "@/components/food/MealModal/AddMealModal";
+import {View} from "react-native";
 import {MealCard} from "@/components/food/MealCard";
 
 export function MealsAddingOptions(props: { refetchDailyData: () => void }) {

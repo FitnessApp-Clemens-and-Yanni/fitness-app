@@ -1,5 +1,4 @@
-import {ScrollView, TouchableOpacity, View} from "react-native";
-import {Text} from "@/components/ui/Text";
+import {ScrollView, TouchableOpacity, View, Text} from "react-native";
 import {Pen, PlusCircle} from "lucide-react-native";
 import {FoodItem, SearchFoodResult} from "../../../../server/data/meta/models";
 import {api} from "@/utils/react";

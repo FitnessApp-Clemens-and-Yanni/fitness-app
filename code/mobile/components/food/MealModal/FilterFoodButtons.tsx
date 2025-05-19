@@ -1,5 +1,4 @@
-import {TouchableOpacity, View} from "react-native";
-import {Text} from "@/components/ui/Text";
+import {TouchableOpacity, View, Text} from "react-native";
 
 export function FilterFoodButtons(props: {
     setSelectedFoodFilter: (filter: string) => void,

@@ -1,6 +1,5 @@
-import {ScrollView, TouchableOpacity, View} from "react-native";
+import {ScrollView, TouchableOpacity, View, Text} from "react-native";
 import {Trash2} from "lucide-react-native";
-import {Text} from "@/components/ui/Text";
 import {MealEntry} from "../../../../server/data/meta/models";
 import {api} from "@/utils/react";
 
