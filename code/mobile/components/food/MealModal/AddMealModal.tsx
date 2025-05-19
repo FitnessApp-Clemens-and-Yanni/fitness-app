@@ -6,8 +6,8 @@ import {X} from "lucide-react-native";
 import {Button} from "@/components/ui/Button";
 import {SearchFoodResult } from "../../../../server/data/meta/models";
 import {FilterFoodButtons} from "@/components/food/MealModal/FilterFoodButtons";
-import {ApiFoodSearchBar} from "@/components/food/MealModal/ApiFoodSearchBar";
-import {ApiFoodSearchBarResult} from "@/components/food/MealModal/ApiFoodSearchBarResult";
+import {ApiSearchBar} from "@/components/food/MealModal/ApiSearchBar";
+import {ApiSearchBarResult} from "@/components/food/MealModal/ApiSearchBarResult";
 import {NutritionalDataDisplay} from "@/components/food/MealModal/NutritionalDataDisplay";
 import {FoodList} from "@/components/food/MealModal/FoodList";
 
@@ -38,7 +38,7 @@ export function AddMealModal(props: {
         error: foodItemsError,
         data: foodData,
         refetch: refetchFoodData,
-    } = api.food.getFoodItemsByMeal.useQuery(
+    } = api.food.getFoodItemsOfDayByMeal.useQuery(
         {
             date: currentDate,
             mealType: props.mealType as "Breakfast" | "Lunch" | "Dinner" | "Snack",
@@ -98,12 +98,18 @@ export function AddMealModal(props: {
 
                     <FilterFoodButtons setSelectedFoodFilter={setSelectedFoodFilter} selectedFoodFilter={selectedFoodFilter} />
 
-                    <ApiFoodSearchBar
+                    <ApiSearchBar
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
                         searchFood={searchFood}
                     />
-                    <ApiFoodSearchBarResult searchFoodResultData={searchFoodResultData as SearchFoodResult} mealType={props.mealType} refetchFoodData={refetchFoodData} currentDate={currentDate} />
+                    <ApiSearchBarResult searchFoodResultData={searchFoodResultData}
+                                        mealType={props.mealType}
+                                        refetchFoodData={refetchFoodData}
+                                        currentDate={currentDate}
+                                        isLoadingSearchFood={isLoadingSearchFood}
+                                        searchFoodError={searchFoodError}
+                    />
 
 
                     <ScrollView className="bg-stone-500 h-40 w-full border border-stone-700">

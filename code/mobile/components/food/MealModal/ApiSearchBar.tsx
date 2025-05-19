@@ -2,7 +2,7 @@ import {TouchableOpacity, View} from "react-native";
 import {Input} from "@/components/ui/input";
 import {ScanBarcode, Search} from "lucide-react-native";
 
-export function ApiFoodSearchBar(props: {
+export function ApiSearchBar(props: {
     searchTerm: string,
     setSearchTerm: (term: string) => void,
     searchFood: () => void})

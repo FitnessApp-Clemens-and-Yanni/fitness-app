@@ -54,6 +54,7 @@ export default function Index() {
 
     return (
         <View className="flex-1 p-4">
+
             <UserSelect/>
 
             {dailyError && (
@@ -68,7 +69,6 @@ export default function Index() {
                                         targetNutritionalData={targetNutritionalData}/>
 
                 <MealsAddingOptions refetchDailyData={refetchDailyData} />
-
             </View>
         </View>
     );

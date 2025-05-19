@@ -4,13 +4,15 @@ import {Pen, PlusCircle} from "lucide-react-native";
 import {FoodItem, SearchFoodResult} from "../../../../server/data/meta/models";
 import {api} from "@/utils/react";
 
-export function ApiFoodSearchBarResult(props: {
-    searchFoodResultData: SearchFoodResult | undefined;
-    mealType: string;
-    refetchFoodData: () => void;
-    currentDate: Date;
+export function ApiSearchBarResult(props: {
+    searchFoodResultData: SearchFoodResult | undefined,
+    mealType: string,
+    refetchFoodData: () => void,
+    currentDate: Date,
+    isLoadingSearchFood: boolean,
+    searchFoodError: any
 }) {
-    const addFoodWithIdMutation = api.fatSecret.addFoodWithId.useMutation({
+    const addFoodWithIdMutation = api.fatSecret.addFoodToMealWithId.useMutation({
         onSuccess: () => {
             props.refetchFoodData();
         },

@@ -6,7 +6,7 @@ import {api} from "@/utils/react";
 
 export function FoodList(props:{foodData: MealEntry, currentDate: Date, refetchFoodData: () => void, mealType: string}) {
 
-    const deleteFoodMutation = api.food.deleteFood.useMutation({
+    const deleteFoodMutation = api.food.deleteFoodOfDayByMeal.useMutation({
         onSuccess: () => {
             props.refetchFoodData();
         },
@@ -31,12 +31,14 @@ export function FoodList(props:{foodData: MealEntry, currentDate: Date, refetchF
                                     })
                                 }
                             >
-                                <Trash2 className="inline self-center flex"/>
+                                <Trash2 className="self-center flex"/>
                             </TouchableOpacity>
+
                             <Text className="text-xs self-center flex">
                                 {food.name}
                             </Text>
                         </View>
+
                         <Text className="text-xs self-center">
                             {food.weightInG}g
                         </Text>
