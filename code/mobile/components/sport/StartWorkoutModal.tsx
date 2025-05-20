@@ -6,14 +6,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { H1, H2, H3, H4 } from "./ui/Typography";
-import { Card } from "./ui/Card";
-import { Button } from "./ui/Button";
+import { H1, H2, H3, H4 } from "../ui/Typography";
+import { Card } from "../ui/Card";
+import { Button } from "../ui/Button";
 import { ArrowBigLeft, Check, Pen } from "lucide-react-native";
 import { generateUUID } from "@/lib/utils";
 import { api } from "@/utils/react";
 import { useEffect, useState } from "react";
-import { TimeDisplay } from "./TimeDisplay";
+import { TimeDisplay } from "../TimeDisplay";
 import { EditSetModal } from "./EditSetModal";
 import { useExerciseSetStore } from "@/lib/stores/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/finished-fe-sets-store";
@@ -135,6 +135,7 @@ export function StartWorkoutModal({
                   }
 
                   await finishWorkoutMutation.mutateAsync({
+                    userId: "gugi",
                     workoutId: selectedWorkout._id,
                     workoutName: selectedWorkout.name,
                     totalTimeInMinutes:

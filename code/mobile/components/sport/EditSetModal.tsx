@@ -1,9 +1,9 @@
 import { AnyFieldApi, useForm } from "@tanstack/react-form";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { z } from "zod";
-import { Button } from "./ui/Button";
+import { Button } from "../ui/Button";
 import {
   postiveIntegerStringSchema,
   positiveNumberStringSchema,
