@@ -5,9 +5,10 @@ services:
       - "4000:3000"
     container_name: phone-web
     networks:
-      - fitness-app-network
+      fitness-network:
+        ipv4_address: 10.5.0.4
     environment:
-      EXPO_PUBLIC_IS_DEV: "no"
+      EXPO_PUBLIC_TRPC_HOST: "http://10.5.0.4:3000"
 
   backend:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest
@@ -15,7 +16,8 @@ services:
       - "3000:3000"
     container_name: backend
     networks:
-      - fitness-app-network
+      fitness-network:
+        ipv4_address: 10.5.0.3
     environment:
       FATSECRET_CONSUMER_KEY: ${FATSECRET_CONSUMER_KEY}
       FATSECRET_CONSUMER_SECRET: ${FATSECRET_CONSUMER_SECRET}
@@ -24,7 +26,10 @@ services:
       - 8.8.8.8
 
 
-
 networks:
-  fitness-app-network:
+  fitness-network:
     driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
