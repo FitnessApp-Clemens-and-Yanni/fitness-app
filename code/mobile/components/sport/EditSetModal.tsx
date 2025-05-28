@@ -13,11 +13,11 @@ import { X } from "lucide-react-native";
 const formSchema = z.object({
   weightsInKg: positiveNumberStringSchema(
     "Please provide the weights you want to use for the set.",
-    { zeroAllowed: false }
+    { zeroAllowed: false },
   ),
   repetitions: postiveIntegerStringSchema(
     "Please provide how many reps the set has.",
-    { zeroAllowed: false }
+    { zeroAllowed: false },
   ),
 });
 
@@ -93,7 +93,7 @@ export function EditSetModal(props: {
                 onPressIn={() => {
                   props.setCurrentSet(
                     +form.getFieldValue("weightsInKg"),
-                    +form.getFieldValue("repetitions")
+                    +form.getFieldValue("repetitions"),
                   );
 
                   props.hideModal();

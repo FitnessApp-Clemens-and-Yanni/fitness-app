@@ -9,7 +9,7 @@ export const SnapshotsRouter = createTRPCRouter({
     .input(
       z.object({
         _id: z.union([OBJECT_ID_SCHEMA, z.null()]),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       const collection =

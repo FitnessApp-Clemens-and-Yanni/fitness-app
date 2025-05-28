@@ -1,11 +1,11 @@
 export async function getSnapshots(
-  selectedWorkout: WorkoutPutRequest | undefined
+  selectedWorkout: WorkoutPutRequest | undefined,
 ) {
   const exerciseSnapshots: ExerciseSnapshot[] = [];
 
   for (const exercise of selectedWorkout?.exercises ?? []) {
     const res = await fetch(
-      `http://localhost:3000/api/exercises-snapshots/${exercise._id}`
+      `http://localhost:3000/api/exercises-snapshots/${exercise._id}`,
     );
 
     if (!res.ok) {

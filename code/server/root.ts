@@ -4,8 +4,8 @@ import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { SnapshotsRouter } from "./routers/snapshots";
 import { db } from "./data/meta";
-import {FoodRouter} from "@/routers/food";
-import {FatSecretRouter} from "@/routers/fatsecret";
+import { FoodRouter } from "@/routers/food";
+import { FatSecretRouter } from "@/routers/fatsecret";
 
 /**
  * This is the primary router for your server.

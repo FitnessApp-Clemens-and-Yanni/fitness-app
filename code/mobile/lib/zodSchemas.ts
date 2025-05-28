@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export function postiveIntegerStringSchema(
   messageForWhenEmpty?: string,
-  options: { zeroAllowed: boolean } = { zeroAllowed: true }
+  options: { zeroAllowed: boolean } = { zeroAllowed: true },
 ) {
   const obj = z
     .string({
@@ -21,7 +21,7 @@ export function postiveIntegerStringSchema(
 
 export function positiveNumberStringSchema(
   messageForWhenEmpty?: string,
-  options: { zeroAllowed: boolean } = { zeroAllowed: true }
+  options: { zeroAllowed: boolean } = { zeroAllowed: true },
 ) {
   const obj = z
     .string({

@@ -72,7 +72,6 @@ export type NutritionalValueOfDay = {
 export const MEAL_ENTRIES_COLLECTION = "MealEntries";
 
 export type MealEntry = {
-  userId: string;
   createdAt: number;
   foods: {
     name: string;

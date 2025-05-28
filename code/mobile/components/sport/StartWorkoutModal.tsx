@@ -143,14 +143,14 @@ export function StartWorkoutModal({
                     exercises: Object.values(
                       Object.groupBy(
                         finishedSetStore.finishedSets,
-                        (x) => x.exerciseId
-                      )
+                        (x) => x.exerciseId,
+                      ),
                     ).map((sets) => {
                       return {
                         id: sets![0].exerciseId,
                         sets: finishedSetStore.finishedSets
                           .filter(
-                            (set) => set.exerciseId === sets![0].exerciseId
+                            (set) => set.exerciseId === sets![0].exerciseId,
                           )
                           .map((finishedSet) => ({
                             weightsInKg: finishedSet.weightsInKg,
@@ -326,7 +326,7 @@ export function StartWorkoutModal({
                               setsAlreadyFinished.exerciseId ===
                                 selectedExercise._id &&
                               setsAlreadyFinished.setIndex ===
-                                setFromSnapshot.idx
+                                setFromSnapshot.idx,
                           )
                             ? "bg-green-300"
                             : ""
@@ -341,7 +341,7 @@ export function StartWorkoutModal({
                         <Text className="text-md">
                           {(
                             frontendSetsStore.setsPerExercise.get(
-                              selectedExercise._id
+                              selectedExercise._id,
                             )!.length *
                             setFromSnapshot.repetitions *
                             setFromSnapshot.weightsInKg
@@ -351,7 +351,7 @@ export function StartWorkoutModal({
                         finishedSetStore.finishedSets.some(
                           (s) =>
                             s.exerciseId === selectedExercise._id &&
-                            s.setIndex === setFromSnapshot.idx
+                            s.setIndex === setFromSnapshot.idx,
                         ) ? (
                           <TouchableOpacity
                             onPress={() => {
@@ -371,12 +371,12 @@ export function StartWorkoutModal({
                                 finishedSetStore.finishedSets.some(
                                   (x) =>
                                     x.exerciseId === selectedExercise._id &&
-                                    x.setIndex === setFromSnapshot.idx
+                                    x.setIndex === setFromSnapshot.idx,
                                 )
                               ) {
                                 finishedSetStore.removeFinishedSet(
                                   selectedExercise._id,
-                                  setFromSnapshot.idx
+                                  setFromSnapshot.idx,
                                 );
 
                                 return;
@@ -472,7 +472,7 @@ export function StartWorkoutModal({
                   (
                   {workoutResponse?.exercises.reduce(
                     (acc, cur) => acc + cur.numberOfSets,
-                    0
+                    0,
                   ) - finishedSetStore.finishedSets.length}{" "}
                   exercises left)
                 </Text>
@@ -486,7 +486,7 @@ export function StartWorkoutModal({
                 setTimingInterval(
                   setInterval(() => {
                     setCurrentTimestamp(Date.now());
-                  }, 500)
+                  }, 500),
                 );
               }}
             >

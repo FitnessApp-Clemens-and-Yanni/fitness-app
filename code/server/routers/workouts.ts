@@ -29,9 +29,9 @@ export const WorkoutsRouter = createTRPCRouter({
             sorting: z.number(),
             numberOfSets: z.number(),
             noteText: z.string(),
-          })
+          }),
         ),
-      })
+      }),
     )
     .mutation(async ({ input: workout, ctx }) => {
       const collection = ctx.db.collection<Workout>(WORKOUTS_COLLECTION);
@@ -62,12 +62,12 @@ export const WorkoutsRouter = createTRPCRouter({
 
       const res = await collection.updateOne(
         { _id: workout._id },
-        { $set: { ...newWorkout } }
+        { $set: { ...newWorkout } },
       );
 
       if (res.matchedCount === 0) {
         return new Error(
-          "Sorry, the workout could not be updated in the database."
+          "Sorry, the workout could not be updated in the database.",
         );
       }
 
@@ -87,17 +87,17 @@ export const WorkoutsRouter = createTRPCRouter({
               z.object({
                 weightsInKg: z.number(),
                 repetitions: z.number(),
-              })
+              }),
             ),
-          })
+          }),
         ),
         totalTimeInMinutes: z.number(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       // I am adding the journal entry first because we would rather have a journal entry without a snapshot entry than otherwise
       const finishedWorkoutsCollection = ctx.db.collection<FinishedWorkout>(
-        FINISHED_WORKOUTS_COLLECTION
+        FINISHED_WORKOUTS_COLLECTION,
       );
       await finishedWorkoutsCollection.insertOne(input);
 
@@ -108,12 +108,12 @@ export const WorkoutsRouter = createTRPCRouter({
       for (const exercise of input.exercises) {
         const res = await snapshotsCollection.updateOne(
           { exerciseId: exercise.id },
-          { $set: { exerciseDefaults: { sets: exercise.sets } } }
+          { $set: { exerciseDefaults: { sets: exercise.sets } } },
         );
 
         if (res.matchedCount === 0) {
           return new Error(
-            "Sorry, one of the exercises could not be updated in the snapshots collection on the database."
+            "Sorry, one of the exercises could not be updated in the snapshots collection on the database.",
           );
         }
       }
