@@ -7,7 +7,7 @@ import { Button } from "@ui/Button";
 import {
   postiveIntegerStringSchema,
   positiveNumberStringSchema,
-} from "@/lib/zodSchemas";
+} from "@/lib/zod-schemas";
 import { X } from "lucide-react-native";
 
 const formSchema = z.object({
