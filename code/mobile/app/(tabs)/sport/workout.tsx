@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -17,24 +16,36 @@ import { TimeDisplay } from "@comp/TimeDisplay";
 import { EditSetModal } from "@comp/sport/EditSetModal";
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
-export function StartWorkoutModal({
-  workoutResponse,
-  selectedWorkout,
-  setSelectedWorkout,
-  selectedExercise,
-  setSelectedExercise,
-}: {
-  workoutResponse: WorkoutResponse;
-  selectedWorkout: WorkoutPutRequest | undefined;
-  setSelectedWorkout: React.Dispatch<
-    React.SetStateAction<WorkoutPutRequest | undefined>
-  >;
-  selectedExercise: WorkoutExercisePutRequest | undefined;
-  setSelectedExercise: React.Dispatch<
-    React.SetStateAction<WorkoutExercisePutRequest | undefined>
-  >;
-}) {
+export default function WorkoutPage() {
+  const router = useRouter();
+
+  const [selectedWorkout, setSelectedWorkout] = useState<
+    WorkoutPutRequest | undefined
+  >();
+  const [selectedExercise, setSelectedExercise] = useState<
+    WorkoutExercisePutRequest | undefined
+  >();
+
+  const workoutResponse: WorkoutResponse = JSON.parse(
+    useLocalSearchParams<{ workoutResponse: string }>().workoutResponse,
+  );
+
+  useEffect(() => {
+    setSelectedWorkout({
+      _id: workoutResponse._id,
+      name: workoutResponse.name,
+      exercises: workoutResponse.exercises.map((exercise) => ({
+        _id: exercise._id,
+        name: exercise.name,
+        noteText: exercise.noteText,
+        sorting: exercise.sorting,
+        numberOfSets: exercise.numberOfSets,
+      })),
+    });
+  }, []);
+
   const {
     isLoading,
     error,
@@ -105,7 +116,7 @@ export function StartWorkoutModal({
 
   if (showSuccessScreen) {
     return (
-      <Modal visible={selectedWorkout !== undefined} className="flex-1">
+      <View className="flex-1">
         <View className="flex-1 bg-gradient-to-br from-primary to-red-500 items-center justify-center">
           <Card className="gap-5 text-center p-5 max-w-72 shadow-primary">
             <Text className="text-lg">
@@ -166,21 +177,14 @@ export function StartWorkoutModal({
             </View>
           </Card>
         </View>
-      </Modal>
+      </View>
     );
   }
 
   if (error || snapshotData instanceof Error) {
     console.error("Could not load snapshot, error:", error, snapshotData);
 
-    return (
-      <Modal
-        visible={selectedWorkout !== undefined}
-        className="text-white flex-1"
-      >
-        <H1>Sorry, something went wrong!</H1>
-      </Modal>
-    );
+    return <H1 className="text-center">Sorry, something went wrong!</H1>;
   }
 
   if (selectedExercise !== undefined && editModalValues !== undefined) {
@@ -209,10 +213,7 @@ export function StartWorkoutModal({
 
   if (isLoading) {
     return (
-      <Modal
-        visible={selectedWorkout !== undefined}
-        className="text-white flex-1 relative"
-      >
+      <View className="text-white flex-1 relative">
         <H1 className="m-5">{selectedWorkout?.name}</H1>
         <ScrollView horizontal={true} className="flex-1 py-5 px-4">
           {selectedWorkout?.exercises.map((exercise) => (
@@ -272,15 +273,12 @@ export function StartWorkoutModal({
             </Button>
           </View>
         </View>
-      </Modal>
+      </View>
     );
   }
 
   return (
-    <Modal
-      visible={selectedWorkout !== undefined}
-      className="text-white flex-1"
-    >
+    <View className="flex-1">
       <H1 className="m-5">{selectedWorkout?.name}</H1>
 
       <ScrollView horizontal={true} className="flex-1 py-5 px-4">
@@ -439,6 +437,7 @@ export function StartWorkoutModal({
                 frontendSetsStore.reset();
                 setSelectedExercise(undefined);
                 setSelectedWorkout(undefined);
+                router.dismiss();
               }}
             >
               <Text>
@@ -495,6 +494,6 @@ export function StartWorkoutModal({
           )}
         </View>
       </View>
-    </Modal>
+    </View>
   );
 }
