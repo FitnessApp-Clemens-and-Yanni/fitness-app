@@ -12,58 +12,9 @@ import { Set, useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Skeleton } from "@ui/skeleton";
-import { create } from "zustand";
-
-const useWorkoutStore = create<{
-  selectedWorkout: WorkoutPutRequest | undefined;
-  setSelectedWorkout: (workout: WorkoutPutRequest | undefined) => void;
-  selectedExercise: WorkoutExercisePutRequest | undefined;
-  setSelectedExercise: (
-    exercise: WorkoutExercisePutRequest | undefined,
-  ) => void;
-}>()((set) => ({
-  selectedWorkout: undefined,
-  setSelectedWorkout: (workout) =>
-    set((state) => ({ ...state, selectedWorkout: workout })),
-  selectedExercise: undefined,
-  setSelectedExercise: (exercise) =>
-    set((state) => ({ ...state, selectedExercise: exercise })),
-}));
-
-const useTimingStore = create<{
-  startTimestamp: number | undefined;
-  setStartTimestamp: (val: number | undefined) => void;
-  currentTimestamp: number | undefined;
-  setCurrentTimestamp: (val: number | undefined) => void;
-  stopTimes: () => void;
-}>()((set) => ({
-  startTimestamp: undefined,
-  setStartTimestamp: (timestamp) =>
-    set((state) => ({ ...state, startTimestamp: timestamp })),
-  currentTimestamp: undefined,
-  setCurrentTimestamp: (timestamp) =>
-    set((state) => ({ ...state, currentTimestamp: timestamp })),
-  stopTimes: () =>
-    set((state) => ({
-      ...state,
-      startTimestamp: undefined,
-      currentTimestamp: undefined,
-    })),
-}));
-
-type EditModalValues = {
-  idx: number;
-  weightsInKg: number;
-  repetitions: number;
-};
-const useEditModalStore = create<{
-  editModalValues: EditModalValues | undefined;
-  setEditModalValues: (values: EditModalValues | undefined) => void;
-}>()((set) => ({
-  editModalValues: undefined,
-  setEditModalValues: (values) =>
-    set((state) => ({ ...state, editModalValues: values })),
-}));
+import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
+import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =
@@ -165,7 +116,8 @@ function SuccessScreen(props: { setIsShown: (val: boolean) => void }) {
   const finishedSetStore = useFinishedSetsStore();
   const { selectedWorkout } = useWorkoutStore();
 
-  const { startTimestamp, currentTimestamp, stopTimes } = useTimingStore();
+  const { startTimestamp, currentTimestamp, stopTimes } =
+    useWorkoutTimingStore();
 
   const apiUtils = api.useUtils();
 
@@ -246,7 +198,7 @@ function WorkoutsFooterNavigation(props: {
     setStartTimestamp,
     currentTimestamp,
     setCurrentTimestamp,
-  } = useTimingStore();
+  } = useWorkoutTimingStore();
 
   const [timingInterval, setTimingInterval] = useState<
     NodeJS.Timeout | undefined
@@ -378,7 +330,7 @@ function SetsScrollView() {
   const exerciseSetStore = useExerciseSetStore();
   const { selectedExercise } = useWorkoutStore();
   const finishedSetStore = useFinishedSetsStore();
-  const { startTimestamp } = useTimingStore();
+  const { startTimestamp } = useWorkoutTimingStore();
   const { setEditModalValues } = useEditModalStore();
 
   if (selectedExercise === undefined) {
