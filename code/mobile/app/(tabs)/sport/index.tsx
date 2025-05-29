@@ -19,36 +19,36 @@ export default function Index() {
     data: workoutsData,
   } = api.workouts.getAll.useQuery();
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Sorry, an error occured... {error.message}</Text>
-      </View>
-    );
-  }
-
   return (
-    <FlatList
-      data={workoutsData ?? []}
-      renderItem={({ item }) => <Workout workoutResponse={item} />}
-      className="mt-5"
-      contentContainerClassName="gap-5"
-      columnWrapperClassName="justify-evenly"
-      keyExtractor={(item) => item._id}
-      numColumns={2}
-    />
+    <>
+      {isLoading || error ? (
+        <View className="flex-1 justify-center items-center">
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text>Sorry, an error occured... {error!.message}</Text>
+          )}
+        </View>
+      ) : (
+        <FlatList
+          data={workoutsData ?? []}
+          renderItem={({ item }) => <SingleWorkout workoutResponse={item} />}
+          className="mt-5"
+          contentContainerClassName="gap-5"
+          columnWrapperClassName="justify-evenly"
+          keyExtractor={(item) => item._id}
+          numColumns={2}
+        />
+      )}
+    </>
   );
 }
 
-function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
+function SingleWorkout({
+  workoutResponse,
+}: {
+  workoutResponse: WorkoutResponse;
+}) {
   const [workoutModel, setWorkoutModel] = useState<
     WorkoutPutRequest | undefined
   >();
@@ -118,7 +118,7 @@ function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
             <View className="flex-[5] flex flex-row justify-end items-center">
               <Link
                 href={{
-                  pathname: "/sport/workout",
+                  pathname: "/sport/workouts",
                   params: {
                     workoutResponse: JSON.stringify(workoutResponse),
                   },

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { api } from "@/utils/react";
-import { UserSelect } from "@/components/UserSelect";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { LoadingDisplay } from "@/components/LoadingDisplay";
 import { NutritionalDataDisplay } from "@/components/food/NutritionalDataDisplay";
@@ -49,8 +48,6 @@ export default function Index() {
 
   return (
     <View className="flex-1 p-4">
-      <UserSelect />
-
       <View className="flex-1 flex-col justify-between">
         <DateDisplay
           selectedDate={currentDate}
