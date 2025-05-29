@@ -1,9 +1,9 @@
 import { AnyFieldApi, useForm } from "@tanstack/react-form";
 import { Modal, Text, TouchableOpacity, View } from "react-native";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { z } from "zod";
-import { Button } from "./ui/Button";
+import { Button } from "../ui/Button";
 import {
   postiveIntegerStringSchema,
   positiveNumberStringSchema,
@@ -13,11 +13,11 @@ import { X } from "lucide-react-native";
 const formSchema = z.object({
   weightsInKg: positiveNumberStringSchema(
     "Please provide the weights you want to use for the set.",
-    { zeroAllowed: false }
+    { zeroAllowed: false },
   ),
   repetitions: postiveIntegerStringSchema(
     "Please provide how many reps the set has.",
-    { zeroAllowed: false }
+    { zeroAllowed: false },
   ),
 });
 
@@ -93,7 +93,7 @@ export function EditSetModal(props: {
                 onPressIn={() => {
                   props.setCurrentSet(
                     +form.getFieldValue("weightsInKg"),
-                    +form.getFieldValue("repetitions")
+                    +form.getFieldValue("repetitions"),
                   );
 
                   props.hideModal();

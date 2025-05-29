@@ -1,5 +1,5 @@
-import { EditWorkoutModal } from "@/components/EditWorkoutModal";
-import { StartWorkoutModal } from "@/components/StartWorkoutModal";
+import { EditWorkoutModal } from "@/components/sport/EditWorkoutModal";
+import { StartWorkoutModal } from "@/components/sport/StartWorkoutModal";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/utils/react";
 import { Pen } from "lucide-react-native";
@@ -17,8 +17,7 @@ export default function Index() {
     isLoading,
     error,
     data: workoutsData,
-  }  = api.workouts.getAll.useQuery();
-
+  } = api.workouts.getAll.useQuery();
 
   if (isLoading) {
     return (
@@ -91,7 +90,7 @@ function Workout({ workoutResponse }: { workoutResponse: WorkoutResponse }) {
 
   const setExerciseSetCount = (
     text: string,
-    exercise: WorkoutExercisePutRequest
+    exercise: WorkoutExercisePutRequest,
   ) => {
     if (text === "") {
       const idx = workoutModel!.exercises.indexOf(exercise);

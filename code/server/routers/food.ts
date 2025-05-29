@@ -7,6 +7,7 @@ import {
 } from "@/data/meta/models.js";
 import { createTRPCRouter, publicProcedure } from "@/trpc.js";
 import z from "zod";
+import { calculateNewNutritionalValuesInDatabase } from "@/utils/nutritionCalculator.js";
 
 export const FoodRouter = createTRPCRouter({
   getTargetNutritionalValues: publicProcedure.query(async ({ ctx }) => {
@@ -39,13 +40,13 @@ export const FoodRouter = createTRPCRouter({
       });
 
       if (!dailyNutrition) {
-        return new Error("No nutritional values found for the specified date.");
+        return "NoEntries" as const;
       }
 
       return dailyNutrition as NutritionalValueOfDay;
     }),
 
-  getFoodItemsByMeal: publicProcedure
+  getFoodItemsOfDayByMeal: publicProcedure
     .input(
       z.object({
         date: z.date(),
@@ -64,7 +65,11 @@ export const FoodRouter = createTRPCRouter({
         Snack: "snackMeals",
       };
 
+<<<<<<< HEAD
       const mappedMealType = mealTypeMapping[input.mealType] || input.mealType;
+=======
+      const mappedMealType = mealTypeMapping[input.mealType];
+>>>>>>> feature-clemens-date-picker
 
       const foodItems = await collection.findOne({
         "dayOfEntry.year": input.date.getFullYear(),
@@ -81,10 +86,10 @@ export const FoodRouter = createTRPCRouter({
       ] as MealEntry;
     }),
 
-  deleteFood: publicProcedure
+  deleteFoodOfDayByMeal: publicProcedure
     .input(
       z.object({
-        date: z.date().default(() => new Date()), // Default to current date
+        date: z.date().default(() => new Date()),
         mealType: z.string(),
         foodName: z.string(),
       }),
@@ -116,65 +121,10 @@ export const FoodRouter = createTRPCRouter({
         },
       );
 
-      CalculateNewNutritionalValues();
+      await calculateNewNutritionalValuesInDatabase(ctx.db, input.date);
 
       if (result.modifiedCount === 0) {
         return new Error("Food item not found or could not be deleted.");
-      }
-
-      async function CalculateNewNutritionalValues() {
-        // Fetch the updated document after deletion
-        const updatedDocument = await collection.findOne({
-          "dayOfEntry.year": input.date.getFullYear(),
-          "dayOfEntry.month": input.date.getMonth() + 1,
-          "dayOfEntry.day": input.date.getDate(),
-        });
-
-        if (!updatedDocument) return;
-
-        // Initialize totals
-        let totalCalories = 0;
-        let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFats = 0;
-
-        // Calculate totals from all meals
-        const mealTypes = [
-          "breakfastMeals",
-          "lunchMeals",
-          "dinnerMeals",
-          "snackMeals",
-        ];
-        for (const mealType of mealTypes) {
-          const meal = updatedDocument[
-            mealType as keyof NutritionalValueOfDay
-          ] as MealEntry;
-          if (meal && meal.foods) {
-            for (const food of meal.foods) {
-              totalCalories += food.caloriesInKcal;
-              totalProtein += food.proteinInG;
-              totalCarbs += food.carbsInG;
-              totalFats += food.fatsInG;
-            }
-          }
-        }
-
-        // Update the document with new totals
-        await collection.updateOne(
-          {
-            "dayOfEntry.year": input.date.getFullYear(),
-            "dayOfEntry.month": input.date.getMonth() + 1,
-            "dayOfEntry.day": input.date.getDate(),
-          },
-          {
-            $set: {
-              caloriesInKcal: totalCalories,
-              proteinInG: totalProtein,
-              carbsInG: totalCarbs,
-              fatsInG: totalFats,
-            },
-          },
-        );
       }
 
       return {
@@ -183,13 +133,10 @@ export const FoodRouter = createTRPCRouter({
       };
     }),
 
-  addFood: publicProcedure
+  createEmptyDayEntry: publicProcedure
     .input(
       z.object({
-        date: z.date().default(() => new Date()),
-        mealType: z.string(),
-        foodName: z.string(),
-        weightInG: z.number(),
+        date: z.date(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -197,107 +144,37 @@ export const FoodRouter = createTRPCRouter({
         NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
       );
 
-      // Map the meal type to the corresponding field name in the database
-      const mealTypeMapping: Record<string, string> = {
-        Breakfast: "breakfastMeals",
-        Lunch: "lunchMeals",
-        Dinner: "dinnerMeals",
-        Snack: "snackMeals",
-      };
-
-      const mappedMealType = mealTypeMapping[input.mealType] || input.mealType;
-
-      // Fetch nutritional info for the food (simplified - in a real app you'd fetch this from a food database)
-      // For now, I'm using placeholder values for calories, protein, carbs, and fats
-      const caloriesPerGram = 2; // Example value
-      const proteinPerGram = 0.1; // Example value
-      const carbsPerGram = 0.2; // Example value
-      const fatsPerGram = 0.05; // Example value
-
-      const newFood = {
-        name: input.foodName,
-        weightInG: input.weightInG,
-        caloriesInKcal: caloriesPerGram * input.weightInG,
-        proteinInG: proteinPerGram * input.weightInG,
-        carbsInG: carbsPerGram * input.weightInG,
-        fatsInG: fatsPerGram * input.weightInG,
-      };
-
-      // Add the food to the specified meal
-      const result = await collection.updateOne(
-        {
-          "dayOfEntry.year": input.date.getFullYear(),
-          "dayOfEntry.month": input.date.getMonth() + 1,
-          "dayOfEntry.day": input.date.getDate(),
+      const emptyEntry: NutritionalValueOfDay = {
+        userId: "0", // Default user ID
+        caloriesInKcal: 0,
+        proteinInG: 0,
+        carbsInG: 0,
+        fatsInG: 0,
+        dayOfEntry: {
+          year: input.date.getFullYear(),
+          month: input.date.getMonth() + 1,
+          day: input.date.getDate(),
         },
-        {
-          $push: {
-            [`${mappedMealType}.foods`]: newFood,
-          },
+        breakfastMeals: {
+          createdAt: Date.now(),
+          foods: [],
         },
-      );
-
-      await calculateNewNutritionalValues();
-
-      if (result.modifiedCount === 0) {
-        return new Error("Could not add food item.");
-      }
-
-      async function calculateNewNutritionalValues() {
-        // Fetch the updated document after addition
-        const updatedDocument = await collection.findOne({
-          "dayOfEntry.year": input.date.getFullYear(),
-          "dayOfEntry.month": input.date.getMonth() + 1,
-          "dayOfEntry.day": input.date.getDate(),
-        });
-
-        if (!updatedDocument) return;
-
-        let totalCalories = 0;
-        let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFats = 0;
-
-        const mealTypes = [
-          "breakfastMeals",
-          "lunchMeals",
-          "dinnerMeals",
-          "snackMeals",
-        ];
-        for (const mealType of mealTypes) {
-          const meal = updatedDocument[
-            mealType as keyof NutritionalValueOfDay
-          ] as MealEntry;
-          if (meal && meal.foods) {
-            for (const food of meal.foods) {
-              totalCalories += food.caloriesInKcal;
-              totalProtein += food.proteinInG;
-              totalCarbs += food.carbsInG;
-              totalFats += food.fatsInG;
-            }
-          }
-        }
-
-        await collection.updateOne(
-          {
-            "dayOfEntry.year": input.date.getFullYear(),
-            "dayOfEntry.month": input.date.getMonth() + 1,
-            "dayOfEntry.day": input.date.getDate(),
-          },
-          {
-            $set: {
-              caloriesInKcal: totalCalories,
-              proteinInG: totalProtein,
-              carbsInG: totalCarbs,
-              fatsInG: totalFats,
-            },
-          },
-        );
-      }
-
-      return {
-        success: true,
-        message: `Successfully added ${input.foodName}`,
+        lunchMeals: {
+          createdAt: Date.now(),
+          foods: [],
+        },
+        dinnerMeals: {
+          createdAt: Date.now(),
+          foods: [],
+        },
+        snackMeals: {
+          createdAt: Date.now(),
+          foods: [],
+        },
       };
+
+      await collection.insertOne(emptyEntry);
+
+      return emptyEntry;
     }),
 });

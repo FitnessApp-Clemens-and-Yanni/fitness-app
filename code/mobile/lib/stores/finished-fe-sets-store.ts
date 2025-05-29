@@ -24,7 +24,7 @@ export const useFinishedSetsStore = create<{
   removeFinishedSet: (exerciseId, setIndex) =>
     set((state) => ({
       finishedSets: state.finishedSets.filter(
-        (x) => x.exerciseId !== exerciseId && x.setIndex !== setIndex
+        (x) => x.exerciseId !== exerciseId && x.setIndex !== setIndex,
       ),
     })),
 
@@ -33,7 +33,7 @@ export const useFinishedSetsStore = create<{
       const oldSetIdx = state.finishedSets.findIndex(
         (s) =>
           s.exerciseId === updatedSet.exerciseId &&
-          s.setIndex === updatedSet.setIndex
+          s.setIndex === updatedSet.setIndex,
       );
 
       if (oldSetIdx === -1) {

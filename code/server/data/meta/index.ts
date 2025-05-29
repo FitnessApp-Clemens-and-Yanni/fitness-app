@@ -49,10 +49,9 @@ async function ensureCollectionsInitializedAndPopulated() {
       TARGET_NUTRITIONAL_VALUE_COLLECTION,
     );
 
-  const nutritionalValueOfDayCollection =
-    await db.createCollection<NutritionalValueOfDay>(
-      NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
-    );
+  await db.createCollection<NutritionalValueOfDay>(
+    NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
+  );
 
   if ((await workoutsCollection.countDocuments()) === 0) {
     workoutsCollection.insertMany(workouts);

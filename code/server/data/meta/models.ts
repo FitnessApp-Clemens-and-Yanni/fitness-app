@@ -72,7 +72,6 @@ export type NutritionalValueOfDay = {
 export const MEAL_ENTRIES_COLLECTION = "MealEntries";
 
 export type MealEntry = {
-  userId: string;
   createdAt: number;
   foods: {
     name: string;
@@ -89,4 +88,16 @@ type DateOnly = {
   year: number;
   month: number;
   day: number;
+};
+
+export type FoodItem = {
+  food_name: string;
+  food_description: string;
+  food_id: string;
+};
+
+export type SearchFoodResult = {
+  foods: {
+    food: FoodItem[] | FoodItem;
+  };
 };

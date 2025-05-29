@@ -10,11 +10,11 @@ const Card = forwardRef<ViewRef, ComponentPropsWithoutRef<typeof View>>(
       ref={ref}
       className={cn(
         "rounded-lg border border-border bg-card shadow-sm shadow-foreground/10",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 Card.displayName = "Card";
 
@@ -25,7 +25,7 @@ const CardHeader = forwardRef<ViewRef, ComponentPropsWithoutRef<typeof View>>(
       className={cn("flex flex-col space-y-1.5 p-6", className)}
       {...props}
     />
-  )
+  ),
 );
 CardHeader.displayName = "CardHeader";
 
@@ -37,11 +37,11 @@ const CardTitle = forwardRef<TextRef, ComponentPropsWithoutRef<typeof Text>>(
       ref={ref}
       className={cn(
         "text-2xl text-card-foreground font-semibold leading-none tracking-tight",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 CardTitle.displayName = "CardTitle";
 
@@ -62,7 +62,7 @@ const CardContent = forwardRef<ViewRef, ComponentPropsWithoutRef<typeof View>>(
     <TextClassContext.Provider value="text-card-foreground">
       <View ref={ref} className={cn("p-6 pt-0", className)} {...props} />
     </TextClassContext.Provider>
-  )
+  ),
 );
 CardContent.displayName = "CardContent";
 
@@ -73,7 +73,7 @@ const CardFooter = forwardRef<ViewRef, ComponentPropsWithoutRef<typeof View>>(
       className={cn("flex flex-row items-center p-6 pt-0", className)}
       {...props}
     />
-  )
+  ),
 );
 CardFooter.displayName = "CardFooter";
 
