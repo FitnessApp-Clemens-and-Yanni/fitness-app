@@ -2,7 +2,7 @@ import {
   MealEntry,
   NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
   NutritionalValueOfDay,
-} from "@/data/meta/models";
+} from "@/data/meta/models.js";
 import { Db } from "mongodb";
 
 export async function calculateNewNutritionalValuesInDatabase(

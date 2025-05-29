@@ -65,11 +65,7 @@ export const FoodRouter = createTRPCRouter({
         Snack: "snackMeals",
       };
 
-<<<<<<< HEAD
-      const mappedMealType = mealTypeMapping[input.mealType] || input.mealType;
-=======
       const mappedMealType = mealTypeMapping[input.mealType];
->>>>>>> feature-clemens-date-picker
 
       const foodItems = await collection.findOne({
         "dayOfEntry.year": input.date.getFullYear(),
