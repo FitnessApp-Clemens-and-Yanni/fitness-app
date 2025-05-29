@@ -9,13 +9,13 @@ import {
   Text,
 } from "react-native";
 import { X } from "lucide-react-native";
-import { Button } from "@/components/ui/Button";
-import { SearchFoodResult } from "../../../../server/data/meta/models";
-import { FilterFoodButtons } from "@/components/food/MealModal/FilterFoodButtons";
-import { ApiSearchBar } from "@/components/food/MealModal/ApiSearchBar";
-import { ApiSearchBarResult } from "@/components/food/MealModal/ApiSearchBarResult";
-import { NutritionalDataDisplay } from "@/components/food/MealModal/NutritionalDataDisplay";
-import { FoodList } from "@/components/food/MealModal/FoodList";
+import { Button } from "@ui/Button";
+import { SearchFoodResult } from "@server/data/meta/models";
+import { FilterFoodButtons } from "@comp/food/MealModal/FilterFoodButtons";
+import { ApiSearchBar } from "@comp/food/MealModal/ApiSearchBar";
+import { ApiSearchBarResult } from "@comp/food/MealModal/ApiSearchBarResult";
+import { NutritionalDataDisplay } from "@comp/food/MealModal/NutritionalDataDisplay";
+import { FoodList } from "@comp/food/MealModal/FoodList";
 
 export function AddMealModal(props: {
   isVisible: boolean;

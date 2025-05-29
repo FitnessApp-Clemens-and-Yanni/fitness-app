@@ -1,9 +1,9 @@
 import { View, Text } from "react-native";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@ui/progress";
 import {
   NutritionalValueOfDay,
   TargetNutritionalValue,
-} from "../../../server/data/meta/models";
+} from "@server/data/meta/models";
 
 type NutrientKey = "caloriesInKcal" | "proteinInG" | "carbsInG" | "fatsInG";
 

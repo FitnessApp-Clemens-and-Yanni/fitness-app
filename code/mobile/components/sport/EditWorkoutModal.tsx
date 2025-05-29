@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Card } from "../ui/Card";
-import { Button } from "../ui/Button";
+import { Card } from "@ui/Card";
+import { Button } from "@ui/Button";
 import { api } from "@/utils/react";
 
 export function EditWorkoutModal({

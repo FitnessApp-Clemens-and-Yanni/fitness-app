@@ -1,4 +1,4 @@
-import { Text } from "@/components/ui/Text";
+import { Text } from "@ui/Text";
 import { View } from "react-native";
 
 export function ErrorDisplay(props: { message: string }) {

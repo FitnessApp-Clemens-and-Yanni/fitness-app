@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { MealCard } from "@/components/food/MealCard";
+import { MealCard } from "@comp/food/MealCard";
 
 export function MealsAddingOptions(props: {
   refetchDailyData: () => void;

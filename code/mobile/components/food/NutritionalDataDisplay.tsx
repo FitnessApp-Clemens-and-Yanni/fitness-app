@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import {
   NutritionalValueOfDay,
   TargetNutritionalValue,
-} from "../../../server/data/meta/models";
+} from "@server/data/meta/models";
 import { NutritionalValuesProgressBars } from "@/components/food/NutritionalValuesProgressBars";
 
 export function NutritionalDataDisplay(props: {

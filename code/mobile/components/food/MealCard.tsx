@@ -1,8 +1,8 @@
 import { TouchableOpacity, Text } from "react-native";
 import { Eye, Pen } from "lucide-react-native";
-import { Card } from "@/components/ui/Card";
-import { AddMealModal } from "@/components/food/MealModal/AddMealModal";
-import { Alert } from "@/components/Alert";
+import { Card } from "@ui/Card";
+import { AddMealModal } from "@comp/food/MealModal/AddMealModal";
+import { Alert } from "@comp/Alert";
 import { useState } from "react";
 
 export function MealCard(props: {

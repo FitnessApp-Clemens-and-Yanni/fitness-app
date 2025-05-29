@@ -1,5 +1,5 @@
 import { TouchableOpacity, View } from "react-native";
-import { Input } from "@/components/ui/input";
+import { Input } from "@ui/input";
 import { ScanBarcode, Search } from "lucide-react-native";
 
 export function ApiSearchBar(props: {

@@ -7,7 +7,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/Alert-dialog";
+} from "@ui/Alert-dialog";
 import { ReactNode } from "react";
 import { Text } from "react-native";
 

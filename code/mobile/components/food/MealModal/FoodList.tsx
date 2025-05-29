@@ -1,6 +1,6 @@
 import { ScrollView, TouchableOpacity, View, Text } from "react-native";
 import { Trash2 } from "lucide-react-native";
-import { MealEntry } from "../../../../server/data/meta/models";
+import { MealEntry } from "@server/data/meta/models";
 import { api } from "@/utils/react";
 
 export function FoodList(props: {
