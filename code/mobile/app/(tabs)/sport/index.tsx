@@ -1,14 +1,14 @@
-import { EditWorkoutModal } from "@/components/sport/EditWorkoutModal";
-import { StartWorkoutModal } from "@/components/sport/StartWorkoutModal";
-import { Button } from "@/components/ui/Button";
+import { EditWorkoutModal } from "@comp/sport/EditWorkoutModal";
+import { StartWorkoutModal } from "@comp/sport/StartWorkoutModal";
+import { Button } from "@ui/Button";
 import { api } from "@/utils/react";
 import { Pen } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  View,
   Text,
+  View,
   TouchableOpacity,
 } from "react-native";
 

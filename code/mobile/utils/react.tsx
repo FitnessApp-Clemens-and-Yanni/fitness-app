@@ -55,5 +55,5 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 function getBaseUrl() {
   return (__DEV__ ?? true)
     ? "http://localhost:3000"
-    : "http://64.227.116.189:3000";
+    : "https://the-fitness-app-dev.org:3001";
 }
