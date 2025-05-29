@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type Set = {
+export type Set = {
   idx: number;
   weightsInKg: number;
   repetitions: number;
