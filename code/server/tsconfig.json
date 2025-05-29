@@ -11,10 +11,9 @@
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./*"],
-      "@shared/*": ["../shared/build/*"]
+      "@shared/*": ["./shared/*"]
     },
     "composite": true
   },
-  "exclude": ["node_modules", "build"],
-  "references": [{ "path": "../shared" }]
+  "exclude": ["node_modules", "build"]
 }

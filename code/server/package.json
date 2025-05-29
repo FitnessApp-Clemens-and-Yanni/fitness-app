@@ -8,7 +8,7 @@
     "start": "tsx root",
     "dev": "tsx watch root",
     "prod": "tsx root",
-    "db": "docker run -d --name database-fitness-app-mongodb -p 27017:27017 -d mongodb/mongodb-community-server"
+    "db": "docker run -d --name database-fitness-app-mongodb -p 27017:27017 mongodb/mongodb-community-server"
   },
   "keywords": [],
   "author": "",

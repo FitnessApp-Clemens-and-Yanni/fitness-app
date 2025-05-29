@@ -4,7 +4,7 @@ import cors from "cors";
 import { SnapshotsRouter } from "@/routers/snapshots.js";
 import { FoodRouter } from "@/routers/food.js";
 import { FatSecretRouter } from "@/routers/fatsecret.js";
-import { doDb } from "./data/meta/index.js";
+import { db } from "./data/meta/index.js";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 
 /**
@@ -34,7 +34,7 @@ const server = createHTTPServer({
   middleware: cors(),
   createContext() {
     return {
-      doDb: doDb,
+      db: db,
       headers: new Headers(),
     };
   },

@@ -12,18 +12,16 @@ export const SnapshotsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      return await ctx.doDb(async (db) => {
-        const collection =
-          db.collection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
+      const collection =
+        ctx.db.collection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
 
-        if (input._id === null) {
-          return [];
-        }
+      if (input._id === null) {
+        return [];
+      }
 
-        const snapshot = await collection.findOne({ exerciseId: input._id });
-        return snapshot === null
-          ? []
-          : [{ ...snapshot, _id: snapshot._id.toString() }];
-      });
+      const snapshot = await collection.findOne({ exerciseId: input._id });
+      return snapshot === null
+        ? []
+        : [{ ...snapshot, _id: snapshot._id.toString() }];
     }),
 });
