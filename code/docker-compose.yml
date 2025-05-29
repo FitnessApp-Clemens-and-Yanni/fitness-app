@@ -3,7 +3,7 @@ services:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
     restart: unless-stopped
     ports:
-      - "4000:3000"
+      - "4000:80"
     container_name: phone-web
     networks:
       - fitness-network
@@ -24,7 +24,6 @@ services:
       MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
     dns:
       - 8.8.8.8
-
 
 networks:
   fitness-network:
