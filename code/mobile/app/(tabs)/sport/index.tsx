@@ -16,6 +16,7 @@ import {
   WorkoutPutRequest,
   WorkoutResponse,
 } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Index() {
   const {
@@ -27,13 +28,20 @@ export default function Index() {
   return (
     <>
       {isLoading || error ? (
-        <View className="flex-1 justify-center items-center">
-          {isLoading ? (
-            <ActivityIndicator />
-          ) : (
-            <Text>Sorry, an error occured... {error!.message}</Text>
-          )}
-        </View>
+        isLoading ? (
+          <FlatList
+            data={new Array(5).fill(null).map((_, idx) => idx + 1)}
+            renderItem={() => (
+              <Skeleton className="mt-2 rounded aspect-square p-2 flex flex-col justify-end w-5/12"></Skeleton>
+            )}
+            className="mt-5 flex-1"
+            contentContainerClassName="gap-5"
+            columnWrapperClassName="justify-evenly"
+            numColumns={2}
+          />
+        ) : (
+          <Text>Sorry, an error occured... {error!.message}</Text>
+        )
       ) : (
         <FlatList
           data={workoutsData ?? []}
