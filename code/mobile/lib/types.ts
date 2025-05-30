@@ -1,11 +1,11 @@
-type WorkoutResponse = {
+export type WorkoutResponse = {
   _id: string;
   name: string;
   sorting: number;
   exercises: WorkoutExerciseResponse[];
 };
 
-type WorkoutExerciseResponse = {
+export type WorkoutExerciseResponse = {
   _id: string;
   name: string;
   equipmentInfo: string;
@@ -17,13 +17,13 @@ type WorkoutExerciseResponse = {
   sorting: number;
 };
 
-type WorkoutPutRequest = {
+export type WorkoutPutRequest = {
   _id: string;
   name: string;
   exercises: WorkoutExercisePutRequest[];
 };
 
-type WorkoutExercisePutRequest = {
+export type WorkoutExercisePutRequest = {
   _id: string;
   name: string;
   numberOfSets: number;
@@ -31,7 +31,7 @@ type WorkoutExercisePutRequest = {
   sorting: number;
 };
 
-type ExerciseSnapshot = {
+export type ExerciseSnapshot = {
   exerciseId: string;
   userId: null;
   exerciseDefaults: {

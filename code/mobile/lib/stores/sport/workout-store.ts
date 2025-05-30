@@ -1,3 +1,4 @@
+import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
 import { create } from "zustand";
 
 export const useWorkoutStore = create<{

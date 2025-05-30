@@ -11,6 +11,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Link } from "expo-router";
+import {
+  WorkoutExercisePutRequest,
+  WorkoutPutRequest,
+  WorkoutResponse,
+} from "@/lib/types";
 
 export default function Index() {
   const {

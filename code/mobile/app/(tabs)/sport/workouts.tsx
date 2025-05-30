@@ -15,6 +15,7 @@ import { Skeleton } from "@ui/skeleton";
 import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
 import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
 import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
+import { WorkoutResponse } from "@/lib/types";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =
