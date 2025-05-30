@@ -1,0 +1,84 @@
+import { TimeDisplay } from "@comp/TimeDisplay";
+import { Button } from "@ui/Button";
+import { Card } from "@ui/Card";
+import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
+import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
+import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { api } from "@/utils/react";
+import { Text, View } from "react-native";
+import { useRouter } from "expo-router";
+
+export default function SuccessScreen() {
+  const finishedSetStore = useFinishedSetsStore();
+  const { selectedWorkout } = useWorkoutStore();
+  const router = useRouter();
+
+  const { startTimestamp, currentTimestamp, stopTimes } =
+    useWorkoutTimingStore();
+
+  const apiUtils = api.useUtils();
+
+  const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({
+    onSuccess: () => {
+      apiUtils.snapshots.getExerciseDefaultsForWorkout.invalidate();
+    },
+  });
+
+  return (
+    <View className="flex-1">
+      <View className="flex-1 bg-gradient-to-br from-primary to-red-500 items-center justify-center">
+        <Card className="gap-5 text-center p-5 max-w-72 shadow-primary">
+          <Text className="text-lg">
+            <Text className="font-bold italic">Congrats</Text>, you finished
+            your workout and it took you
+          </Text>
+          <TimeDisplay
+            className="text-5xl text-center"
+            timeInMinutes={(currentTimestamp! - startTimestamp!) / 60_000}
+          />
+          <Text className="text-lg">minutes!</Text>
+          <View className="justify-end">
+            <Button
+              onPress={async () => {
+                router.dismiss();
+
+                stopTimes();
+                finishedSetStore.reset();
+
+                if (selectedWorkout === undefined) {
+                  return;
+                }
+
+                await finishWorkoutMutation.mutateAsync({
+                  userId: "gugi",
+                  workoutId: selectedWorkout._id,
+                  workoutName: selectedWorkout.name,
+                  totalTimeInMinutes:
+                    (currentTimestamp! - startTimestamp!) / 60_000,
+                  exercises: Object.values(
+                    Object.groupBy(
+                      finishedSetStore.finishedSets,
+                      (x) => x.exerciseId,
+                    ),
+                  ).map((sets) => {
+                    return {
+                      id: sets![0].exerciseId,
+                      sets: finishedSetStore.finishedSets
+                        .filter((set) => set.exerciseId === sets![0].exerciseId)
+                        .map((finishedSet) => ({
+                          weightsInKg: finishedSet.weightsInKg,
+                          repetitions: finishedSet.repetitions,
+                        })),
+                    };
+                  }),
+                });
+              }}
+            >
+              <Text className="font-bold text-white">Yay! :D</Text>
+            </Button>
+          </View>
+        </Card>
+      </View>
+    </View>
+  );
+}

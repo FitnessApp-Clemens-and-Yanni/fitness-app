@@ -1,21 +1,19 @@
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { H1, H2, H3, H4 } from "@ui/Typography";
+import { H1, H3 } from "@ui/Typography";
 import { Card } from "@ui/Card";
 import { Button } from "@ui/Button";
-import { ArrowBigLeft, Check, Pen } from "lucide-react-native";
-import { generateUUID } from "@/lib/utils";
-import { api } from "@/utils/react";
+import { ArrowBigLeft } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { TimeDisplay } from "@comp/TimeDisplay";
 import { EditSetModal } from "@comp/sport/EditSetModal";
-import { Set, useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
+import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Skeleton } from "@ui/skeleton";
 import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
 import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
 import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
 import { WorkoutResponse } from "@/lib/types";
+import { SetsView } from "@/components/sport/sets-view/SetsView";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =
@@ -24,6 +22,8 @@ export default function WorkoutsPage() {
   const workoutResponse: WorkoutResponse = JSON.parse(
     useLocalSearchParams<{ workoutResponse: string }>().workoutResponse,
   );
+
+  const router = useRouter();
 
   useEffect(() => {
     setSelectedWorkout({
@@ -41,14 +41,9 @@ export default function WorkoutsPage() {
 
   const finishedSetStore = useFinishedSetsStore();
 
-  const [showSuccessScreen, setShowSuccessScreen] = useState<boolean>(false);
   const { editModalValues, setEditModalValues } = useEditModalStore();
 
   const frontendSetsStore = useExerciseSetStore();
-
-  if (showSuccessScreen) {
-    return <SuccessScreen setIsShown={setShowSuccessScreen} />;
-  }
 
   return selectedExercise !== undefined && editModalValues !== undefined ? (
     <EditSetModal
@@ -86,7 +81,7 @@ export default function WorkoutsPage() {
         </ScrollView>
 
         <WorkoutsFooterNavigation
-          onSuccess={() => setShowSuccessScreen(true)}
+          onSuccess={() => router.navigate("/sport/success")}
           workoutResponse={workoutResponse}
         />
       </View>
@@ -110,79 +105,6 @@ function ExercisesScrollView() {
         </Card>
       ))}
     </ScrollView>
-  );
-}
-
-function SuccessScreen(props: { setIsShown: (val: boolean) => void }) {
-  const finishedSetStore = useFinishedSetsStore();
-  const { selectedWorkout } = useWorkoutStore();
-
-  const { startTimestamp, currentTimestamp, stopTimes } =
-    useWorkoutTimingStore();
-
-  const apiUtils = api.useUtils();
-
-  const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({
-    onSuccess: () => {
-      apiUtils.snapshots.getExerciseDefaultsForWorkout.invalidate();
-    },
-  });
-
-  return (
-    <View className="flex-1">
-      <View className="flex-1 bg-gradient-to-br from-primary to-red-500 items-center justify-center">
-        <Card className="gap-5 text-center p-5 max-w-72 shadow-primary">
-          <Text className="text-lg">
-            <Text className="font-bold italic">Congrats</Text>, you finished
-            your workout and it took you
-          </Text>
-          <TimeDisplay
-            className="text-5xl text-center"
-            timeInMinutes={(currentTimestamp! - startTimestamp!) / 60_000}
-          />
-          <Text className="text-lg">minutes!</Text>
-          <View className="justify-end">
-            <Button
-              onPress={async () => {
-                props.setIsShown(false);
-                stopTimes();
-                finishedSetStore.reset();
-
-                if (selectedWorkout === undefined) {
-                  return;
-                }
-
-                await finishWorkoutMutation.mutateAsync({
-                  userId: "gugi",
-                  workoutId: selectedWorkout._id,
-                  workoutName: selectedWorkout.name,
-                  totalTimeInMinutes:
-                    (currentTimestamp! - startTimestamp!) / 60_000,
-                  exercises: Object.values(
-                    Object.groupBy(
-                      finishedSetStore.finishedSets,
-                      (x) => x.exerciseId,
-                    ),
-                  ).map((sets) => {
-                    return {
-                      id: sets![0].exerciseId,
-                      sets: finishedSetStore.finishedSets
-                        .filter((set) => set.exerciseId === sets![0].exerciseId)
-                        .map((finishedSet) => ({
-                          weightsInKg: finishedSet.weightsInKg,
-                          repetitions: finishedSet.repetitions,
-                        })),
-                    };
-                  }),
-                });
-              }}
-            >
-              <Text className="font-bold text-white">Yay! :D</Text>
-            </Button>
-          </View>
-        </Card>
-      </View>
-    </View>
   );
 }
 
@@ -274,261 +196,6 @@ function WorkoutsFooterNavigation(props: {
         </Button>
       )}
     </View>
-  );
-}
-
-function SetsView() {
-  const { selectedExercise, selectedWorkout } = useWorkoutStore();
-
-  const {
-    isLoading,
-    error,
-    data: snapshotData,
-  } = api.snapshots.getExerciseDefaultsForWorkout.useQuery({
-    _id: selectedExercise?._id ?? null,
-  });
-
-  if (error || snapshotData instanceof Error) {
-    console.error("Could not load snapshot, error:", error, snapshotData);
-    return <H1 className="text-center">Sorry, something went wrong!</H1>;
-  }
-
-  useEffect(updateSetsEffect(snapshotData), [
-    snapshotData,
-    selectedExercise,
-    selectedWorkout,
-  ]);
-
-  return isLoading ? (
-    <View className="gap-5">
-      <Skeleton className="flex-1 w-full p-20" />
-      <Skeleton className="flex-1 w-full p-20" />
-      <Skeleton className="flex-1 w-full p-20" />
-    </View>
-  ) : (
-    <View className="gap-5">
-      <H2 className="m-2">{selectedExercise?.name}</H2>
-      <View className="flex-1 flex-row justify-evenly">
-        <Card className="py-3 px-2 justify-center">
-          <Text>kg</Text>
-        </Card>
-        <Card className="py-3 px-2 justify-center">
-          <Text>reps</Text>
-        </Card>
-        <Card className="py-3 px-2 justify-center">
-          <Text>vol</Text>
-        </Card>
-        <View className="px-7"></View>
-      </View>
-      <SetsScrollView />
-      <View className="flex-1"></View>
-      <PreviousSets snapshotData={snapshotData} />
-    </View>
-  );
-}
-
-function SetsScrollView() {
-  const exerciseSetStore = useExerciseSetStore();
-  const { selectedExercise } = useWorkoutStore();
-  const finishedSetStore = useFinishedSetsStore();
-  const { startTimestamp } = useWorkoutTimingStore();
-  const { setEditModalValues } = useEditModalStore();
-
-  if (selectedExercise === undefined) {
-    throw new Error(
-      "There should never be a scenario where there is not a selected exercise here.",
-    );
-  }
-
-  return (
-    <ScrollView>
-      {exerciseSetStore.setsPerExercise
-        .get(selectedExercise!._id)
-        ?.map((setFromSnapshot) => (
-          <FinishableEditableSetCard
-            set={setFromSnapshot}
-            isMarkedAsFinished={finishedSetStore.finishedSets.some(
-              (setsAlreadyFinished) =>
-                setsAlreadyFinished.exerciseId === selectedExercise!._id &&
-                setsAlreadyFinished.setIndex === setFromSnapshot.idx,
-            )}
-            numberOfSetsInExercise={
-              exerciseSetStore.setsPerExercise.get(selectedExercise!._id)!
-                .length
-            }
-            onPressEdit={() => {
-              setEditModalValues({
-                idx: setFromSnapshot.idx,
-                weightsInKg: setFromSnapshot.weightsInKg,
-                repetitions: setFromSnapshot.repetitions,
-              });
-            }}
-            onToggleFinished={() => {
-              if (
-                finishedSetStore.finishedSets.some(
-                  (x) =>
-                    x.exerciseId === selectedExercise._id &&
-                    x.setIndex === setFromSnapshot.idx,
-                )
-              ) {
-                finishedSetStore.removeFinishedSet(
-                  selectedExercise._id,
-                  setFromSnapshot.idx,
-                );
-
-                return;
-              }
-
-              finishedSetStore.addFinishedSet({
-                exerciseId: selectedExercise._id,
-                setIndex: setFromSnapshot.idx,
-                ...setFromSnapshot,
-              });
-            }}
-            editable={
-              startTimestamp === undefined ||
-              finishedSetStore.finishedSets.some(
-                (s) =>
-                  s.exerciseId === selectedExercise._id &&
-                  s.setIndex === setFromSnapshot.idx,
-              )
-            }
-            key={setFromSnapshot.idx}
-          />
-        ))}
-    </ScrollView>
-  );
-}
-
-function updateSetsEffect(
-  snapshotData:
-    | {
-        exerciseId: string;
-        exerciseDefaults: {
-          sets: { weightsInKg: number; repetitions: number }[];
-        };
-      }[]
-    | undefined,
-) {
-  const { selectedExercise } = useWorkoutStore();
-  const exerciseSetStore = useExerciseSetStore();
-
-  return () => {
-    if (
-      selectedExercise !== undefined &&
-      exerciseSetStore.setsPerExercise.get(selectedExercise._id) ===
-        undefined &&
-      (snapshotData?.some((s) => s.exerciseId === selectedExercise._id) ??
-        false)
-    ) {
-      const snapshotExerciseSets = snapshotData
-        ?.find((s) => s.exerciseId === selectedExercise._id)!
-        .exerciseDefaults.sets!.map((set, idx) => ({ ...set, idx })); // TODO: When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
-
-      let temporarySets = [...snapshotExerciseSets!.map((x) => ({ ...x }))];
-
-      if (snapshotExerciseSets!.length < selectedExercise.numberOfSets) {
-        const countNew =
-          selectedExercise.numberOfSets - snapshotExerciseSets!.length;
-
-        temporarySets = [
-          ...temporarySets,
-          ...new Array(countNew)
-            .fill(null)
-            .map((_) => temporarySets![temporarySets!.length - 1]),
-        ].map((set, i) => ({ ...set, idx: i }));
-      }
-
-      if (snapshotExerciseSets!.length > selectedExercise.numberOfSets) {
-        temporarySets = temporarySets.slice(0, selectedExercise.numberOfSets);
-      }
-
-      for (const set of temporarySets) {
-        exerciseSetStore.upsertSetForExercise(selectedExercise._id, set);
-      }
-    }
-  };
-}
-
-function FinishableEditableSetCard(props: {
-  set: Set;
-  numberOfSetsInExercise: number;
-  isMarkedAsFinished: boolean;
-  onPressEdit: () => void;
-  onToggleFinished: () => void;
-  editable: boolean;
-}) {
-  return (
-    <Card className="mb-1">
-      <View
-        className={`flex-1 flex-row justify-evenly items-center py-2 ${
-          props.isMarkedAsFinished ? "bg-green-300" : ""
-        }`}
-      >
-        <Text className="text-md">{props.set.weightsInKg.toFixed(2)}</Text>
-        <Text className="text-md">{props.set.repetitions}</Text>
-        <Text className="text-md">
-          {(
-            props.numberOfSetsInExercise *
-            props.set.repetitions *
-            props.set.weightsInKg
-          ).toFixed(2)}
-        </Text>
-        {props.editable ? (
-          <TouchableOpacity onPress={props.onPressEdit}>
-            <Pen />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={props.onToggleFinished}>
-            <Check />
-          </TouchableOpacity>
-        )}
-      </View>
-    </Card>
-  );
-}
-
-function PreviousSets(props: {
-  snapshotData:
-    | {
-        exerciseId: string;
-        exerciseDefaults: {
-          sets: { weightsInKg: number; repetitions: number }[];
-        };
-      }[]
-    | undefined;
-}) {
-  const { selectedExercise } = useWorkoutStore();
-
-  return (
-    <>
-      <H4>Previous records</H4>
-      <ScrollView>
-        {props.snapshotData
-          ?.filter((e) => e.exerciseId === selectedExercise?._id)
-          .map((snapshot) => (
-            <View key={generateUUID()}>
-              {snapshot.exerciseDefaults.sets?.map((previousSet) => (
-                <Card className="mb-1 bg-gray-200" key={generateUUID()}>
-                  <View className="flex-1 flex-row justify-evenly items-center py-2">
-                    <Text className="text-md">
-                      {previousSet.weightsInKg.toFixed(2)}
-                    </Text>
-                    <Text className="text-md">{previousSet.repetitions}</Text>
-                    <Text className="text-md">
-                      {(
-                        previousSet.weightsInKg *
-                        previousSet.repetitions *
-                        snapshot.exerciseDefaults.sets.length
-                      ).toFixed(2)}
-                    </Text>
-                  </View>
-                </Card>
-              ))}
-            </View>
-          ))}
-      </ScrollView>
-    </>
   );
 }
 
