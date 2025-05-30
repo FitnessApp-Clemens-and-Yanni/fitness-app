@@ -9,8 +9,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
 import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
 import { WorkoutResponse } from "@/lib/types";
-import { SetsView } from "@/components/sport/sets-view/SetsView";
-import { WorkoutsFooterNavigation } from "@/components/sport/WorkoutsFooterNavigation";
+import { SetsView } from "@comp/sport/sets-view/SetsView";
+import { WorkoutsFooterNavigation } from "@comp/sport/WorkoutsFooterNavigation";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =

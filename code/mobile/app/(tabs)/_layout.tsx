@@ -1,26 +1,37 @@
+import { FontAwesomeIcon } from "@/components/font-awesome-icon";
+import { IconColors as AppColors } from "@/lib/app-colors";
 import { Tabs } from "expo-router";
-import { Banana, Dumbbell } from "lucide-react-native";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "darkgray",
+        tabBarInactiveTintColor: AppColors.PINK_100,
+        tabBarActiveTintColor: AppColors.WHITE,
+        tabBarStyle: {
+          backgroundColor: AppColors.PRIMARY,
+          shadowColor: AppColors.BLACK,
+          shadowRadius: 10,
+          shadowOpacity: 0.5,
+        },
       }}
-      safeAreaInsets={{ top: 2, bottom: 2 }}
     >
       <Tabs.Screen
         name="sport"
         options={{
-          title: "Sport",
-          tabBarIcon: ({ color }) => <Dumbbell fontSize={4} color={color} />,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesomeIcon name="dumbbell" color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="food"
         options={{
-          title: "Food",
-          tabBarIcon: ({ color }) => <Banana color={color} />,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesomeIcon name="utensils" color={color} />
+          ),
         }}
       />
     </Tabs>

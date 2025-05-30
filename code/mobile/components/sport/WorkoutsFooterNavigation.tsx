@@ -7,9 +7,9 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { TimeDisplay } from "@comp/TimeDisplay";
 import { Text, TouchableOpacity, View } from "react-native";
-import { Button } from "@ui/Button";
-import { Icon } from "@rneui/themed";
-import { IconColors } from "@/lib/icon-colors";
+import { IconColors } from "@/lib/app-colors";
+import { FontAwesomeIcon } from "../font-awesome-icon";
+import { CTA } from "@comp/CTA";
 
 export function WorkoutsFooterNavigation(props: {
   workoutResponse: WorkoutResponse;
@@ -45,18 +45,16 @@ export function WorkoutsFooterNavigation(props: {
             router.dismissTo("/sport");
           }}
         >
-          <Icon
+          <FontAwesomeIcon
             name="angle-double-left"
-            type="font-awesome-5"
             color={IconColors.PRIMARY}
             className="scale-60"
-            solid
           />
         </TouchableOpacity>
       )}
       {startTimestamp !== undefined ? (
         <View className="flex-row gap-5">
-          <Button
+          <CTA
             onPress={() => {
               clearInterval(timingInterval);
               setTimingInterval(undefined);
@@ -67,8 +65,8 @@ export function WorkoutsFooterNavigation(props: {
             }}
           >
             <Text>Cancle Workout</Text>
-          </Button>
-          <Button
+          </CTA>
+          <CTA
             onPress={() => {
               clearInterval(timingInterval);
               setTimingInterval(undefined);
@@ -84,10 +82,10 @@ export function WorkoutsFooterNavigation(props: {
               ) - finishedSetStore.finishedSets.length}{" "}
               exercises left)
             </Text>
-          </Button>
+          </CTA>
         </View>
       ) : (
-        <Button
+        <CTA
           onPress={() => {
             setStartTimestamp(Date.now());
             setCurrentTimestamp(Date.now());
@@ -99,7 +97,7 @@ export function WorkoutsFooterNavigation(props: {
           }}
         >
           <Text>Start Workout</Text>
-        </Button>
+        </CTA>
       )}
     </View>
   );

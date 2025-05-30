@@ -1,6 +1,8 @@
+import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { Card } from "@/components/ui/Card";
+import { IconColors as AppColors } from "@/lib/app-colors";
 import { Set } from "@/lib/stores/sport/fe-sets-store";
-import { Check, Pen } from "lucide-react-native";
+// import { Check, Pen } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export function FinishableEditableSetCard(props: {
@@ -29,11 +31,19 @@ export function FinishableEditableSetCard(props: {
         </Text>
         {props.editable ? (
           <TouchableOpacity onPress={props.onPressEdit}>
-            <Pen />
+            <FontAwesomeIcon
+              name="pen"
+              color={AppColors.GREY_700}
+              className="scale-75"
+            />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={props.onToggleFinished}>
-            <Check />
+            <FontAwesomeIcon
+              name="check"
+              color={AppColors.GREY_700}
+              className="scale-75"
+            />
           </TouchableOpacity>
         )}
       </View>

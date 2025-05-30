@@ -2,12 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import "../global.css";
 import { Stack } from "expo-router";
 import { TRPCReactProvider } from "@/utils/react";
-import {
-  Theme,
-  ThemeProvider,
-  DefaultTheme,
-  DarkTheme,
-} from "@react-navigation/native";
+import { Theme, ThemeProvider, DefaultTheme } from "@react-navigation/native";
 import { NAV_THEME } from "@/lib/constants";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
@@ -18,10 +13,10 @@ const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   colors: NAV_THEME.light,
 };
-const DARK_THEME: Theme = {
-  ...DarkTheme,
-  colors: NAV_THEME.dark,
-};
+// const DARK_THEME: Theme = {
+//   ...DarkTheme,
+//   colors: NAV_THEME.dark,
+// };
 
 export default function MainLayout() {
   const hasMounted = useRef(false);

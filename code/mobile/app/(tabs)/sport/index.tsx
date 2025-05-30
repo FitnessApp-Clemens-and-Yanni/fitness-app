@@ -9,8 +9,8 @@ import {
   WorkoutResponse,
 } from "@/lib/types";
 import { Skeleton } from "@ui/skeleton";
-import { Icon } from "@rneui/themed";
-import { IconColors } from "@/lib/icon-colors";
+import { IconColors } from "@/lib/app-colors";
+import { FontAwesomeIcon } from "@comp/font-awesome-icon";
 
 export default function Index() {
   const {
@@ -55,21 +55,11 @@ export default function Index() {
             <View className="bg-primary rounded-full p-3">
               {isEditing ? (
                 <TouchableOpacity onPress={() => setIsEditing(false)}>
-                  <Icon
-                    name="check"
-                    type="font-awesome-5"
-                    color={IconColors.WHITE}
-                    solid
-                  />
+                  <FontAwesomeIcon name="check" color={IconColors.WHITE} />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Icon
-                    name="pen"
-                    type="font-awesome-5"
-                    color={IconColors.WHITE}
-                    solid
-                  />
+                  <FontAwesomeIcon name="pen" color={IconColors.WHITE} />
                 </TouchableOpacity>
               )}
             </View>
@@ -89,29 +79,10 @@ function SingleWorkout(props: {
   >();
 
   const [rotationObj, setRotationObj] = useState({ rotation: 0, direction: 1 });
-  const MAX_ANGLE = 2;
 
-  useEffect(() => {
-    let animationInterval: NodeJS.Timeout | undefined = undefined;
-
-    if (props.isInEditMode) {
-      animationInterval = setInterval(() => {
-        setRotationObj((r) => ({
-          rotation: r.rotation + 0.3 * r.direction,
-          direction:
-            r.rotation > MAX_ANGLE
-              ? -2
-              : r.rotation < -MAX_ANGLE
-                ? 2
-                : r.direction,
-        }));
-      }, 25);
-    } else {
-      setRotationObj({ rotation: 0, direction: 1 });
-      clearInterval(animationInterval);
-    }
-    return () => clearInterval(animationInterval);
-  }, [props.isInEditMode]);
+  useEffect(wiggleAnimationEffect(props.isInEditMode, 2, setRotationObj), [
+    props.isInEditMode,
+  ]);
 
   const startUpdatingWorkout = () => {
     setWorkoutModel({
@@ -157,17 +128,6 @@ function SingleWorkout(props: {
     });
   };
 
-  const _WorkoutDisplay = () => (
-    <>
-      <Text className="flex-1 text-xl p-3">{props.workoutResponse.name}</Text>
-      <View className="flex-[3] flex flex-col justify-end items-between">
-        <View className="flex-1 flex flex-row items-end">
-          <View className="flex-[5] flex flex-row justify-end items-center"></View>
-        </View>
-      </View>
-    </>
-  );
-
   return (
     <>
       <EditWorkoutModal
@@ -176,12 +136,14 @@ function SingleWorkout(props: {
         setExerciseSetCount={setExerciseSetCount}
       />
       <View
-        className="mt-2 w-5/12 ring-2 ring-primary bg-primary rounded aspect-square p-2 flex flex-col justify-end"
+        className="mt-2 w-5/12 ring-2 ring-primary bg-primary rounded aspect-square p-2 flex flex-col justify-end shadow-black shadow-md"
         style={{ transform: [{ rotate: `${rotationObj.rotation}deg` }] }}
       >
         {props.isInEditMode ? (
           <TouchableOpacity className="flex-1" onPress={startUpdatingWorkout}>
-            <_WorkoutDisplay />
+            <Text className="flex-1 text-xl p-3 text-pink-50 font-bold">
+              {props.workoutResponse.name}
+            </Text>
           </TouchableOpacity>
         ) : (
           <Link
@@ -195,7 +157,9 @@ function SingleWorkout(props: {
             className="flex-1"
           >
             <TouchableOpacity>
-              <_WorkoutDisplay />
+              <Text className="flex-1 text-xl p-3 text-pink-50 font-bold">
+                {props.workoutResponse.name}
+              </Text>
             </TouchableOpacity>
           </Link>
         )}
@@ -203,3 +167,35 @@ function SingleWorkout(props: {
     </>
   );
 }
+
+function wiggleAnimationEffect(
+  isInEditMode: boolean,
+  maxAngle: number,
+  setRotationObj: (
+    callback: ((r: RotationObj) => RotationObj) | RotationObj,
+  ) => void,
+) {
+  return () => {
+    let animationInterval: NodeJS.Timeout | undefined = undefined;
+
+    if (isInEditMode) {
+      animationInterval = setInterval(() => {
+        setRotationObj((r) => ({
+          rotation: r.rotation + 0.3 * r.direction,
+          direction:
+            r.rotation > maxAngle
+              ? -2
+              : r.rotation < -maxAngle
+                ? 2
+                : r.direction,
+        }));
+      }, 25);
+    } else {
+      setRotationObj({ rotation: 0, direction: 1 });
+      clearInterval(animationInterval);
+    }
+    return () => clearInterval(animationInterval);
+  };
+}
+
+type RotationObj = { rotation: number; direction: number };
