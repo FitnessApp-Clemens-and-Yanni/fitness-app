@@ -10,6 +10,7 @@ import {
 import { Card } from "@ui/Card";
 import { Button } from "@ui/Button";
 import { api } from "@/utils/react";
+import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
 
 export function EditWorkoutModal({
   workoutModel,

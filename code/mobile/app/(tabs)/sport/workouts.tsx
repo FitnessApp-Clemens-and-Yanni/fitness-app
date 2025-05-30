@@ -1,19 +1,16 @@
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { H1, H3 } from "@ui/Typography";
 import { Card } from "@ui/Card";
-import { Button } from "@ui/Button";
-import { ArrowBigLeft } from "lucide-react-native";
-import { useEffect, useState } from "react";
-import { TimeDisplay } from "@comp/TimeDisplay";
+import { useEffect } from "react";
 import { EditSetModal } from "@comp/sport/EditSetModal";
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
-import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
 import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
 import { WorkoutResponse } from "@/lib/types";
 import { SetsView } from "@/components/sport/sets-view/SetsView";
+import { WorkoutsFooterNavigation } from "@/components/sport/WorkoutsFooterNavigation";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =
@@ -22,6 +19,9 @@ export default function WorkoutsPage() {
   const workoutResponse: WorkoutResponse = JSON.parse(
     useLocalSearchParams<{ workoutResponse: string }>().workoutResponse,
   );
+  const finishedSetStore = useFinishedSetsStore();
+  const { editModalValues, setEditModalValues } = useEditModalStore();
+  const frontendSetsStore = useExerciseSetStore();
 
   const router = useRouter();
 
@@ -38,12 +38,6 @@ export default function WorkoutsPage() {
       })),
     });
   }, []);
-
-  const finishedSetStore = useFinishedSetsStore();
-
-  const { editModalValues, setEditModalValues } = useEditModalStore();
-
-  const frontendSetsStore = useExerciseSetStore();
 
   return selectedExercise !== undefined && editModalValues !== undefined ? (
     <EditSetModal
@@ -107,96 +101,3 @@ function ExercisesScrollView() {
     </ScrollView>
   );
 }
-
-function WorkoutsFooterNavigation(props: {
-  workoutResponse: WorkoutResponse;
-  onSuccess: () => void;
-}) {
-  const router = useRouter();
-  const { setSelectedExercise, setSelectedWorkout } = useWorkoutStore();
-  const exerciseSetStore = useExerciseSetStore();
-  const finishedSetStore = useFinishedSetsStore();
-  const {
-    startTimestamp,
-    setStartTimestamp,
-    currentTimestamp,
-    setCurrentTimestamp,
-  } = useWorkoutTimingStore();
-
-  const [timingInterval, setTimingInterval] = useState<
-    NodeJS.Timeout | undefined
-  >();
-
-  return (
-    <View className="flex-row justify-between p-5 items-center">
-      {startTimestamp !== undefined ? (
-        <TimeDisplay
-          timeInMinutes={(currentTimestamp! - startTimestamp) / 60_000}
-        />
-      ) : (
-        <TouchableOpacity
-          onPress={() => {
-            exerciseSetStore.reset();
-            setSelectedExercise(undefined);
-            setSelectedWorkout(undefined);
-            router.dismissTo("/sport");
-          }}
-        >
-          <Text>
-            <ArrowBigLeft />
-          </Text>
-        </TouchableOpacity>
-      )}
-      {startTimestamp !== undefined ? (
-        <View className="flex-row gap-5">
-          <Button
-            onPress={() => {
-              clearInterval(timingInterval);
-              setTimingInterval(undefined);
-
-              setStartTimestamp(undefined);
-              setCurrentTimestamp(undefined);
-              finishedSetStore.reset();
-            }}
-          >
-            <Text>Cancle Workout</Text>
-          </Button>
-          <Button
-            onPress={() => {
-              clearInterval(timingInterval);
-              setTimingInterval(undefined);
-              props.onSuccess();
-              // setShowSuccessScreen(true);
-            }}
-          >
-            <Text>Finish Workout</Text>
-            <Text className="text-sm">
-              (
-              {props.workoutResponse?.exercises.reduce(
-                (acc, cur) => acc + cur.numberOfSets,
-                0,
-              ) - finishedSetStore.finishedSets.length}{" "}
-              exercises left)
-            </Text>
-          </Button>
-        </View>
-      ) : (
-        <Button
-          onPress={() => {
-            setStartTimestamp(Date.now());
-            setCurrentTimestamp(Date.now());
-            setTimingInterval(
-              setInterval(() => {
-                setCurrentTimestamp(Date.now());
-              }, 500),
-            );
-          }}
-        >
-          <Text>Start Workout</Text>
-        </Button>
-      )}
-    </View>
-  );
-}
-
-// TODO: Fix time going on after success screen shown

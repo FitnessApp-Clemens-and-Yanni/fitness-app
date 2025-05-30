@@ -1,22 +1,16 @@
 import { EditWorkoutModal } from "@comp/sport/EditWorkoutModal";
-import { Button } from "@ui/Button";
 import { api } from "@/utils/react";
-import { Pen } from "lucide-react-native";
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList, Text, View, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
 import {
   WorkoutExercisePutRequest,
   WorkoutPutRequest,
   WorkoutResponse,
 } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@ui/skeleton";
+import { Icon } from "@rneui/themed";
+import { IconColors } from "@/lib/icon-colors";
 
 export default function Index() {
   const {
@@ -24,6 +18,8 @@ export default function Index() {
     error,
     data: workoutsData,
   } = api.workouts.getAll.useQuery();
+
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <>
@@ -43,34 +39,85 @@ export default function Index() {
           <Text>Sorry, an error occured... {error!.message}</Text>
         )
       ) : (
-        <FlatList
-          data={workoutsData ?? []}
-          renderItem={({ item }) => <SingleWorkout workoutResponse={item} />}
-          className="mt-5"
-          contentContainerClassName="gap-5"
-          columnWrapperClassName="justify-evenly"
-          keyExtractor={(item) => item._id}
-          numColumns={2}
-        />
+        <>
+          <FlatList
+            data={workoutsData ?? []}
+            renderItem={({ item }) => (
+              <SingleWorkout workoutResponse={item} isInEditMode={isEditing} />
+            )}
+            className="mt-5"
+            contentContainerClassName="gap-5"
+            columnWrapperClassName="justify-evenly"
+            keyExtractor={(item) => item._id}
+            numColumns={2}
+          />
+          <View className="flex-row justify-end p-5">
+            <View className="bg-primary rounded-full p-3">
+              {isEditing ? (
+                <TouchableOpacity onPress={() => setIsEditing(false)}>
+                  <Icon
+                    name="check"
+                    type="font-awesome-5"
+                    color={IconColors.WHITE}
+                    solid
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => setIsEditing(true)}>
+                  <Icon
+                    name="pen"
+                    type="font-awesome-5"
+                    color={IconColors.WHITE}
+                    solid
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </>
       )}
     </>
   );
 }
 
-function SingleWorkout({
-  workoutResponse,
-}: {
+function SingleWorkout(props: {
   workoutResponse: WorkoutResponse;
+  isInEditMode: boolean;
 }) {
   const [workoutModel, setWorkoutModel] = useState<
     WorkoutPutRequest | undefined
   >();
 
+  const [rotationObj, setRotationObj] = useState({ rotation: 0, direction: 1 });
+  const MAX_ANGLE = 2;
+
+  useEffect(() => {
+    let animationInterval: NodeJS.Timeout | undefined = undefined;
+
+    if (props.isInEditMode) {
+      animationInterval = setInterval(() => {
+        setRotationObj((r) => ({
+          rotation: r.rotation + 0.3 * r.direction,
+          direction:
+            r.rotation > MAX_ANGLE
+              ? -2
+              : r.rotation < -MAX_ANGLE
+                ? 2
+                : r.direction,
+        }));
+      }, 25);
+    } else {
+      setRotationObj({ rotation: 0, direction: 1 });
+      clearInterval(animationInterval);
+    }
+    return () => clearInterval(animationInterval);
+  }, [props.isInEditMode]);
+
   const startUpdatingWorkout = () => {
     setWorkoutModel({
-      _id: workoutResponse._id,
-      name: workoutResponse.name,
-      exercises: workoutResponse.exercises.map((exercise) => ({
+      _id: props.workoutResponse._id,
+      name: props.workoutResponse.name,
+      exercises: props.workoutResponse.exercises.map((exercise) => ({
         _id: exercise._id,
         name: exercise.name,
         noteText: exercise.noteText,
@@ -110,6 +157,17 @@ function SingleWorkout({
     });
   };
 
+  const _WorkoutDisplay = () => (
+    <>
+      <Text className="flex-1 text-xl p-3">{props.workoutResponse.name}</Text>
+      <View className="flex-[3] flex flex-col justify-end items-between">
+        <View className="flex-1 flex flex-row items-end">
+          <View className="flex-[5] flex flex-row justify-end items-center"></View>
+        </View>
+      </View>
+    </>
+  );
+
   return (
     <>
       <EditWorkoutModal
@@ -117,34 +175,30 @@ function SingleWorkout({
         setWorkoutModel={setWorkoutModel}
         setExerciseSetCount={setExerciseSetCount}
       />
-
-      <View className="mt-2 w-5/12 ring-2 ring-primary bg-neutral-300 rounded aspect-square p-2 flex flex-col justify-end">
-        <Text className="flex-1 text-xl p-3">{workoutResponse.name}</Text>
-        <View className="flex-[3] flex flex-col justify-end items-between">
-          <View className="flex-1 flex flex-row items-end">
-            <TouchableOpacity
-              onPress={startUpdatingWorkout}
-              className="flex-[2] flex flex-row justify-center items-center h-10"
-            >
-              <Pen />
+      <View
+        className="mt-2 w-5/12 ring-2 ring-primary bg-primary rounded aspect-square p-2 flex flex-col justify-end"
+        style={{ transform: [{ rotate: `${rotationObj.rotation}deg` }] }}
+      >
+        {props.isInEditMode ? (
+          <TouchableOpacity className="flex-1" onPress={startUpdatingWorkout}>
+            <_WorkoutDisplay />
+          </TouchableOpacity>
+        ) : (
+          <Link
+            href={{
+              pathname: "/sport/workouts",
+              params: {
+                workoutResponse: JSON.stringify(props.workoutResponse),
+              },
+            }}
+            asChild
+            className="flex-1"
+          >
+            <TouchableOpacity>
+              <_WorkoutDisplay />
             </TouchableOpacity>
-            <View className="flex-[5] flex flex-row justify-end items-center">
-              <Link
-                href={{
-                  pathname: "/sport/workouts",
-                  params: {
-                    workoutResponse: JSON.stringify(workoutResponse),
-                  },
-                }}
-                asChild
-              >
-                <Button>
-                  <Text>Start</Text>
-                </Button>
-              </Link>
-            </View>
-          </View>
-        </View>
+          </Link>
+        )}
       </View>
     </>
   );

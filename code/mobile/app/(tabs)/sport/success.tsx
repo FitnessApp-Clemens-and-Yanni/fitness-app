@@ -9,20 +9,7 @@ import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function SuccessScreen() {
-  const finishedSetStore = useFinishedSetsStore();
-  const { selectedWorkout } = useWorkoutStore();
-  const router = useRouter();
-
-  const { startTimestamp, currentTimestamp, stopTimes } =
-    useWorkoutTimingStore();
-
-  const apiUtils = api.useUtils();
-
-  const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({
-    onSuccess: () => {
-      apiUtils.snapshots.getExerciseDefaultsForWorkout.invalidate();
-    },
-  });
+  const { startTimestamp, currentTimestamp } = useWorkoutTimingStore();
 
   return (
     <View className="flex-1">
@@ -38,47 +25,63 @@ export default function SuccessScreen() {
           />
           <Text className="text-lg">minutes!</Text>
           <View className="justify-end">
-            <Button
-              onPress={async () => {
-                router.dismiss();
-
-                stopTimes();
-                finishedSetStore.reset();
-
-                if (selectedWorkout === undefined) {
-                  return;
-                }
-
-                await finishWorkoutMutation.mutateAsync({
-                  userId: "gugi",
-                  workoutId: selectedWorkout._id,
-                  workoutName: selectedWorkout.name,
-                  totalTimeInMinutes:
-                    (currentTimestamp! - startTimestamp!) / 60_000,
-                  exercises: Object.values(
-                    Object.groupBy(
-                      finishedSetStore.finishedSets,
-                      (x) => x.exerciseId,
-                    ),
-                  ).map((sets) => {
-                    return {
-                      id: sets![0].exerciseId,
-                      sets: finishedSetStore.finishedSets
-                        .filter((set) => set.exerciseId === sets![0].exerciseId)
-                        .map((finishedSet) => ({
-                          weightsInKg: finishedSet.weightsInKg,
-                          repetitions: finishedSet.repetitions,
-                        })),
-                    };
-                  }),
-                });
-              }}
-            >
-              <Text className="font-bold text-white">Yay! :D</Text>
-            </Button>
+            <DismissButton />
           </View>
         </Card>
       </View>
     </View>
+  );
+}
+
+function DismissButton() {
+  const finishedSetStore = useFinishedSetsStore();
+  const { selectedWorkout } = useWorkoutStore();
+  const router = useRouter();
+  const { currentTimestamp, startTimestamp, stopTimes } =
+    useWorkoutTimingStore();
+
+  const apiUtils = api.useUtils();
+
+  const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({
+    onSuccess: () => {
+      apiUtils.snapshots.getExerciseDefaultsForWorkout.invalidate();
+    },
+  });
+
+  const onDismiss = async () => {
+    router.dismiss();
+
+    stopTimes();
+    finishedSetStore.reset();
+
+    if (selectedWorkout === undefined) {
+      return;
+    }
+
+    await finishWorkoutMutation.mutateAsync({
+      userId: "gugi",
+      workoutId: selectedWorkout._id,
+      workoutName: selectedWorkout.name,
+      totalTimeInMinutes: (currentTimestamp! - startTimestamp!) / 60_000,
+      exercises: Object.values(
+        Object.groupBy(finishedSetStore.finishedSets, (x) => x.exerciseId),
+      ).map((sets) => {
+        return {
+          id: sets![0].exerciseId,
+          sets: finishedSetStore.finishedSets
+            .filter((set) => set.exerciseId === sets![0].exerciseId)
+            .map((finishedSet) => ({
+              weightsInKg: finishedSet.weightsInKg,
+              repetitions: finishedSet.repetitions,
+            })),
+        };
+      }),
+    });
+  };
+
+  return (
+    <Button onPress={onDismiss}>
+      <Text className="font-bold text-white">Yay! :D</Text>
+    </Button>
   );
 }
