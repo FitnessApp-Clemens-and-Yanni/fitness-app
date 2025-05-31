@@ -76,11 +76,8 @@ export function EditWorkoutModal() {
               className="rounded-full aspect-square bg-primary px-2 pl-[0.57rem] justify-center"
               onPress={() => {
                 mutation.mutate({
-                  _id: workoutEditStore.workoutBeingEdited!._id,
                   userId: userStore.currentUser,
-                  name: workoutEditStore.workoutBeingEdited!.name,
-                  ...workoutEditStore.workoutBeingEdited,
-                  exercises: workoutEditStore.workoutBeingEdited!.exercises,
+                  ...workoutEditStore.workoutBeingEdited!,
                 });
                 workoutEditStore.setWorkoutBeingEdited(undefined);
               }}
@@ -99,7 +96,25 @@ export function EditWorkoutModal() {
 }
 
 function EditWorkoutExercise(props: { exercise: WorkoutExercisePutRequest }) {
-  const workoutEditStore = useWorkoutEditStore();
+  const { workoutBeingEdited, setWorkoutBeingEdited } = useWorkoutEditStore();
+
+  const setExerciseFESets = (
+    text: string,
+    exercise: WorkoutExercisePutRequest,
+  ) => {
+    if (!/^\d{0,2}$/.test(text)) {
+      return;
+    }
+
+    const idx = workoutBeingEdited!.exercises.indexOf(exercise);
+    setWorkoutBeingEdited({
+      ...workoutBeingEdited!,
+      exercises: workoutBeingEdited!.exercises.with(idx, {
+        ...workoutBeingEdited!.exercises[idx],
+        numberOfSets: text === "" ? 0 : +text,
+      }),
+    });
+  };
 
   return (
     <Card className="flex-row py-5 gap-5 mb-2 pr-5 items-center">
@@ -116,46 +131,9 @@ function EditWorkoutExercise(props: { exercise: WorkoutExercisePutRequest }) {
         <TextInput
           className="w-7 ring-1 ring-primary rounded py-2 text-center"
           value={props.exercise.numberOfSets.toString()}
-          onChangeText={(text) =>
-            setExerciseSetCount(
-              workoutEditStore.workoutBeingEdited,
-              workoutEditStore.setWorkoutBeingEdited,
-            )(text, props.exercise)
-          }
+          onChangeText={(text) => setExerciseFESets(text, props.exercise)}
         />
       </View>
     </Card>
   );
-}
-
-function setExerciseSetCount(
-  workoutBeingEdited: WorkoutPutRequest | undefined,
-  setWorkoutBeingEdited: (val: WorkoutPutRequest | undefined) => void,
-) {
-  return (text: string, exercise: WorkoutExercisePutRequest) => {
-    if (text === "") {
-      const idx = workoutBeingEdited!.exercises.indexOf(exercise);
-      setWorkoutBeingEdited({
-        ...workoutBeingEdited!,
-        exercises: workoutBeingEdited!.exercises.with(idx, {
-          ...workoutBeingEdited!.exercises[idx],
-          numberOfSets: 0,
-        }),
-      });
-      return;
-    }
-
-    if (!/^\d{1,2}$/.test(text)) {
-      return;
-    }
-
-    const idx = workoutBeingEdited!.exercises.indexOf(exercise);
-    setWorkoutBeingEdited({
-      ...workoutBeingEdited!,
-      exercises: workoutBeingEdited!.exercises.with(idx, {
-        ...workoutBeingEdited!.exercises[idx],
-        numberOfSets: +text,
-      }),
-    });
-  };
 }
