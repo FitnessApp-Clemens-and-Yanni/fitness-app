@@ -1,7 +1,9 @@
 import { ScrollView, TouchableOpacity, View, Text } from "react-native";
-import { Trash2 } from "lucide-react-native";
+//import { Trash2 } from "lucide-react-native";
 import { MealEntry } from "@server/data/meta/models";
 import { api } from "@/utils/react";
+import { FontAwesomeIcon } from "@/components/font-awesome-icon";
+import { AppColors } from "@/lib/app-colors";
 
 export function FoodList(props: {
   foodData: MealEntry;
@@ -33,7 +35,8 @@ export function FoodList(props: {
                   })
                 }
               >
-                <Trash2 className="self-center flex" />
+                {/*<Trash2 className="self-center flex" /> */}
+                <FontAwesomeIcon name="trash" color={AppColors.RED} className="self-center flex scale-75" />
               </TouchableOpacity>
 
               <Text className="text-xs self-center flex">{food.name}</Text>
