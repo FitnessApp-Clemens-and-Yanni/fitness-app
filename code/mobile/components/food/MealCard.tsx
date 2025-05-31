@@ -1,11 +1,12 @@
 import { TouchableOpacity, Text } from "react-native";
-import { Eye, Pen } from "lucide-react-native";
 import { Card } from "@ui/Card";
 import { MealAddingModal } from "@/components/food/meal-modal";
 import { Alert } from "@comp/Alert";
 import { useEffect, useState } from "react";
 import { MealType } from "@server/shared/zod-schemas/meal-type";
 import { api } from "@/utils/react";
+import { FontAwesomeIcon } from "../font-awesome-icon";
+import { AppColors } from "@/lib/app-colors";
 
 export function MealCard(props: { mealType: MealType; currentDate?: Date }) {
   const apiUtils = api.useUtils();
@@ -37,15 +38,21 @@ export function MealCard(props: { mealType: MealType; currentDate?: Date }) {
   };
 
   return (
-    <Card className="flex flex-row justify-between bg-stone-300">
-      <Text className="p-4 content-center">{props.mealType}</Text>
-      <TouchableOpacity onPress={handleMealPress}>
-        {date.toDateString() === props.currentDate?.toDateString() ? (
-          <Pen className="m-4" />
-        ) : (
-          <Eye className="m-4" />
-        )}
-      </TouchableOpacity>
+    <>
+      <Card className="flex flex-row justify-between bg-stone-300">
+        <Text className="p-4 content-center">{props.mealType}</Text>
+        <TouchableOpacity onPress={handleMealPress}>
+          <FontAwesomeIcon
+            name={
+              date.toDateString() === props.currentDate?.toDateString()
+                ? "pen"
+                : "eye"
+            }
+            color={AppColors.GREY_800}
+            className="m-4 scale-[80%]"
+          />
+        </TouchableOpacity>
+      </Card>
 
       <Alert
         isOpen={alertOpen}
@@ -54,12 +61,11 @@ export function MealCard(props: { mealType: MealType; currentDate?: Date }) {
         message="You can't add a meal for a past date"
         trigger={<></>}
       />
-
       <MealAddingModal
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         mealType={props.mealType}
       />
-    </Card>
+    </>
   );
 }
