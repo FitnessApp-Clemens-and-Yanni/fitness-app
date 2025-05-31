@@ -48,7 +48,7 @@ export function MealCard(props: { mealType: MealType; currentDate?: Date }) {
                 ? "pen"
                 : "eye"
             }
-            color={AppColors.GREY_800}
+            color={AppColors.GRAY_800}
             className="m-4 scale-[80%]"
           />
         </TouchableOpacity>

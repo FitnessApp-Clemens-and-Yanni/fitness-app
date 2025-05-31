@@ -120,7 +120,7 @@ function EditWorkoutExercise(props: { exercise: WorkoutExercisePutRequest }) {
     <Card className="flex-row py-5 gap-5 mb-2 pr-5 items-center">
       <FontAwesomeIcon
         name="grip-vertical"
-        color={AppColors.GREY_700}
+        color={AppColors.GRAY_700}
         className="ml-2"
       />
       <View className="flex-1 flex-row items-center">

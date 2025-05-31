@@ -28,14 +28,14 @@ export function ApiSearchBar(props: {
           >
             <FontAwesomeIcon
               name="search"
-              color={AppColors.GREY_700}
+              color={AppColors.GRAY_700}
               className="scale-[0.8]"
             />
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity>
-          <FontAwesomeIcon name="camera" color={AppColors.GREY_700} />
+          <FontAwesomeIcon name="camera" color={AppColors.GRAY_700} />
         </TouchableOpacity>
       </View>
     </View>

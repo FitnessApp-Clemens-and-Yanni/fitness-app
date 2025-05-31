@@ -32,7 +32,7 @@ export function FinishableEditableSetCard(props: {
           <TouchableOpacity onPress={props.onPressEdit}>
             <FontAwesomeIcon
               name="pen"
-              color={AppColors.GREY_700}
+              color={AppColors.GRAY_700}
               className="scale-75"
             />
           </TouchableOpacity>
@@ -40,7 +40,7 @@ export function FinishableEditableSetCard(props: {
           <TouchableOpacity onPress={props.onToggleFinished}>
             <FontAwesomeIcon
               name="check"
-              color={AppColors.GREY_700}
+              color={AppColors.GRAY_700}
               className="scale-75"
             />
           </TouchableOpacity>

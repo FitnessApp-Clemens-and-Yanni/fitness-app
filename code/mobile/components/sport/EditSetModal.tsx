@@ -45,7 +45,7 @@ export function EditSetModal(props: {
         <View className="w-5/6 h-[90%] bg-white rounded-lg shadow gap-3 p-5">
           <View className="flex-row justify-end mb-5">
             <TouchableOpacity onPressIn={props.hideModal}>
-              <FontAwesomeIcon name="times" color={AppColors.GREY_800} />
+              <FontAwesomeIcon name="times" color={AppColors.GRAY_800} />
             </TouchableOpacity>
           </View>
           <form.Field name="weightsInKg">

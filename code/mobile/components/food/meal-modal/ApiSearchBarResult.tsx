@@ -81,7 +81,7 @@ export function ApiSearchBarResult(props: {
                 >
                   <FontAwesomeIcon
                     name="plus"
-                    color={AppColors.GREY_800}
+                    color={AppColors.GRAY_800}
                     className="scale-[65%]"
                   />
                 </TouchableOpacity>
@@ -117,7 +117,7 @@ export function ApiSearchBarResult(props: {
               >
                 <FontAwesomeIcon
                   name="plus"
-                  color={AppColors.GREY_800}
+                  color={AppColors.GRAY_800}
                   className="scale-[65%]"
                 />
               </TouchableOpacity>
