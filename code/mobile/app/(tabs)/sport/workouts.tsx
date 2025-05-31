@@ -105,10 +105,8 @@ function ExercisesScrollView() {
       contentContainerClassName="gap-4"
     >
       {selectedWorkout?.exercises.map((exercise) => (
-        <Card
-          key={exercise._id}
-          className="aspect-square break-words text-pretty"
-        >
+        <Card key={exercise._id} className="w-28 h-28 break-words text-pretty">
+          {/* Aspect Square not working on Safari on IOS here, FSR => w-28 h-28 */}
           <TouchableOpacity
             className="p-2 flex-1 bg-primary rounded"
             onPress={() => setSelectedExercise(exercise)}
