@@ -134,7 +134,11 @@ export const FoodRouter = createTRPCRouter({
         },
       );
 
-      await calculateNewNutritionalValuesInDatabase(ctx.db, input.date);
+      await calculateNewNutritionalValuesInDatabase(
+        ctx.db,
+        input.date,
+        input.userId,
+      );
 
       if (result.modifiedCount === 0) {
         return new Error("Food item not found or could not be deleted.");

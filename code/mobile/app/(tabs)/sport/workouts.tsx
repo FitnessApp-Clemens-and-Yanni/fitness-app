@@ -105,9 +105,12 @@ function ExercisesScrollView() {
       contentContainerClassName="gap-4"
     >
       {selectedWorkout?.exercises.map((exercise) => (
-        <Card key={exercise._id} className="aspect-square">
+        <Card
+          key={exercise._id}
+          className="aspect-square break-words text-pretty"
+        >
           <TouchableOpacity
-            className="p-2 h-full aspect-square bg-primary rounded"
+            className="p-2 flex-1 bg-primary rounded"
             onPress={() => setSelectedExercise(exercise)}
           >
             <Text className="text-sm text-pink-100 font-bold">
