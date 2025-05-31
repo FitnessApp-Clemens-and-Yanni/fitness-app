@@ -2,7 +2,7 @@ import { Card } from "@ui/Card";
 import { Skeleton } from "@ui/skeleton";
 import { H1, H2 } from "@ui/Typography";
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
-import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
 import { api } from "@/utils/react";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
@@ -10,7 +10,7 @@ import { SetsScrollView } from "@comp/sport/sets-view/SetsScrollView";
 import { PreviousSets } from "@comp/sport/sets-view/PreviousSets";
 
 export function SetsView() {
-  const { selectedExercise, selectedWorkout } = useWorkoutStore();
+  const { selectedExercise, selectedWorkout } = useSelectedWorkoutStore();
 
   const {
     isLoading,
@@ -25,7 +25,7 @@ export function SetsView() {
     return <H1 className="text-center">Sorry, something went wrong!</H1>;
   }
 
-  useEffect(updateSetsEffect(snapshotData), [
+  useEffect(adjustSetsEffect(snapshotData), [
     snapshotData,
     selectedExercise,
     selectedWorkout,
@@ -59,7 +59,7 @@ export function SetsView() {
   );
 }
 
-function updateSetsEffect(
+function adjustSetsEffect(
   snapshotData:
     | {
         exerciseId: string;
@@ -69,7 +69,7 @@ function updateSetsEffect(
       }[]
     | undefined,
 ) {
-  const { selectedExercise } = useWorkoutStore();
+  const { selectedExercise } = useSelectedWorkoutStore();
   const exerciseSetStore = useExerciseSetStore();
 
   return () => {

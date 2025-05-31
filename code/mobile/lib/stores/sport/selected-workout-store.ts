@@ -1,7 +1,7 @@
 import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
 import { create } from "zustand";
 
-export const useWorkoutStore = create<{
+export const useSelectedWorkoutStore = create<{
   selectedWorkout: WorkoutPutRequest | undefined;
   setSelectedWorkout: (workout: WorkoutPutRequest | undefined) => void;
   selectedExercise: WorkoutExercisePutRequest | undefined;

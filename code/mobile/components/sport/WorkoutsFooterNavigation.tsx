@@ -1,7 +1,7 @@
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
-import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
 import { WorkoutResponse } from "@/lib/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export function WorkoutsFooterNavigation(props: {
   onSuccess: () => void;
 }) {
   const router = useRouter();
-  const { setSelectedExercise, setSelectedWorkout } = useWorkoutStore();
+  const { setSelectedExercise, setSelectedWorkout } = useSelectedWorkoutStore();
   const exerciseSetStore = useExerciseSetStore();
   const finishedSetStore = useFinishedSetsStore();
   const {
@@ -63,9 +63,8 @@ export function WorkoutsFooterNavigation(props: {
               setCurrentTimestamp(undefined);
               finishedSetStore.reset();
             }}
-          >
-            <Text>Cancle Workout</Text>
-          </CTA>
+            text="Cancle Workout"
+          />
           <CTA
             onPress={() => {
               clearInterval(timingInterval);
@@ -73,8 +72,8 @@ export function WorkoutsFooterNavigation(props: {
               props.onSuccess();
             }}
           >
-            <Text>Finish Workout</Text>
-            <Text className="text-sm">
+            <Text className="text-primary-foreground">Finish Workout</Text>
+            <Text className="text-primary-foreground text-sm">
               (
               {props.workoutResponse?.exercises.reduce(
                 (acc, cur) => acc + cur.numberOfSets,
@@ -95,9 +94,8 @@ export function WorkoutsFooterNavigation(props: {
               }, 500),
             );
           }}
-        >
-          <Text>Start Workout</Text>
-        </CTA>
+          text="Start Workout"
+        />
       )}
     </View>
   );

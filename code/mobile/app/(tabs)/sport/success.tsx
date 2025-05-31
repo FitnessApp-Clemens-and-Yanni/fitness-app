@@ -3,7 +3,7 @@ import { Button } from "@ui/Button";
 import { Card } from "@ui/Card";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
-import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
 import { api } from "@/utils/react";
 import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
@@ -15,7 +15,7 @@ export default function SuccessScreen() {
   return (
     <View className="flex-1">
       <View className="flex-1 bg-gradient-to-br from-primary to-red-500 items-center justify-center">
-        <Card className="gap-5 text-center p-5 max-w-72 shadow-primary">
+        <Card className="gap-5 text-center p-5 max-w-72 shadow-black/20 shadow-md">
           <Text className="text-lg">
             <Text className="font-bold italic">Congrats</Text>, you finished
             your workout and it took you
@@ -26,7 +26,7 @@ export default function SuccessScreen() {
           />
           <Text className="text-lg">minutes!</Text>
           <View className="justify-end">
-            <DismissButton />
+            <DismissSuccessScreenButton />
           </View>
         </Card>
       </View>
@@ -34,15 +34,14 @@ export default function SuccessScreen() {
   );
 }
 
-function DismissButton() {
+function DismissSuccessScreenButton() {
   const finishedSetStore = useFinishedSetsStore();
-  const { selectedWorkout } = useWorkoutStore();
+  const { selectedWorkout } = useSelectedWorkoutStore();
   const router = useRouter();
   const { currentTimestamp, startTimestamp, stopTimes } =
     useWorkoutTimingStore();
 
   const userStore = useUserStore();
-
   const apiUtils = api.useUtils();
 
   const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({

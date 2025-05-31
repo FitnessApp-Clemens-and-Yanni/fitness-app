@@ -29,7 +29,7 @@ export default function Index() {
     <>
       {isLoading ? (
         <FlatList
-          data={new Array(5).fill(null).map((_, idx) => idx + 1)}
+          data={new Array(5)}
           renderItem={() => (
             <Skeleton className="mt-2 rounded aspect-square p-2 flex flex-col justify-end w-5/12"></Skeleton>
           )}

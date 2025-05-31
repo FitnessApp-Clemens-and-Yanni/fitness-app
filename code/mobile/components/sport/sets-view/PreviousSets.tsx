@@ -1,6 +1,6 @@
 import { Card } from "@ui/Card";
 import { H4 } from "@ui/Typography";
-import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
 import { generateUUID } from "@/lib/utils";
 import { ScrollView, Text, View } from "react-native";
 
@@ -14,7 +14,7 @@ export function PreviousSets(props: {
       }[]
     | undefined;
 }) {
-  const { selectedExercise } = useWorkoutStore();
+  const { selectedExercise } = useSelectedWorkoutStore();
 
   return (
     <>

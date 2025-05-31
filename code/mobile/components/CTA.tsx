@@ -1,14 +1,20 @@
 import { Button } from "@ui/Button";
 import React from "react";
+import { Text } from "react-native";
 
 export function CTA(props: {
-  children: React.ReactNode;
+  text?: string;
+  children?: React.ReactNode;
   className?: string;
   onPress: () => void;
 }) {
   return (
     <Button className={`${props.className}`} onPress={props.onPress}>
-      {props.children}
+      {props.text === undefined ? (
+        props.children
+      ) : (
+        <Text className="text-primary-foreground">{props.text}</Text>
+      )}
     </Button>
   );
 }

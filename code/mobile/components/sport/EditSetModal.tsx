@@ -8,7 +8,8 @@ import {
   postiveIntegerStringSchema,
   positiveNumberStringSchema,
 } from "@/lib/zod-schemas";
-import { X } from "lucide-react-native";
+import { FontAwesomeIcon } from "../font-awesome-icon";
+import { AppColors } from "@/lib/app-colors";
 
 const formSchema = z.object({
   weightsInKg: positiveNumberStringSchema(
@@ -20,18 +21,6 @@ const formSchema = z.object({
     { zeroAllowed: false },
   ),
 });
-
-function FieldInfo({ field }: { field: AnyFieldApi }) {
-  return (
-    <>
-      {field.state.meta.isTouched && field.state.meta.errors.length ? (
-        <Text className="text-sm text-red-500">
-          {field.state.meta.errors.map((err) => err.message).join(",")}
-        </Text>
-      ) : null}
-    </>
-  );
-}
 
 export function EditSetModal(props: {
   isModalVisible: boolean;
@@ -56,7 +45,7 @@ export function EditSetModal(props: {
         <View className="w-5/6 h-[90%] bg-white rounded-lg shadow gap-3 p-5">
           <View className="flex-row justify-end mb-5">
             <TouchableOpacity onPressIn={props.hideModal}>
-              <X />
+              <FontAwesomeIcon name="times" color={AppColors.GREY_800} />
             </TouchableOpacity>
           </View>
           <form.Field name="weightsInKg">
@@ -106,5 +95,17 @@ export function EditSetModal(props: {
         </View>
       </View>
     </Modal>
+  );
+}
+
+function FieldInfo({ field }: { field: AnyFieldApi }) {
+  return (
+    <>
+      {field.state.meta.isTouched && field.state.meta.errors.length ? (
+        <Text className="text-sm text-red-500">
+          {field.state.meta.errors.map((err) => err.message).join(",")}
+        </Text>
+      ) : null}
+    </>
   );
 }

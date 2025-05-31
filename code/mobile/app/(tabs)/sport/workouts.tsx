@@ -6,7 +6,7 @@ import { EditSetModal } from "@comp/sport/EditSetModal";
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
+import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
 import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
 import { WorkoutResponse } from "@/lib/types";
 import { SetsView } from "@comp/sport/sets-view/SetsView";
@@ -15,7 +15,7 @@ import { useUserStore } from "@/lib/stores/user-store";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =
-    useWorkoutStore();
+    useSelectedWorkoutStore();
 
   const workoutResponse: WorkoutResponse = JSON.parse(
     useLocalSearchParams<{ workoutResponse: string }>().workoutResponse,
@@ -96,7 +96,7 @@ export default function WorkoutsPage() {
 }
 
 function ExercisesScrollView() {
-  const { selectedWorkout, setSelectedExercise } = useWorkoutStore();
+  const { selectedWorkout, setSelectedExercise } = useSelectedWorkoutStore();
 
   return (
     <ScrollView
