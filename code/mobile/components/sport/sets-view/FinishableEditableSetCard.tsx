@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { Card } from "@/components/ui/Card";
-import { IconColors as AppColors } from "@/lib/app-colors";
+import { AppColors as AppColors } from "@/lib/app-colors";
 import { Set } from "@/lib/stores/sport/fe-sets-store";
 // import { Check, Pen } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";

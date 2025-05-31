@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
-import { IconColors as AppColors } from "@/lib/app-colors";
+import { AppColors as AppColors } from "@/lib/app-colors";
 import { Tabs } from "expo-router";
 
 export default function TabLayout() {

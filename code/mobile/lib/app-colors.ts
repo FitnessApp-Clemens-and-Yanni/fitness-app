@@ -1,4 +1,4 @@
-export const IconColors = {
+export const AppColors = {
   BACKGROUND: "#ffffff",
   FOREGROUND: "#09090b",
   CARD: "#ffffff",

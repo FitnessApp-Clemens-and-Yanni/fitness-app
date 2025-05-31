@@ -9,7 +9,7 @@ import {
   WorkoutResponse,
 } from "@/lib/types";
 import { Skeleton } from "@ui/skeleton";
-import { IconColors } from "@/lib/app-colors";
+import { AppColors } from "@/lib/app-colors";
 import { FontAwesomeIcon } from "@comp/font-awesome-icon";
 
 export default function Index() {
@@ -55,11 +55,11 @@ export default function Index() {
             <View className="bg-primary rounded-full p-3">
               {isEditing ? (
                 <TouchableOpacity onPress={() => setIsEditing(false)}>
-                  <FontAwesomeIcon name="check" color={IconColors.WHITE} />
+                  <FontAwesomeIcon name="check" color={AppColors.WHITE} />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <FontAwesomeIcon name="pen" color={IconColors.WHITE} />
+                  <FontAwesomeIcon name="pen" color={AppColors.WHITE} />
                 </TouchableOpacity>
               )}
             </View>

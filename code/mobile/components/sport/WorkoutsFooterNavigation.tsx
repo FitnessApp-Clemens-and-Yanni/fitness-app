@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { TimeDisplay } from "@comp/TimeDisplay";
 import { Text, TouchableOpacity, View } from "react-native";
-import { IconColors } from "@/lib/app-colors";
+import { AppColors } from "@/lib/app-colors";
 import { FontAwesomeIcon } from "../font-awesome-icon";
 import { CTA } from "@comp/CTA";
 
@@ -47,7 +47,7 @@ export function WorkoutsFooterNavigation(props: {
         >
           <FontAwesomeIcon
             name="angle-double-left"
-            color={IconColors.PRIMARY}
+            color={AppColors.PRIMARY}
             className="scale-60"
           />
         </TouchableOpacity>
