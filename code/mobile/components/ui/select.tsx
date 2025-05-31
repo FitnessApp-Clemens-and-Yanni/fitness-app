@@ -6,6 +6,7 @@ import { Check } from "@/lib/icons/Check";
 import { ChevronDown } from "@/lib/icons/ChevronDown";
 import { ChevronUp } from "@/lib/icons/ChevronUp";
 import { cn } from "@/lib/utils";
+import { useAugmentedRef } from "@rn-primitives/hooks";
 
 type Option = SelectPrimitive.Option;
 
@@ -18,24 +19,31 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   SelectPrimitive.TriggerRef,
   SelectPrimitive.TriggerProps
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex flex-row h-10 native:h-12 items-center text-sm justify-between rounded-md border border-input bg-background px-3 py-2 web:ring-offset-background text-muted-foreground web:focus:outline-none web:focus:ring-2 web:focus:ring-ring web:focus:ring-offset-2 [&>span]:line-clamp-1",
-      props.disabled && "web:cursor-not-allowed opacity-50",
-      className,
-    )}
-    {...props}
-  >
-    <>{children}</>
-    <ChevronDown
-      size={16}
-      aria-hidden={true}
-      className="text-foreground opacity-50"
-    />
-  </SelectPrimitive.Trigger>
-));
+>(({ className, children, ...props }, ref) => {
+  const triggerRef = useAugmentedRef({ ref });
+
+  return (
+    <SelectPrimitive.Trigger
+      ref={triggerRef}
+      className={cn(
+        "flex flex-row h-10 native:h-12 items-center text-sm justify-between rounded-md border border-input bg-background px-3 py-2 web:ring-offset-background text-muted-foreground web:focus:outline-none web:focus:ring-2 web:focus:ring-ring web:focus:ring-offset-2 [&>span]:line-clamp-1",
+        props.disabled && "web:cursor-not-allowed opacity-50",
+        className,
+      )}
+      onPress={() => {
+        triggerRef?.current?.open();
+      }}
+      {...props}
+    >
+      <>{children}</>
+      <ChevronDown
+        size={16}
+        aria-hidden={true}
+        className="text-foreground opacity-50"
+      />
+    </SelectPrimitive.Trigger>
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 /**

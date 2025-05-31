@@ -12,11 +12,20 @@ import z from "zod";
 import { OBJECT_ID_SCHEMA } from "@shared/zod-schemas/ObjectId.js";
 
 export const WorkoutsRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    const collection = ctx.db.collection<Workout>(WORKOUTS_COLLECTION);
-    const workouts = await collection.find().sort("sorting").toArray();
-    return workouts as Workout[];
-  }),
+  getAll: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const collection = ctx.db.collection<Workout>(WORKOUTS_COLLECTION);
+      const workouts = await collection
+        .find({ userId: input.userId })
+        .sort("sorting")
+        .toArray();
+      return workouts as Workout[];
+    }),
 
   setWorkout: publicProcedure
     .input(

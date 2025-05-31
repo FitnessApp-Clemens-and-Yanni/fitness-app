@@ -1,8 +1,9 @@
 import { Workout } from "@/data/meta/models.js";
 
-export const workouts = [
+export const workouts: Workout[] = [
   {
     _id: "507f191e310c19729de860ea",
+    userId: "gugi",
     name: "Leg",
     sorting: 1,
     exercises: [
@@ -59,6 +60,7 @@ export const workouts = [
   },
   {
     _id: "507f191f310c19729de860ea",
+    userId: "gugi",
     name: "Back and Shoulders",
     sorting: 3,
     exercises: [
@@ -87,4 +89,4 @@ export const workouts = [
       },
     ],
   },
-] as Workout[];
+];

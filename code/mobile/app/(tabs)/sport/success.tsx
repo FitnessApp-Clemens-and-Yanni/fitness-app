@@ -7,6 +7,7 @@ import { useWorkoutStore } from "@/lib/stores/sport/workout-store";
 import { api } from "@/utils/react";
 import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export default function SuccessScreen() {
   const { startTimestamp, currentTimestamp } = useWorkoutTimingStore();
@@ -40,6 +41,8 @@ function DismissButton() {
   const { currentTimestamp, startTimestamp, stopTimes } =
     useWorkoutTimingStore();
 
+  const userStore = useUserStore();
+
   const apiUtils = api.useUtils();
 
   const finishWorkoutMutation = api.workouts.finishWorkout.useMutation({
@@ -59,7 +62,7 @@ function DismissButton() {
     }
 
     await finishWorkoutMutation.mutateAsync({
-      userId: "gugi",
+      userId: userStore.currentUser,
       workoutId: selectedWorkout._id,
       workoutName: selectedWorkout.name,
       totalTimeInMinutes: (currentTimestamp! - startTimestamp!) / 60_000,

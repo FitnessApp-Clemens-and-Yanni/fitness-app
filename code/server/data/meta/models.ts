@@ -24,7 +24,7 @@ export const SNAPSHOTS_COLLECTION = "exerciseSnapshots";
 
 export type ExerciseSnapshot = {
   exerciseId: string;
-  userId: null;
+  userId: string;
   exerciseDefaults: {
     sets: { weightsInKg: number; repetitions: number }[];
   };

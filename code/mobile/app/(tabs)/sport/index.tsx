@@ -11,13 +11,16 @@ import {
 import { Skeleton } from "@ui/skeleton";
 import { AppColors } from "@/lib/app-colors";
 import { FontAwesomeIcon } from "@comp/font-awesome-icon";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export default function Index() {
+  const userStore = useUserStore();
+
   const {
     isLoading,
     error,
     data: workoutsData,
-  } = api.workouts.getAll.useQuery();
+  } = api.workouts.getAll.useQuery({ userId: userStore.currentUser });
 
   const [isEditing, setIsEditing] = useState(false);
 

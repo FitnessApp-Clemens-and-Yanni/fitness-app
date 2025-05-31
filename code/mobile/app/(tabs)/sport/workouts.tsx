@@ -1,7 +1,7 @@
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { H1, H3 } from "@ui/Typography";
 import { Card } from "@ui/Card";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { EditSetModal } from "@comp/sport/EditSetModal";
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
@@ -11,6 +11,7 @@ import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
 import { WorkoutResponse } from "@/lib/types";
 import { SetsView } from "@comp/sport/sets-view/SetsView";
 import { WorkoutsFooterNavigation } from "@comp/sport/WorkoutsFooterNavigation";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export default function WorkoutsPage() {
   const { selectedWorkout, setSelectedWorkout, selectedExercise } =
@@ -23,7 +24,16 @@ export default function WorkoutsPage() {
   const { editModalValues, setEditModalValues } = useEditModalStore();
   const frontendSetsStore = useExerciseSetStore();
 
+  const userStore = useUserStore();
+  const [userAtBegin] = useState(userStore.currentUser);
+
   const router = useRouter();
+
+  useEffect(() => {
+    if (userStore.currentUser != userAtBegin) {
+      router.dismissTo("/sport");
+    }
+  }, [userStore.currentUser]);
 
   useEffect(() => {
     setSelectedWorkout({
@@ -63,7 +73,9 @@ export default function WorkoutsPage() {
     <View className="flex-1">
       <H1 className="m-5">{selectedWorkout?.name}</H1>
 
-      <ExercisesScrollView />
+      <View className="h-36">
+        <ExercisesScrollView />
+      </View>
 
       <View className="flex-[8]">
         <ScrollView className="flex-1 p-5">
@@ -87,14 +99,20 @@ function ExercisesScrollView() {
   const { selectedWorkout, setSelectedExercise } = useWorkoutStore();
 
   return (
-    <ScrollView horizontal={true} className="flex-1 py-5 px-4">
+    <ScrollView
+      horizontal={true}
+      className="flex-1 py-5 px-4"
+      contentContainerClassName="gap-4"
+    >
       {selectedWorkout?.exercises.map((exercise) => (
-        <Card key={exercise._id} className="aspect-square mr-5">
+        <Card key={exercise._id} className="aspect-square">
           <TouchableOpacity
-            className="p-2 aspect-square"
+            className="p-2 h-full aspect-square bg-primary rounded"
             onPress={() => setSelectedExercise(exercise)}
           >
-            <Text className="text-[.75em]">{exercise.name}</Text>
+            <Text className="text-sm text-pink-100 font-bold">
+              {exercise.name}
+            </Text>
           </TouchableOpacity>
         </Card>
       ))}

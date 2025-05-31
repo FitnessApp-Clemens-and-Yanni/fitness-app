@@ -11,6 +11,7 @@ import { Card } from "@ui/Card";
 import { Button } from "@ui/Button";
 import { api } from "@/utils/react";
 import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export function EditWorkoutModal({
   workoutModel,
@@ -27,20 +28,24 @@ export function EditWorkoutModal({
   ) => void;
 }) {
   const apiUtils = api.useUtils();
+  const userStore = useUserStore();
 
   const mutation = api.workouts.setWorkout.useMutation({
     onSuccess: (data) => {
-      apiUtils.workouts.getAll.setData((() => {})(), (oldWorkouts) => {
-        if (oldWorkouts === undefined) {
-          return [];
-        }
+      apiUtils.workouts.getAll.setData(
+        { userId: userStore.currentUser },
+        (oldWorkouts) => {
+          if (oldWorkouts === undefined) {
+            return [];
+          }
 
-        if (data instanceof Error) {
-          console.error(data.message);
-          return [];
-        }
-        return oldWorkouts.map((wo) => (wo._id === data._id ? data : wo));
-      });
+          if (data instanceof Error) {
+            console.error(data.message);
+            return [];
+          }
+          return oldWorkouts.map((wo) => (wo._id === data._id ? data : wo));
+        },
+      );
 
       apiUtils.workouts.getAll.invalidate();
     },
@@ -89,7 +94,7 @@ export function EditWorkoutModal({
               onPress={() => {
                 mutation.mutate({
                   _id: workoutModel!._id,
-                  userId: "gugi",
+                  userId: userStore.currentUser,
                   name: workoutModel!.name,
                   ...workoutModel,
                   exercises: workoutModel!.exercises,

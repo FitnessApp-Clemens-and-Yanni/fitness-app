@@ -1,4 +1,9 @@
 import {
+  POSSIBLE_USERS,
+  PossibleUserId,
+  useUserStore,
+} from "@/lib/stores/user-store";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -8,12 +13,19 @@ import {
   SelectValue,
 } from "@ui/select";
 
-export const POSSIBLE_USERS = ["yanni", "gugi"] as const;
-
 export function UserSelect() {
+  const userStore = useUserStore();
+
   return (
     <Select
-      defaultValue={{ value: POSSIBLE_USERS[0], label: POSSIBLE_USERS[0] }}
+      defaultValue={{
+        value: userStore.currentUser,
+        label: userStore.currentUser,
+      }}
+      onValueChange={(option) => {
+        const value = option!.value as PossibleUserId;
+        userStore.setCurrentUser(value);
+      }}
     >
       <SelectTrigger>
         <SelectValue placeholder="Select user" />
