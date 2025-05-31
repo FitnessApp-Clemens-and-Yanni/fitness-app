@@ -9,9 +9,10 @@ import { DateDisplay } from "@/components/DateDisplay";
 
 export default function Index() {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const apiUtils = api.useUtils();
 
   useEffect(() => {
-    refetchDailyData();
+    apiUtils.food.getNutritionalValuesOfDay.invalidate();
   }, [currentDate]);
 
   const {
@@ -20,11 +21,8 @@ export default function Index() {
     data: targetNutritionalData,
   } = api.food.getTargetNutritionalValues.useQuery();
 
-  const {
-    isLoading: isLoadingDailyValues,
-    data: dailyNutritionalData,
-    refetch: refetchDailyData,
-  } = api.food.getNutritionalValuesOfDay.useQuery({ date: currentDate });
+  const { isLoading: isLoadingDailyValues, data: dailyNutritionalData } =
+    api.food.getNutritionalValuesOfDay.useQuery({ date: currentDate });
 
   if (
     isLoadingTargets === true ||
@@ -59,10 +57,7 @@ export default function Index() {
           targetNutritionalData={targetNutritionalData}
         />
 
-        <MealsAddingOptions
-          currentDate={currentDate}
-          refetchDailyData={refetchDailyData}
-        />
+        <MealsAddingOptions currentDate={currentDate} />
       </View>
     </View>
   );

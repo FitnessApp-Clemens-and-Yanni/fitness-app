@@ -16,8 +16,8 @@ export function NutritionalDataDisplay(props: {
         nutrientKey="caloriesInKcal"
         dailyNutritionalData={props.dailyNutritionalData}
         targetNutritionalData={props.targetNutritionalData}
-        viewTextClasses="flex flex-row justify-center"
-        progressClasses="w-full h-3"
+        viewTextClassName="flex flex-row justify-center"
+        progressClassName="w-full h-3"
       />
 
       <Text className="text-lg font-semibold pl-4">Nutritional Values</Text>
@@ -27,21 +27,21 @@ export function NutritionalDataDisplay(props: {
         nutrientKey="proteinInG"
         dailyNutritionalData={props.dailyNutritionalData}
         targetNutritionalData={props.targetNutritionalData}
-        viewTextClasses="flex flex-row justify-start"
+        viewTextClassName="flex flex-row justify-start"
       />
       <NutritionalValuesProgressBars
         nutritionalValue="Carbs"
         nutrientKey="carbsInG"
         dailyNutritionalData={props.dailyNutritionalData}
         targetNutritionalData={props.targetNutritionalData}
-        viewTextClasses="flex flex-row justify-start"
+        viewTextClassName="flex flex-row justify-start"
       />
       <NutritionalValuesProgressBars
         nutritionalValue="Fats"
         nutrientKey="fatsInG"
         dailyNutritionalData={props.dailyNutritionalData}
         targetNutritionalData={props.targetNutritionalData}
-        viewTextClasses="flex flex-row justify-start"
+        viewTextClassName="flex flex-row justify-start"
       />
     </View>
   );

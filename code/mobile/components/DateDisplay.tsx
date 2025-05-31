@@ -1,6 +1,7 @@
 import { TouchableOpacity, View, Text } from "react-native";
 import { useState } from "react";
-import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react-native";
+import { FontAwesomeIcon } from "./font-awesome-icon";
+import { AppColors } from "@/lib/app-colors";
 
 const MILLISECONDS_DAY_FACTOR = 1000 * 60 * 60 * 24;
 
@@ -8,8 +9,6 @@ export function DateDisplay(props: {
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
 }) {
-  const today = new Date();
-
   const [weekStartDate, setWeekStartDate] = useState(
     getMondayOfWeek(props.selectedDate.valueOf() / MILLISECONDS_DAY_FACTOR),
   );
@@ -33,6 +32,7 @@ export function DateDisplay(props: {
   }
 
   function goToToday() {
+    const today = new Date();
     const day = today.getDay();
     const diff = day === 0 ? -6 : 1 - day;
 
@@ -97,7 +97,11 @@ export function DateDisplay(props: {
 
       <View className="flex flex-row justify-between">
         <TouchableOpacity className="justify-center" onPress={goToPreviousWeek}>
-          <ChevronLeftIcon />
+          <FontAwesomeIcon
+            name="chevron-left"
+            color={AppColors.BLACK}
+            className="scale-90"
+          />
         </TouchableOpacity>
 
         {getWeekDates().map((date, index) => (
@@ -116,8 +120,12 @@ export function DateDisplay(props: {
           </TouchableOpacity>
         ))}
 
-        <TouchableOpacity className=" justify-center" onPress={goToNextWeek}>
-          <ChevronRightIcon />
+        <TouchableOpacity className="justify-center" onPress={goToNextWeek}>
+          <FontAwesomeIcon
+            name="chevron-right"
+            color={AppColors.BLACK}
+            className="scale-90"
+          />
         </TouchableOpacity>
       </View>
     </View>

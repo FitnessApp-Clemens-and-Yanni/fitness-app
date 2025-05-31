@@ -1,4 +1,5 @@
 import { TouchableOpacity, View, Text } from "react-native";
+import { FOOD_FILTERING_OPTIONS } from "@/lib/food-filtering-options";
 
 export function FilterFoodButtons(props: {
   setSelectedFoodFilter: (filter: string) => void;
@@ -7,7 +8,7 @@ export function FilterFoodButtons(props: {
   return (
     <View className="bg-stone-400 border border-stone-500 rounded-md p-1 w-3/4 self-center">
       <View className="flex flex-row justify-around">
-        {["Often", "Favorite", "Last"].map((option, index) => (
+        {FOOD_FILTERING_OPTIONS.map((option, index) => (
           <TouchableOpacity
             key={index}
             onPress={() => props.setSelectedFoodFilter(option)}

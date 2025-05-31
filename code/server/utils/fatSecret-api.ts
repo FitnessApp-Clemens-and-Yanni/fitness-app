@@ -1,37 +1,33 @@
 import crypto from "crypto";
 import OAuth from "oauth-1.0a";
 
-export interface FatSecretRequestParams {
-  [key: string]: string | number;
-}
-
 export async function callFatSecretApi(
   endpoint: string,
-  params: FatSecretRequestParams,
+  params: Record<string, string | number>,
 ) {
-  const oauth_consumer_key = process.env.FATSECRET_CONSUMER_KEY!;
+  const oauthConsumerKey = process.env.FATSECRET_CONSUMER_KEY!;
   const consumerSecret = process.env.FATSECRET_CONSUMER_SECRET!;
 
-  const oauth_nonce_length = 16;
-  const oauth_signature_method = "HMAC-SHA1";
+  const oauthNonceLength = 16;
+  const oauthSignatureMethod = "HMAC-SHA1";
 
   const oauth = new OAuth({
     consumer: {
-      key: oauth_consumer_key,
+      key: oauthConsumerKey,
       secret: consumerSecret,
     },
-    signature_method: oauth_signature_method,
+    signature_method: oauthSignatureMethod,
     hash_function(baseString, key) {
       return crypto.createHmac("sha1", key).update(baseString).digest("base64");
     },
   });
 
-  const oauth_nonce = crypto.randomBytes(oauth_nonce_length).toString("hex");
+  const oauth_nonce = crypto.randomBytes(oauthNonceLength).toString("hex");
   const oauth_timestamp = Math.floor(Date.now() / 1000);
 
   const urlParams = {
-    oauth_consumer_key,
-    oauth_signature_method,
+    oauth_consumer_key: oauthConsumerKey,
+    oauth_signature_method: oauthSignatureMethod,
     oauth_timestamp,
     oauth_nonce,
     oauth_version: "1.0",
@@ -71,7 +67,6 @@ export async function callFatSecretApi(
   return data;
 }
 
-// Helper function for meal type mapping
 export const getMealTypeField = (mealType: string): string => {
   const mealTypeMapping: Record<string, string> = {
     Breakfast: "breakfastMeals",

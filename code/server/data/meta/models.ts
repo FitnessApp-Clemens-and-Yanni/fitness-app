@@ -89,15 +89,3 @@ type DateOnly = {
   month: number;
   day: number;
 };
-
-export type FoodItem = {
-  food_name: string;
-  food_description: string;
-  food_id: string;
-};
-
-export type SearchFoodResult = {
-  foods: {
-    food: FoodItem[] | FoodItem;
-  };
-};

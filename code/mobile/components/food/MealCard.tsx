@@ -1,28 +1,25 @@
 import { TouchableOpacity, Text } from "react-native";
 import { Eye, Pen } from "lucide-react-native";
 import { Card } from "@ui/Card";
-import { AddMealModal } from "@comp/food/MealModal/AddMealModal";
+import { MealAddingModal } from "@/components/food/meal-modal";
 import { Alert } from "@comp/Alert";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { api } from "@/utils/react";
 
-export function MealCard(props: {
-  mealType: string;
-  refetchDailyData: () => void;
-  currentDate?: Date;
-}) {
-  const [modalState, setModalState] = useState({
-    visible: false,
-    mealType: "",
-  });
+export function MealCard(props: { mealType: MealType; currentDate?: Date }) {
+  const apiUtils = api.useUtils();
 
+  const [isVisible, setIsVisible] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
 
   const date = new Date();
 
-  const handleModalClose = () => {
-    props.refetchDailyData();
-    setModalState({ visible: false, mealType: "" });
-  };
+  useEffect(() => {
+    if (!isVisible) {
+      apiUtils.food.getNutritionalValuesOfDay.invalidate();
+    }
+  }, [isVisible]);
 
   const handleMealPress = () => {
     if (
@@ -31,7 +28,7 @@ export function MealCard(props: {
     ) {
       setAlertOpen(true);
     } else {
-      setModalState({ visible: true, mealType: props.mealType });
+      setIsVisible(true);
     }
   };
 
@@ -58,10 +55,10 @@ export function MealCard(props: {
         trigger={<></>}
       />
 
-      <AddMealModal
-        isVisible={modalState.visible}
-        mealType={modalState.mealType}
-        closeBtnClick={handleModalClose}
+      <MealAddingModal
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
+        mealType={props.mealType}
       />
     </Card>
   );
