@@ -1,4 +1,3 @@
-import { GripVertical, Plus, X } from "lucide-react-native";
 import {
   Modal,
   ScrollView,
@@ -8,25 +7,16 @@ import {
   View,
 } from "react-native";
 import { Card } from "@ui/Card";
-import { Button } from "@ui/Button";
 import { api } from "@/utils/react";
 import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
 import { useUserStore } from "@/lib/stores/user-store";
+import { FontAwesomeIcon } from "../font-awesome-icon";
+import { AppColors } from "@/lib/app-colors";
+import { useWorkoutEditStore } from "@/lib/stores/sport/workout-edit-store";
 
-export function EditWorkoutModal({
-  workoutModel,
-  setWorkoutModel,
-  setExerciseSetCount,
-}: {
-  workoutModel: WorkoutPutRequest | undefined;
-  setWorkoutModel: React.Dispatch<
-    React.SetStateAction<WorkoutPutRequest | undefined>
-  >;
-  setExerciseSetCount: (
-    text: string,
-    exercise: WorkoutExercisePutRequest,
-  ) => void;
-}) {
+export function EditWorkoutModal() {
+  const workoutEditStore = useWorkoutEditStore();
+
   const apiUtils = api.useUtils();
   const userStore = useUserStore();
 
@@ -46,67 +36,126 @@ export function EditWorkoutModal({
           return oldWorkouts.map((wo) => (wo._id === data._id ? data : wo));
         },
       );
-
-      apiUtils.workouts.getAll.invalidate();
     },
   });
 
   return (
-    <Modal transparent={true} visible={workoutModel !== undefined}>
+    <Modal
+      transparent={true}
+      visible={workoutEditStore.workoutBeingEdited !== undefined}
+    >
       <View className="flex-1 py-7 px-5">
         <View className="flex-1 bg-gray-200/95 ring-1 ring-primary">
           <View className="flex flex-row justify-between bg-primary/90 p-5">
-            <Text className="text-2xl font-thin">{workoutModel?.name}</Text>
-            <TouchableOpacity onPress={() => setWorkoutModel(undefined)}>
-              <X />
+            <Text className="text-2xl font-bold text-white">
+              {workoutEditStore.workoutBeingEdited?.name}
+            </Text>
+            <TouchableOpacity
+              onPress={() => workoutEditStore.setWorkoutBeingEdited(undefined)}
+              className="rounded-full aspect-square"
+            >
+              <FontAwesomeIcon name="times" color={AppColors.WHITE} />
             </TouchableOpacity>
           </View>
           <ScrollView className="p-5 flex-1">
-            {workoutModel?.exercises
+            {workoutEditStore.workoutBeingEdited?.exercises
               .toSorted((e) => e.sorting)
               .map((exercise) => (
-                <Card
-                  className="flex-row py-5 gap-5 mb-2 pr-5 items-center"
-                  key={exercise._id}
-                >
-                  <GripVertical />
-                  <View className="flex-1 flex-row items-center">
-                    <Text>{exercise.name}</Text>
-                  </View>
-                  <View className="flex-row items-center gap-2">
-                    <Text>Sets:</Text>
-                    <TextInput
-                      className="w-7 ring-1 ring-primary rounded py-2 text-center"
-                      value={exercise.numberOfSets.toString()}
-                      onChangeText={(text) =>
-                        setExerciseSetCount(text, exercise)
-                      }
-                    />
-                  </View>
-                </Card>
+                <EditWorkoutExercise exercise={exercise} key={exercise._id} />
               ))}
           </ScrollView>
           <View className="flex-row justify-end gap-5 p-5">
-            <Button>
-              <Plus />
-            </Button>
-            <Button
+            <TouchableOpacity className="rounded-full aspect-square bg-primary px-2 pl-[0.57rem] justify-center">
+              <FontAwesomeIcon
+                name="plus"
+                color={AppColors.WHITE}
+                className="text-center"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="rounded-full aspect-square bg-primary px-2 pl-[0.57rem] justify-center"
               onPress={() => {
                 mutation.mutate({
-                  _id: workoutModel!._id,
+                  _id: workoutEditStore.workoutBeingEdited!._id,
                   userId: userStore.currentUser,
-                  name: workoutModel!.name,
-                  ...workoutModel,
-                  exercises: workoutModel!.exercises,
+                  name: workoutEditStore.workoutBeingEdited!.name,
+                  ...workoutEditStore.workoutBeingEdited,
+                  exercises: workoutEditStore.workoutBeingEdited!.exercises,
                 });
-                setWorkoutModel(undefined);
+                workoutEditStore.setWorkoutBeingEdited(undefined);
               }}
             >
-              <Text>Save</Text>
-            </Button>
+              <FontAwesomeIcon
+                name="save"
+                color={AppColors.WHITE}
+                className="scale-95"
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     </Modal>
   );
+}
+
+function EditWorkoutExercise(props: { exercise: WorkoutExercisePutRequest }) {
+  const workoutEditStore = useWorkoutEditStore();
+
+  return (
+    <Card className="flex-row py-5 gap-5 mb-2 pr-5 items-center">
+      <FontAwesomeIcon
+        name="grip-vertical"
+        color={AppColors.GREY_700}
+        className="ml-2"
+      />
+      <View className="flex-1 flex-row items-center">
+        <Text>{props.exercise.name}</Text>
+      </View>
+      <View className="flex-row items-center gap-2">
+        <Text>Sets:</Text>
+        <TextInput
+          className="w-7 ring-1 ring-primary rounded py-2 text-center"
+          value={props.exercise.numberOfSets.toString()}
+          onChangeText={(text) =>
+            setExerciseSetCount(
+              workoutEditStore.workoutBeingEdited,
+              workoutEditStore.setWorkoutBeingEdited,
+            )(text, props.exercise)
+          }
+        />
+      </View>
+    </Card>
+  );
+}
+
+function setExerciseSetCount(
+  workoutBeingEdited: WorkoutPutRequest | undefined,
+  setWorkoutBeingEdited: (val: WorkoutPutRequest | undefined) => void,
+) {
+  return (text: string, exercise: WorkoutExercisePutRequest) => {
+    if (text === "") {
+      const idx = workoutBeingEdited!.exercises.indexOf(exercise);
+      setWorkoutBeingEdited({
+        ...workoutBeingEdited!,
+        exercises: workoutBeingEdited!.exercises.with(idx, {
+          ...workoutBeingEdited!.exercises[idx],
+          numberOfSets: 0,
+        }),
+      });
+      return;
+    }
+
+    if (!/^\d{1,2}$/.test(text)) {
+      return;
+    }
+
+    const idx = workoutBeingEdited!.exercises.indexOf(exercise);
+    setWorkoutBeingEdited({
+      ...workoutBeingEdited!,
+      exercises: workoutBeingEdited!.exercises.with(idx, {
+        ...workoutBeingEdited!.exercises[idx],
+        numberOfSets: +text,
+      }),
+    });
+  };
 }

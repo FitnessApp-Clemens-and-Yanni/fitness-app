@@ -12,6 +12,7 @@ import { Skeleton } from "@ui/skeleton";
 import { AppColors } from "@/lib/app-colors";
 import { FontAwesomeIcon } from "@comp/font-awesome-icon";
 import { useUserStore } from "@/lib/stores/user-store";
+import { useWorkoutEditStore } from "@/lib/stores/sport/workout-edit-store";
 
 export default function Index() {
   const userStore = useUserStore();
@@ -26,27 +27,29 @@ export default function Index() {
 
   return (
     <>
-      {isLoading || error ? (
-        isLoading ? (
-          <FlatList
-            data={new Array(5).fill(null).map((_, idx) => idx + 1)}
-            renderItem={() => (
-              <Skeleton className="mt-2 rounded aspect-square p-2 flex flex-col justify-end w-5/12"></Skeleton>
-            )}
-            className="mt-5 flex-1"
-            contentContainerClassName="gap-5"
-            columnWrapperClassName="justify-evenly"
-            numColumns={2}
-          />
-        ) : (
-          <Text>Sorry, an error occured... {error!.message}</Text>
-        )
+      {isLoading ? (
+        <FlatList
+          data={new Array(5).fill(null).map((_, idx) => idx + 1)}
+          renderItem={() => (
+            <Skeleton className="mt-2 rounded aspect-square p-2 flex flex-col justify-end w-5/12"></Skeleton>
+          )}
+          className="mt-5 flex-1"
+          contentContainerClassName="gap-5"
+          columnWrapperClassName="justify-evenly"
+          numColumns={2}
+        />
+      ) : error ? (
+        <Text>Sorry, an error occured... {error!.message}</Text>
       ) : (
         <>
           <FlatList
             data={workoutsData ?? []}
             renderItem={({ item }) => (
-              <SingleWorkout workoutResponse={item} isInEditMode={isEditing} />
+              <SingleWorkout
+                workoutResponse={item}
+                isInEditMode={isEditing}
+                key={item._id}
+              />
             )}
             className="mt-5"
             contentContainerClassName="gap-5"
@@ -56,15 +59,12 @@ export default function Index() {
           />
           <View className="flex-row justify-end p-5">
             <View className="bg-primary rounded-full p-3">
-              {isEditing ? (
-                <TouchableOpacity onPress={() => setIsEditing(false)}>
-                  <FontAwesomeIcon name="check" color={AppColors.WHITE} />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <FontAwesomeIcon name="pen" color={AppColors.WHITE} />
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity onPress={() => setIsEditing(!isEditing)}>
+                <FontAwesomeIcon
+                  name={isEditing ? "check" : "pen"}
+                  color={AppColors.WHITE}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </>
@@ -77,18 +77,16 @@ function SingleWorkout(props: {
   workoutResponse: WorkoutResponse;
   isInEditMode: boolean;
 }) {
-  const [workoutModel, setWorkoutModel] = useState<
-    WorkoutPutRequest | undefined
-  >();
+  const workoutEditStore = useWorkoutEditStore();
 
   const [rotationObj, setRotationObj] = useState({ rotation: 0, direction: 1 });
 
-  useEffect(wiggleAnimationEffect(props.isInEditMode, 2, setRotationObj), [
+  useEffect(wiggleAnimationEffect(props.isInEditMode, 1, setRotationObj), [
     props.isInEditMode,
   ]);
 
   const startUpdatingWorkout = () => {
-    setWorkoutModel({
+    workoutEditStore.setWorkoutBeingEdited({
       _id: props.workoutResponse._id,
       name: props.workoutResponse.name,
       exercises: props.workoutResponse.exercises.map((exercise) => ({
@@ -101,43 +99,9 @@ function SingleWorkout(props: {
     });
   };
 
-  const setExerciseSetCount = (
-    text: string,
-    exercise: WorkoutExercisePutRequest,
-  ) => {
-    if (text === "") {
-      const idx = workoutModel!.exercises.indexOf(exercise);
-      setWorkoutModel({
-        ...workoutModel!,
-        exercises: workoutModel!.exercises.with(idx, {
-          ...workoutModel!.exercises[idx],
-          numberOfSets: 0,
-        }),
-      });
-      return;
-    }
-
-    if (!/^\d{1,2}$/.test(text)) {
-      return;
-    }
-
-    const idx = workoutModel!.exercises.indexOf(exercise);
-    setWorkoutModel({
-      ...workoutModel!,
-      exercises: workoutModel!.exercises.with(idx, {
-        ...workoutModel!.exercises[idx],
-        numberOfSets: +text,
-      }),
-    });
-  };
-
   return (
     <>
-      <EditWorkoutModal
-        workoutModel={workoutModel}
-        setWorkoutModel={setWorkoutModel}
-        setExerciseSetCount={setExerciseSetCount}
-      />
+      <EditWorkoutModal />
       <View
         className="mt-2 w-5/12 ring-2 ring-primary bg-primary rounded aspect-square p-2 flex flex-col justify-end shadow-black shadow-md"
         style={{ transform: [{ rotate: `${rotationObj.rotation}deg` }] }}
