@@ -12,8 +12,8 @@ export function NutritionalValuesProgressBars(props: {
   nutrientKey: NutrientKey;
   dailyNutritionalData: NutritionalValueOfDay | "NoEntries";
   targetNutritionalData: TargetNutritionalValue;
-  viewTextClasses?: string;
-  progressClasses?: string;
+  viewTextClassName?: string;
+  progressClassName?: string;
 }) {
   const currentValue =
     props.dailyNutritionalData === "NoEntries"
@@ -24,14 +24,14 @@ export function NutritionalValuesProgressBars(props: {
 
   return (
     <View className="w-full">
-      <View className={props.viewTextClasses}>
+      <View className={props.viewTextClassName}>
         <Text>
           {props.nutritionalValue} {currentValue.toFixed(1)}
           {" / "}
           {targetValue}
         </Text>
       </View>
-      <Progress value={progressValue} className={props.progressClasses} />
+      <Progress value={progressValue} className={props.progressClassName} />
     </View>
   );
 }

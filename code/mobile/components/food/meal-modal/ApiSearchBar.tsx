@@ -1,6 +1,7 @@
 import { TouchableOpacity, View } from "react-native";
 import { Input } from "@ui/input";
-import { ScanBarcode, Search } from "lucide-react-native";
+import { FontAwesomeIcon } from "@/components/font-awesome-icon";
+import { AppColors } from "@/lib/app-colors";
 
 export function ApiSearchBar(props: {
   searchTerm: string;
@@ -25,12 +26,16 @@ export function ApiSearchBar(props: {
             }}
             className="px-2"
           >
-            <Search size={20} color="#78716c" />
+            <FontAwesomeIcon
+              name="search"
+              color={AppColors.GREY_700}
+              className="scale-[0.8]"
+            />
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity>
-          <ScanBarcode size={40} />
+          <FontAwesomeIcon name="camera" color={AppColors.GREY_700} />
         </TouchableOpacity>
       </View>
     </View>

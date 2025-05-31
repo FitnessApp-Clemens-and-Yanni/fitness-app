@@ -8,6 +8,7 @@ import {
 import { createTRPCRouter, publicProcedure } from "@/trpc.js";
 import z from "zod";
 import { calculateNewNutritionalValuesInDatabase } from "@/utils/nutritionCalculator.js";
+import { MEAL_TYPE_SCHEMA } from "@/shared/zod-schemas/meal-type.js";
 
 export const FoodRouter = createTRPCRouter({
   getTargetNutritionalValues: publicProcedure.query(async ({ ctx }) => {
@@ -50,7 +51,7 @@ export const FoodRouter = createTRPCRouter({
     .input(
       z.object({
         date: z.date(),
-        mealType: z.string(),
+        mealType: MEAL_TYPE_SCHEMA,
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -66,6 +67,10 @@ export const FoodRouter = createTRPCRouter({
       };
 
       const mappedMealType = mealTypeMapping[input.mealType];
+
+      if (!mappedMealType) {
+        return new Error("Invalid meal type provided.");
+      }
 
       const foodItems = await collection.findOne({
         "dayOfEntry.year": input.date.getFullYear(),
@@ -86,7 +91,7 @@ export const FoodRouter = createTRPCRouter({
     .input(
       z.object({
         date: z.date().default(() => new Date()),
-        mealType: z.string(),
+        mealType: MEAL_TYPE_SCHEMA,
         foodName: z.string(),
       }),
     )
@@ -102,7 +107,11 @@ export const FoodRouter = createTRPCRouter({
         Snack: "snackMeals",
       };
 
-      const mappedMealType = mealTypeMapping[input.mealType] || input.mealType;
+      const mappedMealType = mealTypeMapping[input.mealType];
+
+      if (!mappedMealType) {
+        throw new Error("Invalid meal type provided.");
+      }
 
       const result = await collection.updateOne(
         {
