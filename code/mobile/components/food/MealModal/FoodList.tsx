@@ -35,7 +35,6 @@ export function FoodList(props: {
                   })
                 }
               >
-                {/*<Trash2 className="self-center flex" /> */}
                 <FontAwesomeIcon name="trash" color={AppColors.RED} className="self-center flex scale-75" />
               </TouchableOpacity>
 
