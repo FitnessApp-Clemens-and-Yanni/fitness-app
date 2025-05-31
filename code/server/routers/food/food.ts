@@ -11,17 +11,20 @@ import { calculateNewNutritionalValuesInDatabase } from "@/utils/nutritionCalcul
 import { MEAL_TYPE_SCHEMA } from "@/shared/zod-schemas/meal-type.js";
 
 export const FoodRouter = createTRPCRouter({
-  getTargetNutritionalValues: publicProcedure.query(async ({ ctx }) => {
-    const collection = ctx.db.collection<TargetNutritionalValue>(
-      TARGET_NUTRITIONAL_VALUE_COLLECTION,
-    );
-    const targetValues = await collection.findOne();
-    return targetValues as TargetNutritionalValue;
-  }),
+  getTargetNutritionalValues: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const collection = ctx.db.collection<TargetNutritionalValue>(
+        TARGET_NUTRITIONAL_VALUE_COLLECTION,
+      );
+      const targetValues = await collection.findOne({ userId: input.userId });
+      return targetValues as TargetNutritionalValue;
+    }),
 
   getNutritionalValuesOfDay: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         date: z.date(),
       }),
     )
@@ -35,6 +38,7 @@ export const FoodRouter = createTRPCRouter({
       const day = input.date.getDate();
 
       const dailyNutrition = await collection.findOne({
+        userId: input.userId,
         "dayOfEntry.year": year,
         "dayOfEntry.month": month,
         "dayOfEntry.day": day,
@@ -50,6 +54,7 @@ export const FoodRouter = createTRPCRouter({
   getFoodItemsOfDayByMeal: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         date: z.date(),
         mealType: MEAL_TYPE_SCHEMA,
       }),
@@ -73,6 +78,7 @@ export const FoodRouter = createTRPCRouter({
       }
 
       const foodItems = await collection.findOne({
+        userId: input.userId,
         "dayOfEntry.year": input.date.getFullYear(),
         "dayOfEntry.month": input.date.getMonth() + 1,
         "dayOfEntry.day": input.date.getDate(),
@@ -90,6 +96,7 @@ export const FoodRouter = createTRPCRouter({
   deleteFoodOfDayByMeal: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         date: z.date().default(() => new Date()),
         mealType: MEAL_TYPE_SCHEMA,
         foodName: z.string(),
@@ -115,6 +122,7 @@ export const FoodRouter = createTRPCRouter({
 
       const result = await collection.updateOne(
         {
+          userId: input.userId,
           "dayOfEntry.year": input.date.getFullYear(),
           "dayOfEntry.month": input.date.getMonth() + 1,
           "dayOfEntry.day": input.date.getDate(),
@@ -141,6 +149,7 @@ export const FoodRouter = createTRPCRouter({
   createEmptyDayEntry: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         date: z.date(),
       }),
     )
@@ -150,7 +159,7 @@ export const FoodRouter = createTRPCRouter({
       );
 
       const emptyEntry: NutritionalValueOfDay = {
-        userId: "0", // Default user ID
+        userId: input.userId,
         caloriesInKcal: 0,
         proteinInG: 0,
         carbsInG: 0,

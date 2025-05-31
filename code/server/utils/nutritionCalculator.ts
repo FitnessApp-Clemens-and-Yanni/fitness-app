@@ -8,12 +8,14 @@ import { Db } from "mongodb";
 export async function calculateNewNutritionalValuesInDatabase(
   db: Db,
   date: Date,
+  userId: string,
 ) {
   const collection = db.collection<NutritionalValueOfDay>(
     NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
   );
 
   const updatedDocument = await collection.findOne({
+    userId,
     "dayOfEntry.year": date.getFullYear(),
     "dayOfEntry.month": date.getMonth() + 1,
     "dayOfEntry.day": date.getDate(),
@@ -48,6 +50,7 @@ export async function calculateNewNutritionalValuesInDatabase(
 
   await collection.updateOne(
     {
+      userId,
       "dayOfEntry.year": date.getFullYear(),
       "dayOfEntry.month": date.getMonth() + 1,
       "dayOfEntry.day": date.getDate(),

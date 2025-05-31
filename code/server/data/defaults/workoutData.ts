@@ -60,7 +60,7 @@ export const workouts: Workout[] = [
   },
   {
     _id: "507f191f310c19729de860ea",
-    userId: "gugi",
+    userId: "yanni",
     name: "Back and Shoulders",
     sorting: 3,
     exercises: [

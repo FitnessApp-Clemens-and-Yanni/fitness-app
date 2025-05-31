@@ -44,7 +44,7 @@ export const snapshots: ExerciseSnapshot[] = [
   },
   {
     exerciseId: "506f191e810c19729de860ef",
-    userId: "gugi",
+    userId: "yanni",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 40, repetitions: 10 },
@@ -55,7 +55,7 @@ export const snapshots: ExerciseSnapshot[] = [
   },
   {
     exerciseId: "506f191e810c19729de860fb",
-    userId: "gugi",
+    userId: "yanni",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 50, repetitions: 10 },

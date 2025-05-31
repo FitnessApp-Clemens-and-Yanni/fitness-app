@@ -7,13 +7,14 @@ import {
 
 type NutrientKey = "caloriesInKcal" | "proteinInG" | "carbsInG" | "fatsInG";
 
-export function NutritionalValuesProgressBars(props: {
+export function NutritionalValuesProgressBar(props: {
   nutritionalValue: string;
   nutrientKey: NutrientKey;
   dailyNutritionalData: NutritionalValueOfDay | "NoEntries";
   targetNutritionalData: TargetNutritionalValue;
   viewTextClassName?: string;
   progressClassName?: string;
+  roundingDigit?: number;
 }) {
   const currentValue =
     props.dailyNutritionalData === "NoEntries"
@@ -26,7 +27,8 @@ export function NutritionalValuesProgressBars(props: {
     <View className="w-full">
       <View className={props.viewTextClassName}>
         <Text>
-          {props.nutritionalValue} {currentValue.toFixed(1)}
+          {props.nutritionalValue}{" "}
+          {currentValue.toFixed(props.roundingDigit ?? 1)}
           {" / "}
           {targetValue}
         </Text>

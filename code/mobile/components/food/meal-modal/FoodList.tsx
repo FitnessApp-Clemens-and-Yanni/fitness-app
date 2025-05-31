@@ -4,6 +4,7 @@ import { api } from "@/utils/react";
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export function FoodList(props: {
   foodData: MealEntry;
@@ -11,6 +12,7 @@ export function FoodList(props: {
   refetchFoodData: () => void;
   mealType: MealType;
 }) {
+  const userStore = useUserStore();
   const deleteFoodMutation = api.food.deleteFoodOfDayByMeal.useMutation({
     onSuccess: () => {
       props.refetchFoodData();
@@ -37,6 +39,7 @@ export function FoodList(props: {
                 <TouchableOpacity
                   onPress={() =>
                     deleteFoodMutation.mutate({
+                      userId: userStore.currentUser,
                       date: props.currentDate,
                       mealType: props.mealType,
                       foodName: food.name,

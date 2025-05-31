@@ -9,7 +9,7 @@ export const targetNutritionalValue: TargetNutritionalValue[] = [
     userId: "gugi",
   },
   {
-    caloriesInKcal: 2500,
+    caloriesInKcal: 1900,
     proteinInG: 150,
     carbsInG: 300,
     fatsInG: 70,

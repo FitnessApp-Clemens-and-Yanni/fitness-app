@@ -17,6 +17,7 @@ import { FoodList } from "@/components/food/meal-modal/FoodList";
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { useUserStore } from "@/lib/stores/user-store";
 
 export type FoodItem = {
   food_name: string;
@@ -42,12 +43,14 @@ export function MealAddingModal(props: {
     null,
   );
 
+  const userStore = useUserStore();
+
   const {
     isLoading: isLoadingSearchFood,
     error: searchFoodError,
     data: searchFoodResultData,
     refetch: searchFood,
-  } = api.fatSecret.getSearchFood.useQuery(
+  } = api.fatSecret.searchForFood.useQuery(
     { search: searchTerm },
     { enabled: false },
   );
@@ -61,6 +64,7 @@ export function MealAddingModal(props: {
     refetch: refetchFoodData,
   } = api.food.getFoodItemsOfDayByMeal.useQuery(
     {
+      userId: userStore.currentUser,
       date: currentDate,
       mealType: props.mealType,
     },
@@ -86,6 +90,7 @@ export function MealAddingModal(props: {
       if (foodItemsStateError === null) {
         createEmptyDayMutation.mutate(
           {
+            userId: userStore.currentUser,
             date: currentDate,
           },
           {

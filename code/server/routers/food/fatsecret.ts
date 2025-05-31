@@ -8,32 +8,8 @@ import { callFatSecretApi, getMealTypeField } from "@/utils/fatSecret-api.js";
 import { calculateNewNutritionalValuesInDatabase } from "@/utils/nutritionCalculator.js";
 import { MEAL_TYPE_SCHEMA } from "@/shared/zod-schemas/meal-type.js";
 
-type FatSecretApiFoodItem = {
-  food_name: string;
-  food_description: string;
-  food_id: string;
-};
-
-type FatSecretApiResponse = {
-  foods: {
-    food: FatSecretApiFoodItem[] | FatSecretApiFoodItem;
-  };
-};
-
-export type FoodItem = {
-  foodName: string;
-  foodDescription: string;
-  foodId: string;
-};
-
-export type SearchFoodResult = {
-  foods: {
-    food: FoodItem[] | FoodItem;
-  };
-};
-
 export const FatSecretRouter = createTRPCRouter({
-  getSearchFood: publicProcedure
+  searchForFood: publicProcedure
     .input(
       z.object({
         search: z.string(),
@@ -68,6 +44,7 @@ export const FatSecretRouter = createTRPCRouter({
   addFoodToMealWithId: publicProcedure
     .input(
       z.object({
+        userId: z.string(),
         foodId: z.string(),
         mealType: MEAL_TYPE_SCHEMA,
         date: z.date().default(() => new Date()),
@@ -115,6 +92,7 @@ export const FatSecretRouter = createTRPCRouter({
 
       const result = await collection.updateOne(
         {
+          userId: input.userId,
           "dayOfEntry.year": input.date.getFullYear(),
           "dayOfEntry.month": input.date.getMonth() + 1,
           "dayOfEntry.day": input.date.getDate(),
@@ -126,7 +104,11 @@ export const FatSecretRouter = createTRPCRouter({
         },
       );
 
-      await calculateNewNutritionalValuesInDatabase(ctx.db, input.date);
+      await calculateNewNutritionalValuesInDatabase(
+        ctx.db,
+        input.date,
+        input.userId,
+      );
 
       if (result.modifiedCount === 0) {
         throw new Error("Could not add food item.");
@@ -138,6 +120,18 @@ export const FatSecretRouter = createTRPCRouter({
       };
     }),
 });
+
+export type FoodItem = {
+  foodName: string;
+  foodDescription: string;
+  foodId: string;
+};
+
+export type SearchFoodResult = {
+  foods: {
+    food: FoodItem[] | FoodItem;
+  };
+};
 
 type FoodApiResponse = {
   food: {
@@ -163,5 +157,17 @@ type FoodApiResponse = {
             fat: string;
           };
     };
+  };
+};
+
+type FatSecretApiFoodItem = {
+  food_name: string;
+  food_description: string;
+  food_id: string;
+};
+
+type FatSecretApiResponse = {
+  foods: {
+    food: FatSecretApiFoodItem[] | FatSecretApiFoodItem;
   };
 };
