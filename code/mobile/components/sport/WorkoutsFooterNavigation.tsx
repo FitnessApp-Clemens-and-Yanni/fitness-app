@@ -2,7 +2,7 @@ import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
 import { useWorkoutTimingStore } from "@/lib/stores/sport/timing-store";
 import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
-import { WorkoutResponse } from "@/lib/types";
+import { WorkoutResponse } from "@/lib/tabs/sport/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { TimeDisplay } from "@comp/TimeDisplay";

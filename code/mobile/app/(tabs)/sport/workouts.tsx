@@ -1,14 +1,14 @@
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { H1, H3 } from "@ui/Typography";
 import { Card } from "@ui/Card";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { EditSetModal } from "@comp/sport/EditSetModal";
 import { useExerciseSetStore } from "@/lib/stores/sport/fe-sets-store";
 import { useFinishedSetsStore } from "@/lib/stores/sport/finished-fe-sets-store";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSelectedWorkoutStore } from "@/lib/stores/sport/selected-workout-store";
 import { useEditModalStore } from "@/lib/stores/sport/fe-set-edit-store";
-import { WorkoutResponse } from "@/lib/types";
+import { WorkoutResponse } from "@/lib/tabs/sport/types";
 import { SetsView } from "@comp/sport/sets-view/SetsView";
 import { WorkoutsFooterNavigation } from "@comp/sport/WorkoutsFooterNavigation";
 import { useUserStore } from "@/lib/stores/user-store";
@@ -28,6 +28,14 @@ export default function WorkoutsPage() {
   const [userAtBegin] = useState(userStore.currentUser);
 
   const router = useRouter();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userStore.currentUser != userAtBegin) {
+        router.dismissTo("/sport");
+      }
+    }, [userStore.currentUser]),
+  );
 
   useEffect(() => {
     if (userStore.currentUser != userAtBegin) {

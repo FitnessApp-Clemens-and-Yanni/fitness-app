@@ -7,7 +7,6 @@ import { NAV_THEME } from "@/lib/constants";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { PortalHost } from "@rn-primitives/portal";
-import "mingcute_icon/font/Mingcute.css";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -40,15 +39,18 @@ export default function MainLayout() {
   }
 
   return (
-    <ThemeProvider value={LIGHT_THEME}>
-      <TRPCReactProvider>
-        <StatusBar style={"light"} />
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-        <PortalHost />
-      </TRPCReactProvider>
-    </ThemeProvider>
+    <>
+      <ThemeProvider value={LIGHT_THEME}>
+        <TRPCReactProvider>
+          <StatusBar style={"light"} />
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </TRPCReactProvider>
+      </ThemeProvider>
+
+      <PortalHost />
+    </>
   );
 }
 

@@ -1,9 +1,9 @@
-import { WorkoutsRouter } from "@/routers/sport/workouts.js";
+import { WorkoutsRouter } from "@/routers/sport/workouts/router-workouts.js";
 import { createCallerFactory, createTRPCRouter } from "@/trpc.js";
 import cors from "cors";
-import { SnapshotsRouter } from "@/routers/sport/snapshots.js";
-import { FoodRouter } from "@/routers/food/food.js";
-import { FatSecretRouter } from "@/routers/food/fatsecret.js";
+import { SnapshotsRouter } from "@/routers/sport/snapshots/router-snapshots.js";
+import { FoodRouter } from "@/routers/food/food/router-food.js";
+import { FatSecretRouter } from "@/routers/food/fatsecret/router-fatsecret.js";
 import { db } from "./data/meta/index.js";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 

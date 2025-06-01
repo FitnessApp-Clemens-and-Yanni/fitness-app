@@ -8,7 +8,10 @@ import {
 } from "react-native";
 import { Card } from "@ui/Card";
 import { api } from "@/utils/react";
-import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
+import {
+  WorkoutExercisePutRequest,
+  WorkoutPutRequest,
+} from "@/lib/tabs/sport/types";
 import { useUserStore } from "@/lib/stores/user-store";
 import { FontAwesomeIcon } from "../font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";

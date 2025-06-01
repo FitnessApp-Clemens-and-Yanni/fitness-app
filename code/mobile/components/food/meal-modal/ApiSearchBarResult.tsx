@@ -1,12 +1,15 @@
 import { ScrollView, TouchableOpacity, View, Text } from "react-native";
 import { api } from "@/utils/react";
-import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { MealType } from "shared/build/zod-schemas/meal-type.js";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { useState } from "react";
-import { FoodItem, SearchFoodResult } from "@server/routers/food/fatsecret";
 import { useUserStore } from "@/lib/stores/user-store";
+import {
+  SearchFoodResult,
+  FoodItem,
+} from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
 
 export function ApiSearchBarResult(props: {
   searchFoodResultData: SearchFoodResult | undefined;

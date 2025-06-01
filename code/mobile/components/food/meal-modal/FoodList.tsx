@@ -3,7 +3,7 @@ import { MealEntry } from "@server/data/meta/models";
 import { api } from "@/utils/react";
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
-import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { MealType } from "shared/build/zod-schemas/meal-type.js";
 import { useUserStore } from "@/lib/stores/user-store";
 
 export function FoodList(props: {

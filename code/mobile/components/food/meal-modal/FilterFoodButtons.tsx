@@ -1,9 +1,12 @@
 import { TouchableOpacity, View, Text } from "react-native";
-import { FOOD_FILTERING_OPTIONS } from "@/lib/food-filtering-options";
+import {
+  FOOD_FILTERING_OPTIONS,
+  FoodFilteringOption,
+} from "shared/build/zod-schemas/food-filtering-options.js";
 
 export function FilterFoodButtons(props: {
-  setSelectedFoodFilter: (filter: string) => void;
-  selectedFoodFilter: string;
+  setSelectedFoodFilter: (filter: FoodFilteringOption) => void;
+  selectedFoodFilter: FoodFilteringOption;
 }) {
   return (
     <View className="bg-stone-400 border border-stone-500 rounded-md p-1 w-3/4 self-center">

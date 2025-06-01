@@ -16,7 +16,8 @@ import { NutritionalDataDisplay } from "@/components/food/meal-modal/Nutritional
 import { FoodList } from "@/components/food/meal-modal/FoodList";
 import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
-import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { MealType } from "shared/build/zod-schemas/meal-type.js";
+import { FoodFilteringOption } from "shared/build/zod-schemas/food-filtering-options.js";
 import { useUserStore } from "@/lib/stores/user-store";
 
 export type FoodItem = {
@@ -37,7 +38,8 @@ export function MealAddingModal(props: {
   mealType: MealType;
 }) {
   const [currentDate] = useState(new Date());
-  const [selectedFoodFilter, setSelectedFoodFilter] = useState("Favorite");
+  const [selectedFoodFilter, setSelectedFoodFilter] =
+    useState<FoodFilteringOption>("Favorite");
   const [searchTerm, setSearchTerm] = useState("");
   const [foodItemsStateError, setFoodItemsStateError] = useState<Error | null>(
     null,

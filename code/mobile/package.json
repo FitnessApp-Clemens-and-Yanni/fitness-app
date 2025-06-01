@@ -47,6 +47,7 @@
     "react-native-svg": "^15.11.2",
     "react-native-web": "~0.19.13",
     "react-query": "^3.39.3",
+    "shared": "github:FitnessApp-Clemens-and-Yanni/the-fitness-app-shared",
     "superjson": "^2.2.1",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",

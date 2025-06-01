@@ -5,16 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc -b"
+    "build": "tsc -b && git add -A && git commit -am 'update shared code' && git push && cd ../mobile && ./update_shared.sh && cd ../shared"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "typescript": "5.8.3"
   },
   "dependencies": {
     "zod": "^3.24.2"
+  },
+  "exports": {
+    "./*": "./*"
   }
 }

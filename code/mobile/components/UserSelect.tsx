@@ -3,6 +3,7 @@ import {
   PossibleUserId,
   useUserStore,
 } from "@/lib/stores/user-store";
+import { api } from "@/utils/react";
 import {
   Select,
   SelectContent,
@@ -12,9 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/select";
+import { useEffect } from "react";
 
 export function UserSelect() {
+  // TODO: Fix bug where the state isn't percistent on navigation
   const userStore = useUserStore();
+  const apiUtils = api.useUtils();
+
+  useEffect(() => {
+    apiUtils.invalidate();
+  }, [userStore.currentUser]);
 
   return (
     <Select

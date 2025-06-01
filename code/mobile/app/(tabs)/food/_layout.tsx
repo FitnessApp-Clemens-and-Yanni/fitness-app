@@ -11,7 +11,6 @@ import { useUserStore } from "@/lib/stores/user-store";
 export default function Index() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const userStore = useUserStore();
-  const [userAtBeginning] = useState(userStore.currentUser);
   const apiUtils = api.useUtils();
 
   useEffect(() => {
@@ -25,13 +24,6 @@ export default function Index() {
   } = api.food.getTargetNutritionalValues.useQuery({
     userId: userStore.currentUser,
   });
-
-  useEffect(() => {
-    if (userStore.currentUser != userAtBeginning) {
-      apiUtils.food.getTargetNutritionalValues.invalidate();
-      apiUtils.food.getNutritionalValuesOfDay.invalidate();
-    }
-  }, [userStore.currentUser]);
 
   const { isLoading: isLoadingDailyValues, data: dailyNutritionalData } =
     api.food.getNutritionalValuesOfDay.useQuery({

@@ -1,11 +1,11 @@
 import { TouchableOpacity, Text } from "react-native";
 import { Card } from "@ui/Card";
-import { MealAddingModal } from "@/components/food/meal-modal";
+import { MealAddingModal } from "@comp/food/meal-modal";
 import { Alert } from "@comp/Alert";
 import { useEffect, useState } from "react";
-import { MealType } from "@server/shared/zod-schemas/meal-type";
+import { MealType } from "shared/build/zod-schemas/meal-type.js";
 import { api } from "@/utils/react";
-import { FontAwesomeIcon } from "../font-awesome-icon";
+import { FontAwesomeIcon } from "@comp/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 
 export function MealCard(props: { mealType: MealType; currentDate?: Date }) {

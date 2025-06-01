@@ -1,8 +1,7 @@
 import { FontAwesomeIcon } from "@comp/font-awesome-icon";
-import { UserSelect } from "@comp/UserSelect";
 import { AppColors as AppColors } from "@/lib/app-colors";
 import { Tabs } from "expo-router";
-import { Text, View } from "react-native";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function TabLayout() {
   return (
@@ -12,25 +11,12 @@ export default function TabLayout() {
         tabBarActiveTintColor: AppColors.WHITE,
         tabBarStyle: {
           backgroundColor: AppColors.PRIMARY,
-          shadowColor: AppColors.BLACK,
+          shadowColor: AppColors.PINK_700,
           shadowRadius: 10,
           shadowOpacity: 0.5,
+          borderTopWidth: 0,
         },
-        header: () => {
-          return (
-            <View className="min-h-10 shadow-sm shadow-gray-200 justify-between px-4 flex-row py-1">
-              <View className="justify-center">
-                <Text className="text-xl font-extrabold italic">
-                  The Fitness App
-                </Text>
-              </View>
-
-              <View className="w-1/3">
-                <UserSelect />
-              </View>
-            </View>
-          );
-        },
+        header: () => <AppHeader />,
       }}
     >
       <Tabs.Screen
@@ -39,7 +25,7 @@ export default function TabLayout() {
           title: "Sport",
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesomeIcon name="dumbbell" color={color} />
+            <FontAwesomeIcon name="dumbbell" color={color} className="mt-2" />
           ),
         }}
       />
@@ -49,7 +35,7 @@ export default function TabLayout() {
           title: "Food",
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesomeIcon name="utensils" color={color} />
+            <FontAwesomeIcon name="utensils" color={color} className="mt-2" />
           ),
         }}
       />

@@ -3,11 +3,7 @@ import { api } from "@/utils/react";
 import { useEffect, useState } from "react";
 import { FlatList, Text, View, TouchableOpacity } from "react-native";
 import { Link } from "expo-router";
-import {
-  WorkoutExercisePutRequest,
-  WorkoutPutRequest,
-  WorkoutResponse,
-} from "@/lib/types";
+import { WorkoutResponse } from "@/lib/tabs/sport/types";
 import { Skeleton } from "@ui/skeleton";
 import { AppColors } from "@/lib/app-colors";
 import { FontAwesomeIcon } from "@comp/font-awesome-icon";

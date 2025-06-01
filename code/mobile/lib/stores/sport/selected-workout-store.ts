@@ -1,4 +1,7 @@
-import { WorkoutExercisePutRequest, WorkoutPutRequest } from "@/lib/types";
+import {
+  WorkoutExercisePutRequest,
+  WorkoutPutRequest,
+} from "@/lib/tabs/sport/types";
 import { create } from "zustand";
 
 export const useSelectedWorkoutStore = create<{

@@ -3,8 +3,7 @@ import {
   NutritionalValueOfDay,
   TargetNutritionalValue,
 } from "@server/data/meta/models";
-// TODO: put these in shared!! The client should never have access to the server! The only exception is the AppRouter and
-// that's just an implementation detail of tRPC
+
 import { NutritionalValuesProgressBar } from "@comp/food/NutritionalValuesProgressBars";
 
 export function NutritionalDataDisplay(props: {

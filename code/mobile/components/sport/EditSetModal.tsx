@@ -7,7 +7,7 @@ import { Button } from "@ui/Button";
 import {
   postiveIntegerStringSchema,
   positiveNumberStringSchema,
-} from "@/lib/zod-schemas";
+} from "shared/build/zod-schemas/integer-schema.js";
 import { FontAwesomeIcon } from "../font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 
