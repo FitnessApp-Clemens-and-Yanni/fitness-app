@@ -16,7 +16,6 @@ import {
 import { useEffect } from "react";
 
 export function UserSelect() {
-  // TODO: Fix bug where the state isn't percistent on navigation
   const userStore = useUserStore();
   const apiUtils = api.useUtils();
 
@@ -26,6 +25,7 @@ export function UserSelect() {
 
   return (
     <Select
+      key={userStore.currentUser}
       defaultValue={{
         value: userStore.currentUser,
         label: userStore.currentUser,

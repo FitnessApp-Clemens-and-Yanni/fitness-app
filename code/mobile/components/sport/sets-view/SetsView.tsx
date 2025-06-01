@@ -82,7 +82,7 @@ function adjustSetsEffect(
     ) {
       const snapshotExerciseSets = snapshotData
         ?.find((s) => s.exerciseId === selectedExercise._id)!
-        .exerciseDefaults.sets!.map((set, idx) => ({ ...set, idx })); // TODO: When the selected exercise doesn't have that data anymore, make sure to fix this (remove the exclam and replace it with proper logic).
+        .exerciseDefaults.sets!.map((set, idx) => ({ ...set, idx }));
 
       let temporarySets = [...snapshotExerciseSets!.map((x) => ({ ...x }))];
 
