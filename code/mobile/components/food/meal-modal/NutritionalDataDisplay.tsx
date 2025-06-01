@@ -12,7 +12,7 @@ export function NutritionalDataDisplay(props: {
           {props.foodData
             ? props.foodData.foods
                 .reduce((sum, food) => sum + food.caloriesInKcal, 0)
-                .toFixed(1)
+                .toFixed(0)
             : 0}
         </Text>
       </View>
@@ -24,7 +24,7 @@ export function NutritionalDataDisplay(props: {
                 .reduce((sum, food) => sum + food.proteinInG, 0)
                 .toFixed(1)
             : 0}
-          g
+          {" g"}
         </Text>
       </View>
       <View className="flex flex-row justify-between">
@@ -35,7 +35,7 @@ export function NutritionalDataDisplay(props: {
                 .reduce((sum, food) => sum + food.carbsInG, 0)
                 .toFixed(1)
             : 0}
-          g
+          {" g"}
         </Text>
       </View>
       <View className="flex flex-row justify-between">
@@ -46,7 +46,7 @@ export function NutritionalDataDisplay(props: {
                 .reduce((sum, food) => sum + food.fatsInG, 0)
                 .toFixed(1)
             : 0}
-          g
+          {" g"}
         </Text>
       </View>
     </View>

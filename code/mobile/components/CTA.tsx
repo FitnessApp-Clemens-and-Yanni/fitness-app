@@ -13,7 +13,7 @@ export function CTA(props: {
       {props.text === undefined ? (
         props.children
       ) : (
-        <Text className="text-primary-foreground">{props.text}</Text>
+        <Text className="text-primary-foreground font-bold">{props.text}</Text>
       )}
     </Button>
   );

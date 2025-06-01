@@ -10,6 +10,7 @@ import {
   SearchFoodResult,
   FoodItem,
 } from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
+import { Card } from "@/components/ui/Card";
 
 export function ApiSearchBarResult(props: {
   searchFoodResultData: SearchFoodResult | undefined;
@@ -37,100 +38,72 @@ export function ApiSearchBarResult(props: {
     },
   });
 
-  if (props.isLoadingSearchFood) {
-    return (
-      <Skeleton>
-        <ScrollView className="max-h-28 w-full border border-stone-500 mb-2 bg-stone-200 rounded-md">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <View
-              key={`skeleton-${index}`}
-              className="flex flex-row justify-between items-center bg-stone-300 w-full border-b border-stone-700 p-1"
-            >
-              <Skeleton className="flex-1 h-4" />
-              <Skeleton className="w-16 h-4 mr-2" />
-              <Skeleton className="w-6 h-6" />
-            </View>
-          ))}
-        </ScrollView>
-      </Skeleton>
-    );
-  }
-
   return (
-    <View>
-      {addFoodError && (
-        <View className="p-2 bg-red-100 border border-red-300 rounded-md mb-2">
-          <Text className="text-red-600 text-sm">{addFoodError}</Text>
-        </View>
-      )}
-      {props.searchFoodResultData?.foods ? (
-        <ScrollView className="max-h-28 w-full border border-stone-500 mb-2 bg-stone-200 rounded-md">
-          {Array.isArray(props.searchFoodResultData.foods.food) ? (
-            props.searchFoodResultData.foods.food.map((item, index) => (
-              <View
-                key={`search-${index}`}
-                className="flex flex-row justify-between items-center bg-stone-300 w-full border-b border-stone-700 p-1"
-              >
-                <Text className="text-sm flex-1">{item.foodName}</Text>
-                <Text className="text-xs text-stone-600 mr-2">
-                  {item.foodDescription?.match(/Per \S+/)?.[0]}
-                </Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    addFoodWithIdMutation.mutate({
-                      userId: userStore.currentUser,
-                      foodId: item.foodId,
-                      mealType: props.mealType,
-                      date: props.currentDate,
-                    })
-                  }
+    <View className="flex-1">
+      {props.isLoadingSearchFood ? (
+        Array.from({ length: 3 }).map((_, index) => (
+          <ScrollView
+            key={`search-card-${index}`}
+            className="h-full w-full bg-primary/50 rounded px-5 py-2"
+            contentContainerClassName="gap-2"
+          >
+            <View>
+              <Skeleton>
+                <Card
+                  key={`search-${index}`}
+                  className="flex-row justify-between items-center px-5 py-2 gap-5 shadow shadow-gray-700/25"
                 >
                   <FontAwesomeIcon
-                    name="plus"
-                    color={AppColors.GRAY_800}
+                    name="spinner"
+                    color={AppColors.GRAY_700}
                     className="scale-[65%]"
                   />
-                </TouchableOpacity>
-              </View>
-            ))
-          ) : (
-            <View
-              key={props.searchFoodResultData.foods.food.foodId}
-              className="flex flex-row justify-between items-center bg-stone-300 w-full border-b border-stone-700 p-1"
+                </Card>
+              </Skeleton>
+            </View>
+          </ScrollView>
+        ))
+      ) : props.searchFoodResultData?.foods ? (
+        <ScrollView
+          className="h-full w-full bg-primary/50 rounded px-5 py-2"
+          contentContainerClassName="gap-2"
+        >
+          {[props.searchFoodResultData.foods.food].flat().map((item, index) => (
+            <TouchableOpacity
+              key={`search-${index}`}
+              onPress={() =>
+                addFoodWithIdMutation.mutate({
+                  userId: userStore.currentUser,
+                  foodId: item.foodId,
+                  mealType: props.mealType,
+                  date: props.currentDate,
+                })
+              }
             >
-              <Text className="text-sm flex-1">
-                {props.searchFoodResultData.foods.food.foodName}
-              </Text>
-              <Text className="text-xs text-stone-600 mr-2">
-                {
-                  props.searchFoodResultData.foods.food.foodDescription?.match(
-                    /Per \S+/,
-                  )?.[0]
-                }
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  if (props.searchFoodResultData) {
-                    addFoodWithIdMutation.mutate({
-                      userId: userStore.currentUser,
-                      foodId: (
-                        props.searchFoodResultData.foods.food as FoodItem
-                      ).foodId,
-                      mealType: props.mealType,
-                      date: props.currentDate,
-                    });
-                  }
-                }}
-              >
+              <Card className="flex-row justify-between items-center px-5 py-2 gap-5 shadow shadow-gray-700/25">
                 <FontAwesomeIcon
                   name="plus"
-                  color={AppColors.GRAY_800}
+                  color={AppColors.GRAY_700}
                   className="scale-[65%]"
                 />
-              </TouchableOpacity>
-            </View>
-          )}
+                <Text className="text-sm flex-1 text-pretty">
+                  {item.foodName}
+                </Text>
+                <Text className="text-xs text-stone-600 text-pretty">
+                  {item.foodDescription?.match(/Per \S+/)?.[0]}
+                </Text>
+              </Card>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
+      ) : (
+        <></>
+      )}
+
+      {addFoodError ? (
+        <View className="p-2 bg-red-100 -mt-2">
+          <Text className="text-red-600 text-sm">{addFoodError}</Text>
+        </View>
       ) : (
         <></>
       )}

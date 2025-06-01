@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { MealType } from "shared/build/zod-schemas/meal-type.js";
 import { useUserStore } from "@/lib/stores/user-store";
+import { Card } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function FoodList(props: {
   foodData: MealEntry;
@@ -23,44 +25,47 @@ export function FoodList(props: {
   });
 
   return (
-    <View>
-      <ScrollView className="bg-stone-500 h-20 w-40 border border-stone-700">
-        {props.foodData.foods.length === 0 ? (
-          <View className="flex justify-center items-center h-full">
-            <Text className="text-xs">No foods yet</Text>
-          </View>
-        ) : (
-          props.foodData.foods.map((food, index) => (
-            <View
+    <View className="h-32">
+      {props.foodData.foods.length === 0 ? (
+        <Skeleton className="justify-center items-center h-full rounded w-40 p-1 bg-primary/50">
+          <Text className="tracking-wider font-bold">No food items yet</Text>
+        </Skeleton>
+      ) : (
+        <ScrollView
+          className="bg-primary/50 rounded w-40 p-1"
+          contentContainerClassName="gap-1"
+        >
+          {props.foodData.foods.map((food, index) => (
+            <Card
               key={`${food.name}-${index}`}
-              className="flex flex-row justify-between bg-stone-300 w-full border-b border-stone-700 p-1"
+              className="flex-row justify-between w-full items-center px-1 gap-1 shadow shadow-gray-700/25"
             >
-              <View className="flex flex-row justify-between gap-1">
-                <TouchableOpacity
-                  onPress={() =>
-                    deleteFoodMutation.mutate({
-                      userId: userStore.currentUser,
-                      date: props.currentDate,
-                      mealType: props.mealType,
-                      foodName: food.name,
-                    })
-                  }
-                >
-                  <FontAwesomeIcon
-                    name="trash"
-                    color={AppColors.RED}
-                    className="self-center flex scale-75"
-                  />
-                </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  deleteFoodMutation.mutate({
+                    userId: userStore.currentUser,
+                    date: props.currentDate,
+                    mealType: props.mealType,
+                    foodName: food.name,
+                  })
+                }
+              >
+                <FontAwesomeIcon
+                  name="trash"
+                  color={AppColors.RED_200}
+                  className="self-center flex scale-[65%]"
+                />
+              </TouchableOpacity>
 
-                <Text className="text-xs self-center flex">{food.name}</Text>
-              </View>
+              <Text className="text-xs self-center flex break-words text-pretty">
+                {food.name}
+              </Text>
 
               <Text className="text-xs self-center">{food.weightInG}g</Text>
-            </View>
-          ))
-        )}
-      </ScrollView>
+            </Card>
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }

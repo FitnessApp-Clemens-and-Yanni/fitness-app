@@ -9,7 +9,7 @@ export function FilterFoodButtons(props: {
   selectedFoodFilter: FoodFilteringOption;
 }) {
   return (
-    <View className="bg-stone-400 border border-stone-500 rounded-md p-1 w-3/4 self-center">
+    <View className="bg-primary/25 rounded-md p-2 w-full self-center">
       <View className="flex flex-row justify-around">
         {FOOD_FILTERING_OPTIONS.map((option, index) => (
           <TouchableOpacity

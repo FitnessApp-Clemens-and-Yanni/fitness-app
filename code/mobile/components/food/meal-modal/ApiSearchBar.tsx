@@ -9,9 +9,9 @@ export function ApiSearchBar(props: {
   searchFood: () => void;
 }) {
   return (
-    <View className="flex flex-col">
-      <View className="flex flex-row items-center gap-1 mb-2">
-        <View className="flex flex-row items-center justify-between flex-1 bg-stone-300 border border-stone-500 rounded-md">
+    <View className="flex flex-col px-5">
+      <View className="flex flex-row items-center gap-5">
+        <View className="flex flex-row items-center justify-between flex-1 bg-primary/30 ring-primary/50 ring-1 rounded-md shadow">
           <Input
             className="bg-transparent border-none"
             placeholder={"Search"}
@@ -28,14 +28,18 @@ export function ApiSearchBar(props: {
           >
             <FontAwesomeIcon
               name="search"
-              color={AppColors.GRAY_700}
+              color={AppColors.PRIMARY}
               className="scale-[0.8]"
             />
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity>
-          <FontAwesomeIcon name="camera" color={AppColors.GRAY_700} />
+        <TouchableOpacity className="shadow rounded-full aspect-square p-2">
+          <FontAwesomeIcon
+            name="camera"
+            color={AppColors.PRIMARY}
+            className="scale-75"
+          />
         </TouchableOpacity>
       </View>
     </View>
