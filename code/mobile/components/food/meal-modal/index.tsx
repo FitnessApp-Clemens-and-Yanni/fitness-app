@@ -165,7 +165,7 @@ export function MealAddingModal(props: {
             searchFoodError={searchFoodError}
           />
 
-          <Skeleton className="h-20 justify-center w-full px-5">
+          <Skeleton className="h-10 justify-center w-full px-2">
             <Text className="text-center font-extralight italic tracking-wider text-gray-800 break-words text-pretty px-5">
               Favourites foods feature coming soon...
             </Text>
