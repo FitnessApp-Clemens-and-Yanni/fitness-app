@@ -38,31 +38,26 @@ export function ApiSearchBarResult(props: {
   return (
     <View className="flex-1">
       {props.isLoadingSearchFood ? (
-        Array.from({ length: 3 }).map((_, index) => (
-          <ScrollView
-            key={`search-card-${index}`}
-            className="h-full w-full bg-primary/50 rounded px-5 py-2"
-            contentContainerClassName="gap-2"
-          >
-            <View>
-              <Skeleton>
-                <Card
-                  key={`search-${index}`}
-                  className="flex-row justify-between items-center px-5 py-2 gap-5 shadow shadow-gray-700/25"
-                >
-                  <FontAwesomeIcon
-                    name="spinner"
-                    color={AppColors.GRAY_700}
-                    className="scale-[65%]"
-                  />
-                </Card>
-              </Skeleton>
-            </View>
-          </ScrollView>
-        ))
+        <ScrollView
+          className="h-full bg-primary/50 rounded px-5 py-2"
+          contentContainerClassName="gap-2"
+        >
+          {new Array(10).fill(null).map((_, index) => (
+            <Skeleton
+              key={`search-card-${index}`}
+              className="flex-row justify-between items-center px-5 py-2 gap-5 shadow shadow-gray-700/25"
+            >
+              <FontAwesomeIcon
+                name="spinner"
+                color={AppColors.GRAY_700}
+                className="scale-[65%]"
+              />
+            </Skeleton>
+          ))}
+        </ScrollView>
       ) : props.searchFoodResultData?.foods ? (
         <ScrollView
-          className="h-full w-full bg-primary/50 rounded px-5 py-2"
+          className="h-full bg-primary/50 rounded px-5 py-2"
           contentContainerClassName="gap-2"
         >
           {[props.searchFoodResultData.foods.food].flat().map((item, index) => (
