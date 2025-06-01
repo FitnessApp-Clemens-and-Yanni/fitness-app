@@ -11,13 +11,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function FoodList(props: {
   foodData: MealEntry;
   currentDate: Date;
-  refetchFoodData: () => void;
   mealType: MealType;
 }) {
   const userStore = useUserStore();
+  const apiUtils = api.useUtils();
+
   const deleteFoodMutation = api.food.deleteFoodOfDayByMeal.useMutation({
     onSuccess: () => {
-      props.refetchFoodData();
+      apiUtils.food.getFoodItemsOfDayByMeal.invalidate();
     },
     onError: (error) => {
       console.error("Error deleting food:", error.message);

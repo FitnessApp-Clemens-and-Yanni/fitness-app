@@ -6,22 +6,19 @@ import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { useState } from "react";
 import { useUserStore } from "@/lib/stores/user-store";
-import {
-  SearchFoodResult,
-  FoodItem,
-} from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
+import { SearchFoodResult } from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
 import { Card } from "@/components/ui/Card";
 
 export function ApiSearchBarResult(props: {
   searchFoodResultData: SearchFoodResult | undefined;
   mealType: MealType;
-  refetchFoodData: () => void;
   currentDate: Date;
   isLoadingSearchFood: boolean;
   searchFoodError: any;
 }) {
   const [addFoodError, setAddFoodError] = useState<string | null>(null);
   const userStore = useUserStore();
+  const apiUtils = api.useUtils();
 
   const addFoodWithIdMutation = api.fatSecret.addFoodToMealWithId.useMutation({
     onSuccess: (response) => {
@@ -30,7 +27,7 @@ export function ApiSearchBarResult(props: {
         return;
       }
       setAddFoodError(null);
-      props.refetchFoodData();
+      apiUtils.food.getFoodItemsOfDayByMeal.invalidate();
     },
     onError: (error) => {
       setAddFoodError(error.message);

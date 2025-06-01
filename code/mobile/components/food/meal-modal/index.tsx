@@ -14,10 +14,8 @@ import { FoodList } from "@comp/food/meal-modal/FoodList";
 import { FontAwesomeIcon } from "@comp/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { MealType } from "shared/build/zod-schemas/meal-type.js";
-import { FoodFilteringOption } from "shared/build/zod-schemas/food-filtering-options.js";
 import { useUserStore } from "@/lib/stores/user-store";
 import { Skeleton } from "@ui/skeleton";
-import { CTA } from "@comp/CTA";
 
 export type FoodItem = {
   food_name: string;
@@ -43,6 +41,7 @@ export function MealAddingModal(props: {
   );
 
   const userStore = useUserStore();
+  const apiUtils = api.useUtils();
 
   const {
     isLoading: isLoadingSearchFood,
@@ -60,7 +59,6 @@ export function MealAddingModal(props: {
     isLoading: isLoadingFoodItems,
     error: foodItemsError,
     data: foodData,
-    refetch: refetchFoodData,
   } = api.food.getFoodItemsOfDayByMeal.useQuery(
     {
       userId: userStore.currentUser,
@@ -83,7 +81,7 @@ export function MealAddingModal(props: {
           {
             onSuccess: () => {
               setFoodItemsStateError(null);
-              refetchFoodData();
+              apiUtils.food.getFoodItemsOfDayByMeal.invalidate();
             },
           },
         );
@@ -148,7 +146,6 @@ export function MealAddingModal(props: {
                 foodData={foodData}
                 mealType={props.mealType}
                 currentDate={currentDate}
-                refetchFoodData={refetchFoodData}
               />
             </View>
           ) : (
@@ -163,7 +160,6 @@ export function MealAddingModal(props: {
           <ApiSearchBarResult
             searchFoodResultData={searchFoodResultData}
             mealType={props.mealType}
-            refetchFoodData={refetchFoodData}
             currentDate={currentDate}
             isLoadingSearchFood={isLoadingSearchFood}
             searchFoodError={searchFoodError}
