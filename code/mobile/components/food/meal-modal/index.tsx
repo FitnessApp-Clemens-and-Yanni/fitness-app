@@ -170,15 +170,6 @@ export function MealAddingModal(props: {
               Favourites foods feature coming soon...
             </Text>
           </Skeleton>
-
-          {/* <FilterFoodButtons
-            setSelectedFoodFilter={setSelectedFoodFilter}
-            selectedFoodFilter={selectedFoodFilter}
-          />
-
-          <ScrollView className="bg-primary/25 h-40 w-full rounded p-5">
-            <Text>This feature is coming soon...</Text>
-          </ScrollView> */}
         </View>
       </View>
     </Modal>
