@@ -23,10 +23,6 @@ export function MealCard(props: { mealType: MealType; currentDate?: Date }) {
       date: props.currentDate!,
     });
 
-  (dailyNutritionalData as NutritionalValueOfDay).breakfastMeals.foods
-    .map((x) => x.caloriesInKcal)
-    .reduce((a, b) => a + b);
-
   const date = new Date();
 
   useEffect(() => {

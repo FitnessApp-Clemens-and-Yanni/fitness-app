@@ -1,6 +1,10 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import {
   ExerciseSnapshot,
+  FINISHED_WORKOUTS_COLLECTION,
+  FinishedWorkout,
+  NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
+  NutritionalValueOfDay,
   SNAPSHOTS_COLLECTION,
   TARGET_NUTRITIONAL_VALUE_COLLECTION,
   TargetNutritionalValue,
@@ -36,10 +40,16 @@ async function ensureCollectionsInitializedAndPopulated() {
   const snapshotsCollection =
     await db.createCollection<ExerciseSnapshot>(SNAPSHOTS_COLLECTION);
 
+  await db.createCollection<FinishedWorkout>(FINISHED_WORKOUTS_COLLECTION);
+
   const targetNutritionalValueCollection =
     await db.createCollection<TargetNutritionalValue>(
       TARGET_NUTRITIONAL_VALUE_COLLECTION,
     );
+
+  await db.createCollection<NutritionalValueOfDay>(
+    NUTRITIONAL_VALUE_OF_DAY_COLLECTION,
+  );
 
   if ((await workoutsCollection.countDocuments()) === 0) {
     workoutsCollection.insertMany(workouts);
