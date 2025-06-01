@@ -3,7 +3,7 @@ import { SNAPSHOTS_COLLECTION } from "@/data/meta/models.js";
 import { ExerciseSnapshot } from "@/data/meta/models.js";
 import { publicProcedure } from "@/trpc.js";
 import { OBJECT_ID_SCHEMA } from "shared/build/zod-schemas/ObjectId.js";
-import z from "zod";
+import z from "zod/v4";
 
 export const getExerciseDefaultsForWorkoutPublicQuery = publicProcedure
   .input(

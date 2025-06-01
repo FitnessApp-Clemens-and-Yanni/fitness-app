@@ -1,7 +1,7 @@
 import { Workout, WORKOUTS_COLLECTION } from "@/data/meta/models.js";
 import { publicProcedure } from "@/trpc.js";
 
-import z from "zod";
+import z from "zod/v4";
 
 export const setWorkoutPublicMutation = publicProcedure
   .input(

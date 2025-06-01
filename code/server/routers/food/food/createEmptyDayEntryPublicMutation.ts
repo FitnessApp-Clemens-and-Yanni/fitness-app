@@ -3,7 +3,7 @@ import { NutritionalValueOfDay } from "@/data/meta/models.js";
 import { NUTRITIONAL_VALUE_OF_DAY_COLLECTION } from "@/data/meta/models.js";
 import { publicProcedure } from "@/trpc.js";
 
-import z from "zod";
+import z from "zod/v4";
 
 export const createEmptyDayEntryPublicMutation = publicProcedure
   .input(

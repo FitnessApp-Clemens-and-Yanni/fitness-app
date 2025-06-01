@@ -1,6 +1,6 @@
 import { publicProcedure } from "@/trpc.js";
 import { callFatSecretApi } from "@/utils/fatSecret-api.js";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export type SearchFoodResult = {
   foods: {

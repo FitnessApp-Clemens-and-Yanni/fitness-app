@@ -3,7 +3,7 @@ import { NUTRITIONAL_VALUE_OF_DAY_COLLECTION } from "@/data/meta/models.js";
 import { publicProcedure } from "@/trpc.js";
 import { calculateNewNutritionalValuesInDatabase } from "@/utils/nutritional-values-calculation-in-database.js";
 import { MEAL_TYPE_SCHEMA } from "shared/build/zod-schemas/meal-type.js";
-import z from "zod";
+import z from "zod/v4";
 
 export const deleteFoodOfDayMyMealPublicMutation = publicProcedure
   .input(

@@ -5,7 +5,7 @@ import { NUTRITIONAL_VALUE_OF_DAY_COLLECTION } from "@/data/meta/models.js";
 import { publicProcedure } from "@/trpc.js";
 import { getMealTypeField } from "@/utils/fatSecret-api.js";
 import { MEAL_TYPE_SCHEMA } from "shared/build/zod-schemas/meal-type.js";
-import z from "zod";
+import z from "zod/v4";
 import { calculateNewNutritionalValuesInDatabase } from "@/utils/nutritional-values-calculation-in-database.js";
 
 export const addFoodToMealWithIdPublicMutation = publicProcedure
