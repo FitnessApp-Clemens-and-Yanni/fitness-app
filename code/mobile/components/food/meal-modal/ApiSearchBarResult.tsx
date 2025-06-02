@@ -8,6 +8,8 @@ import { useState } from "react";
 import { useUserStore } from "@/lib/stores/user-store";
 import { SearchFoodResult } from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
 import { Card } from "@/components/ui/Card";
+import { WeightInput } from "components/food/meal-modal/WeightInput";
+import { Vi } from "zod/v4/locales";
 
 export function ApiSearchBarResult(props: {
   searchFoodResultData: SearchFoodResult | undefined;
@@ -16,6 +18,7 @@ export function ApiSearchBarResult(props: {
   isLoadingSearchFood: boolean;
   searchFoodError: any;
 }) {
+  const [pickedWeight, setPickedWeight] = useState<string>("100");
   const [addFoodError, setAddFoodError] = useState<string | null>(null);
   const userStore = useUserStore();
   const apiUtils = api.useUtils();
@@ -60,6 +63,11 @@ export function ApiSearchBarResult(props: {
           className="h-full bg-primary/50 rounded px-5 py-2"
           contentContainerClassName="gap-2"
         >
+          <WeightInput
+            pickedWeight={pickedWeight}
+            setPickedWeight={setPickedWeight}
+          />
+
           {[props.searchFoodResultData.foods.food].flat().map((item, index) => (
             <TouchableOpacity
               key={`search-${index}`}
@@ -67,6 +75,7 @@ export function ApiSearchBarResult(props: {
                 addFoodWithIdMutation.mutate({
                   userId: userStore.currentUser,
                   foodId: item.foodId,
+                  weight: pickedWeight,
                   mealType: props.mealType,
                   date: props.currentDate,
                 })

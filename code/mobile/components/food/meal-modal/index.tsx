@@ -151,6 +151,7 @@ export function MealAddingModal(props: {
           ) : (
             <></>
           )}
+
           <ApiSearchBar
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}

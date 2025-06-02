@@ -12,6 +12,7 @@ export const addFoodToMealWithIdPublicMutation = publicProcedure
   .input(
     z.object({
       userId: z.string(),
+      weight: z.string(),
       foodId: z.string(),
       mealType: MEAL_TYPE_SCHEMA,
       date: z.date().default(() => new Date()),
@@ -50,11 +51,11 @@ export const addFoodToMealWithIdPublicMutation = publicProcedure
 
     const newFood = {
       name: data.food.food_name,
-      weightInG: 100,
-      caloriesInKcal: parseInt(serving.calories),
-      proteinInG: parseFloat(serving.protein),
-      carbsInG: parseFloat(serving.carbohydrate),
-      fatsInG: parseFloat(serving.fat),
+      weightInG: input.weight,
+      caloriesInKcal: +serving.calories / +input.weight,
+      proteinInG: +serving.protein / +input.weight,
+      carbsInG: +serving.carbohydrate / +input.weight,
+      fatsInG: +serving.fat / +input.weight,
     };
 
     const result = await collection.updateOne(
