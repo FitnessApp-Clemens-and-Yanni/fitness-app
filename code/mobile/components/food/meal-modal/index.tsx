@@ -17,18 +17,6 @@ import { MealType } from "shared/build/zod-schemas/meal-type.js";
 import { useUserStore } from "@/lib/stores/user-store";
 import { Skeleton } from "@ui/skeleton";
 
-export type FoodItem = {
-  food_name: string;
-  food_description: string;
-  food_id: string;
-};
-
-export type SearchFoodResult = {
-  foods: {
-    food: FoodItem[] | FoodItem;
-  };
-};
-
 export function MealAddingModal(props: {
   isVisible: boolean;
   setIsVisible: (visible: boolean) => void;
@@ -151,6 +139,7 @@ export function MealAddingModal(props: {
           ) : (
             <></>
           )}
+
           <ApiSearchBar
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
