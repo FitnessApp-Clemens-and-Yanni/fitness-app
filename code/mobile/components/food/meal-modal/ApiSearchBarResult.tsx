@@ -41,7 +41,7 @@ export function ApiSearchBarResult(props: {
 
   function handelOnFoodPress(item: FoodItem) {
 
-    if (+pickedWeight <= 0) {
+    if (+pickedWeight < 0) {
       setIsPickedWeightPositive(false);
       return;
     }
@@ -51,7 +51,7 @@ export function ApiSearchBarResult(props: {
     addFoodWithIdMutation.mutate({
       userId: userStore.currentUser,
       foodId: item.foodId,
-      weight: pickedWeight ? pickedWeight : "100",
+      weight: pickedWeight !== "" ? pickedWeight : "100",
       mealType: props.mealType,
       date: props.currentDate,
     })
