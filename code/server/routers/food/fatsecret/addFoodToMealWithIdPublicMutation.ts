@@ -30,6 +30,23 @@ export const addFoodToMealWithIdPublicMutation = publicProcedure
     )) as FoodApiResponse;
 
     let serving = null;
+
+    let newFood :
+      { name: string,
+      weightInG: number
+      caloriesInKcal: number
+      proteinInG: number
+      carbsInG: number
+      fatsInG: number
+    } = {
+      name: "",
+      weightInG: 0,
+      caloriesInKcal: 0,
+      proteinInG: 0,
+      carbsInG: 0,
+      fatsInG: 0,
+    }
+
     if (Array.isArray(data.food.servings.serving)) {
       serving = data.food.servings.serving.find(
         (s: any) =>
@@ -37,26 +54,58 @@ export const addFoodToMealWithIdPublicMutation = publicProcedure
           (s.metric_serving_amount === "100.000" &&
             s.metric_serving_unit === "g"),
       );
+
+      const weightInG = +input.weight;
+      const weightFactor = weightInG / 100;
+
+      if(serving) {
+        newFood = {
+          name: data.food.food_name,
+          weightInG: +input.weight,
+          caloriesInKcal: +serving.calories * weightFactor,
+          proteinInG: +serving.protein * weightFactor,
+          carbsInG: +serving.carbohydrate * weightFactor,
+          fatsInG: +serving.fat * weightFactor,
+        };
+      }
+
     } else if (
       data.food.servings.serving.serving_description === "100 g" ||
       (data.food.servings.serving.metric_serving_amount === "100.000" &&
         data.food.servings.serving.metric_serving_unit === "g")
     ) {
       serving = data.food.servings.serving;
+
+      const weightInG = +input.weight;
+      const weightFactor = weightInG / 100;
+
+      newFood = {
+        name: data.food.food_name,
+        weightInG: +input.weight,
+        caloriesInKcal: +serving.calories * weightFactor,
+        proteinInG: +serving.protein * weightFactor,
+        carbsInG: +serving.carbohydrate * weightFactor,
+        fatsInG: +serving.fat * weightFactor,
+      };
+
+    } else if (
+      data.food.servings.serving.serving_description.startsWith("1 ")
+    ) {
+      serving = data.food.servings.serving;
+
+      newFood = {
+        name: data.food.food_name,
+        weightInG: -1,
+        caloriesInKcal: +serving.calories,
+        proteinInG: +serving.protein,
+        carbsInG: +serving.carbohydrate,
+        fatsInG: +serving.fat
+      };
     }
 
     if (!serving) {
-      throw new Error("No serving found for 100g.");
+      throw new Error("No servings found!");
     }
-
-    const newFood = {
-      name: data.food.food_name,
-      weightInG: input.weight,
-      caloriesInKcal: +serving.calories / +input.weight,
-      proteinInG: +serving.protein / +input.weight,
-      carbsInG: +serving.carbohydrate / +input.weight,
-      fatsInG: +serving.fat / +input.weight,
-    };
 
     const result = await collection.updateOne(
       {

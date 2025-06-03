@@ -62,7 +62,7 @@ export function FoodList(props: {
                 {food.name}
               </Text>
 
-              <Text className="text-xs self-center">{food.weightInG}g</Text>
+              <Text className="text-xs self-center">{food.weightInG === -1 ? "1x" : food.weightInG + "g"}</Text>
             </Card>
           ))}
         </ScrollView>

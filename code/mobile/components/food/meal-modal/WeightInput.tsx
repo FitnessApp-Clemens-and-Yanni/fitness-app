@@ -7,7 +7,7 @@ export function WeightInput(props: {
 }) {
   return (
     <View className="flex flex-row gap-1">
-      <Text>Weight:</Text>
+      <Text className="flex items-center">Weight:</Text>
       <Input
         onChangeText={props.setPickedWeight}
         value={props.pickedWeight}
