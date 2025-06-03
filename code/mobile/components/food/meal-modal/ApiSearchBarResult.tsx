@@ -6,8 +6,12 @@ import { FontAwesomeIcon } from "@/components/font-awesome-icon";
 import { AppColors } from "@/lib/app-colors";
 import { useState } from "react";
 import { useUserStore } from "@/lib/stores/user-store";
-import { SearchFoodResult } from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
+import {
+  FoodItem,
+  SearchFoodResult,
+} from "@server/routers/food/fatsecret/serachForFoodPublicQuery";
 import { Card } from "@/components/ui/Card";
+import { WeightInput } from "components/food/meal-modal/WeightInput";
 
 export function ApiSearchBarResult(props: {
   searchFoodResultData: SearchFoodResult | undefined;
@@ -16,6 +20,9 @@ export function ApiSearchBarResult(props: {
   isLoadingSearchFood: boolean;
   searchFoodError: any;
 }) {
+  const [pickedWeight, setPickedWeight] = useState<string>("100");
+  const [isPickedWeightPositive, setIsPickedWeightPositive] =
+    useState<boolean>(true);
   const [addFoodError, setAddFoodError] = useState<string | null>(null);
   const userStore = useUserStore();
   const apiUtils = api.useUtils();
@@ -34,6 +41,23 @@ export function ApiSearchBarResult(props: {
       console.error("Error adding food:", error.message);
     },
   });
+
+  function handelOnFoodPress(item: FoodItem) {
+    if (+pickedWeight < 0) {
+      setIsPickedWeightPositive(false);
+      return;
+    }
+
+    setIsPickedWeightPositive(true);
+
+    addFoodWithIdMutation.mutate({
+      userId: userStore.currentUser,
+      foodId: item.foodId,
+      weight: pickedWeight !== "" ? pickedWeight : "100",
+      mealType: props.mealType,
+      date: props.currentDate,
+    });
+  }
 
   return (
     <View className="flex-1">
@@ -60,17 +84,20 @@ export function ApiSearchBarResult(props: {
           className="h-full bg-primary/50 rounded px-5 py-2"
           contentContainerClassName="gap-2"
         >
+          {!isPickedWeightPositive ? (
+            <Text className="color-red-500 font-extrabold">
+              Your picked weight must be positive
+            </Text>
+          ) : null}
+          <WeightInput
+            pickedWeight={pickedWeight}
+            setPickedWeight={setPickedWeight}
+          />
+
           {[props.searchFoodResultData.foods.food].flat().map((item, index) => (
             <TouchableOpacity
               key={`search-${index}`}
-              onPress={() =>
-                addFoodWithIdMutation.mutate({
-                  userId: userStore.currentUser,
-                  foodId: item.foodId,
-                  mealType: props.mealType,
-                  date: props.currentDate,
-                })
-              }
+              onPress={() => handelOnFoodPress(item)}
             >
               <Card className="flex-row justify-between items-center px-5 py-2 gap-5 shadow shadow-gray-700/25">
                 <FontAwesomeIcon
@@ -82,7 +109,7 @@ export function ApiSearchBarResult(props: {
                   {item.foodName}
                 </Text>
                 <Text className="text-xs text-stone-600 text-pretty">
-                  {item.foodDescription?.match(/Per \S+/)?.[0]}
+                  {item.foodDescription.match(/^Per\s+(\d+\s*.+)\s+-.*/)?.[1]}
                 </Text>
               </Card>
             </TouchableOpacity>
