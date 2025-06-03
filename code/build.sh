@@ -1,14 +1,12 @@
 #!/bin/sh
 
-cd shared
-npm install
-cd ../
-
 cd server
-npm install
+npm i
+./update_shared.sh
 npm run build
 cd ../
 
 cd mobile
-npm install
+npm i
+./update_shared.sh
 cd ../
