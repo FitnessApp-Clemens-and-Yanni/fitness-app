@@ -8,8 +8,7 @@ COPY ./shared .
 
 WORKDIR /app/server
 COPY ./server/package*.json .
-RUN npm install --only=prod
-RUN npm install -D tsx
+RUN npm install
 COPY ./server .
 
 RUN npm run build

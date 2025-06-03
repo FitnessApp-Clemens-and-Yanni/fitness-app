@@ -1,9 +1,9 @@
-import { ExerciseSnapshot } from "../meta/models";
+import { ExerciseSnapshot } from "@/data/meta/models.js";
 
-export const snapshots = [
+export const snapshots: ExerciseSnapshot[] = [
   {
     exerciseId: "506f191e810c19729de860ea",
-    userId: null,
+    userId: "gugi",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 20, repetitions: 10 },
@@ -13,7 +13,7 @@ export const snapshots = [
   },
   {
     exerciseId: "506f191e810c19729de860eb",
-    userId: null,
+    userId: "gugi",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 15, repetitions: 10 },
@@ -24,7 +24,7 @@ export const snapshots = [
   },
   {
     exerciseId: "506f191e810c19729de860ec",
-    userId: null,
+    userId: "gugi",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 40, repetitions: 10 },
@@ -34,7 +34,7 @@ export const snapshots = [
   },
   {
     exerciseId: "506f191e810c19729de860ed",
-    userId: null,
+    userId: "gugi",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 10, repetitions: 10 },
@@ -44,7 +44,7 @@ export const snapshots = [
   },
   {
     exerciseId: "506f191e810c19729de860ef",
-    userId: null,
+    userId: "yanni",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 40, repetitions: 10 },
@@ -55,7 +55,7 @@ export const snapshots = [
   },
   {
     exerciseId: "506f191e810c19729de860fb",
-    userId: null,
+    userId: "yanni",
     exerciseDefaults: {
       sets: [
         { weightsInKg: 50, repetitions: 10 },
@@ -65,4 +65,4 @@ export const snapshots = [
       ],
     },
   },
-] as ExerciseSnapshot[];
+];

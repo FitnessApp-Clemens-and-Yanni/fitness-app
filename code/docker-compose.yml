@@ -1,28 +1,30 @@
 services:
   phone-web:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
+    restart: unless-stopped
     ports:
-      - "4000:4000"
-    container_name: phone-web-fitness-app-react-native
+      - "4000:80"
+    container_name: phone-web
     networks:
-      - fitness-app-network
+      - fitness-network
+    depends_on:
+      - backend
 
   backend:
     image: ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest
+    restart: unless-stopped
     ports:
       - "3000:3000"
-    container_name: server-fitness-app-tsx
+    container_name: backend
     networks:
-      - fitness-app-network
+      - fitness-network
     environment:
-      - "DB_CONN_STRING=mongodb://database-fitness-app-mongodb:27017"
-
-  database:
-    image: mongodb/mongodb-community-server
-    container_name: database-fitness-app-mongodb
-    networks:
-      - fitness-app-network
+      FATSECRET_CONSUMER_KEY: ${FATSECRET_CONSUMER_KEY}
+      FATSECRET_CONSUMER_SECRET: ${FATSECRET_CONSUMER_SECRET}
+      MONGO_DB_CONNECTION_STRING: ${MONGO_DB_CONNECTION_STRING}
+    dns:
+      - 8.8.8.8
 
 networks:
-  fitness-app-network:
+  fitness-network:
     driver: bridge

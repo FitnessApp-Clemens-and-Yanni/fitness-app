@@ -1,11 +1,11 @@
-import { WorkoutsRouter } from "@/routers/workouts";
-import { createCallerFactory, createTRPCRouter } from "@/trpc";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
+import { WorkoutsRouter } from "@/routers/sport/workouts/router-workouts.js";
+import { createCallerFactory, createTRPCRouter } from "@/trpc.js";
 import cors from "cors";
-import { SnapshotsRouter } from "./routers/snapshots";
-import { db } from "./data/meta";
-import {FoodRouter} from "@/routers/food";
-import {FatSecretRouter} from "@/routers/fatsecret";
+import { SnapshotsRouter } from "@/routers/sport/snapshots/router-snapshots.js";
+import { FoodRouter } from "@/routers/food/food/router-food.js";
+import { FatSecretRouter } from "@/routers/food/fatsecret/router-fatsecret.js";
+import { db } from "./data/meta/index.js";
+import { createHTTPServer } from "@trpc/server/adapters/standalone";
 
 /**
  * This is the primary router for your server.
@@ -24,25 +24,22 @@ export type AppRouter = typeof appRouter;
 
 /**
  * Create a server-side caller for the tRPC API.
- * @example
- * const trpc = createCaller(createContext);
- * const res = await trpc.post.all();
- *       ^? Post[]
  */
 export const createCaller = createCallerFactory(appRouter);
+
+const PORT = 3000;
 
 const server = createHTTPServer({
   router: appRouter,
   middleware: cors(),
   createContext() {
     return {
-      db,
+      db: db,
       headers: new Headers(),
     };
   },
-  onError: (err) => {
-    console.error(err.error.message);
-  },
 });
 
-server.listen(3000, () => console.log("Server is running..."));
+server.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
+});

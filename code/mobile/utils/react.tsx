@@ -4,7 +4,7 @@ import {
   httpBatchStreamLink,
   loggerLink,
 } from "@trpc/react-query";
-import { type AppRouter } from "../../server/build/root";
+import type { AppRouter } from "@server/build/root";
 import { createQueryClient } from "./query-client";
 import { useState } from "react";
 import SuperJSON from "superjson";
@@ -40,7 +40,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
           },
         }),
       ],
-    })
+    }),
   );
 
   return (
@@ -53,5 +53,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 }
 
 function getBaseUrl() {
-  return `http://127.0.0.1:${process.env.PORT ?? 3000}`;
+  return (__DEV__ ?? true)
+    ? "http://localhost:3000"
+    : "https://the-fitness-app-dev.org:3001";
 }

@@ -3,10 +3,13 @@
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
+    "jsx": "react-jsx",
     "paths": {
       "@/*": ["./*"],
-      "@shared/*": ["../shared/build/*"]
-    }
+      "@ui/*": ["./components/ui/*"],
+      "@comp/*": ["./components/*"],
+      "@server/*": ["../server/*"],
+    },
   },
-  "references": [{ "path": "../server" }, { "path": "../shared" }]
+  "references": [{ "path": "../server" }]
 }

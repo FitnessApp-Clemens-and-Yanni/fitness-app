@@ -8,24 +8,27 @@
     "start": "tsx root",
     "dev": "tsx watch root",
     "prod": "tsx root",
-    "db": "docker run -d --name database-fitness-app-mongodb -p 27017:27017 -d mongodb/mongodb-community-server"
+    "db": "docker run -d --name database-fitness-app-mongodb -p 27017:27017 -v \"$HOME/mongodb/data:/data/db\" mongo"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
-    "@trpc/server": "^11.0.1",
+    "@trpc/server": "^11.1.4",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "express": "^5.1.0",
     "mongodb": "^6.15.0",
     "oauth-1.0a": "^2.2.6",
+    "shared": "github:FitnessApp-Clemens-and-Yanni/the-fitness-app-shared",
     "superjson": "^2.2.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
+    "prettier": "^3.5.3",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "5.8.3"
   }
 }

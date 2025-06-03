@@ -35,3 +35,16 @@ jobs:
         run: |
           docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-server:latest && \
           docker push ghcr.io/fitnessapp-clemens-and-yanni/fitness-mobile:latest
+
+      - name: Deploy remote using SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.HOST_USERNAME}}
+          key: ${{secrets.KEY}}
+          script: |
+            cd ~/dockerization
+            docker compose down || echo 'No running docker images by docker compose...'
+            wget 'https://raw.githubusercontent.com/FitnessApp-Clemens-and-Yanni/fitness-app/refs/heads/main/code/docker-compose.yml docker-compose.yml'
+            docker compose pull
+            docker compose --env-file ".env" up -d
