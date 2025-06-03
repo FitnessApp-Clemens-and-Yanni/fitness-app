@@ -31,6 +31,8 @@ export const addFoodToMealWithIdPublicMutation = publicProcedure
 
     let serving = null;
 
+    console.log(data.food.servings.serving);
+
     let newFood :
       { name: string,
       weightInG: number
@@ -88,9 +90,7 @@ export const addFoodToMealWithIdPublicMutation = publicProcedure
         fatsInG: +serving.fat * weightFactor,
       };
 
-    } else if (
-      data.food.servings.serving.serving_description.startsWith("1 ")
-    ) {
+    } else {
       serving = data.food.servings.serving;
 
       newFood = {

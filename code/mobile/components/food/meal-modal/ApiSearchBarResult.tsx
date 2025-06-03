@@ -107,7 +107,7 @@ export function ApiSearchBarResult(props: {
                     {item.foodName}
                   </Text>
                   <Text className="text-xs text-stone-600 text-pretty">
-                    {item.foodDescription.match(/^Per\s+(\d+\s*\w+).*/)?.[1]}
+                    {item.foodDescription.match(/^Per\s+(\d+\s*.+)\s+-.*/)?.[1]}
                   </Text>
                 </Card>
               </TouchableOpacity>
