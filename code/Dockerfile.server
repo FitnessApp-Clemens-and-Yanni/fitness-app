@@ -1,11 +1,6 @@
 # BUILD
 FROM node:23-alpine
 
-WORKDIR /app/shared
-COPY ./shared/package*.json .
-RUN npm install --only=prod
-COPY ./shared .
-
 WORKDIR /app/server
 COPY ./server/package*.json .
 RUN npm install
